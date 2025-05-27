@@ -442,7 +442,7 @@
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-    height: 75vh;
+    height: auto;
     background: #fff;
     padding: 0;
     display: flex;
