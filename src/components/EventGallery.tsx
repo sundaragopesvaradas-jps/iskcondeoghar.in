@@ -1,10 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './EventGallery.css';
-import { upcomingFestival, recentEvents, eventVideos, weeklyPrograms, FestivalEvent, EventVideo, WeeklyProgram } from '../data/festivalData';
+import { upcomingFestival, recentEvents, eventVideos, weeklyPrograms } from '../data/festivalData';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { scrollConfig } from '../config/scrollConfig';
 import { dateConfig } from '../config/dateConfig';
-import { contactConfig } from '../config/contactConfig';
 
 interface EventCardProps {
   title: string;
@@ -97,36 +96,36 @@ const VideoCard: React.FC<VideoCardProps> = ({ title, videoUrl, date }) => {
   );
 };
 
-const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
-  const calculateTimeLeft = () => {
-    const targetDateTime = new Date(targetDate).getTime();
-    const now = new Date().getTime();
-    const difference = targetDateTime - now;
+const calculateTimeLeft = (targetDate: string) => {
+  const targetDateTime = new Date(targetDate).getTime();
+  const now = new Date().getTime();
+  const difference = targetDateTime - now;
 
-    if (difference <= 0) {
-      return {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        isExpired: true
-      };
-    }
-
+  if (difference <= 0) {
     return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-      minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((difference % (1000 * 60)) / 1000),
-      isExpired: false
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      isExpired: true
     };
-  };
+  }
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+    minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+    seconds: Math.floor((difference % (1000 * 60)) / 1000),
+    isExpired: false
+  };
+};
+
+const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate));
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const newTimeLeft = calculateTimeLeft();
+      const newTimeLeft = calculateTimeLeft(targetDate);
       setTimeLeft(newTimeLeft);
 
       if (newTimeLeft.isExpired) {
@@ -141,7 +140,7 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
     return (
       <div className="countdown-timer">
         <div className="countdown-expired">
-          Event has started!
+          Program is Live !! <strong>LIVE</strong>!
         </div>
       </div>
     );
