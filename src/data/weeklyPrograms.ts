@@ -26,14 +26,14 @@ export const weeklyPrograms: WeeklyProgram[] = [
     title: "Saturday Khichdi Distribution Programm",
     time: "5:00 PM Onwards",
     day: "Saturday",
-    image: "/images/WeeklyTemplePrograms/Khichdi.jpg",
+    image: "/images/WeeklyTemplePrograms/Khichdi2.jpg",
     description: "Evening Khichdi Distribution on Saturday at various places in the town."
   },
   {
     title: "Special Sunday Program",
     time: "5:00 PM - 8:00 PM",
     day: "Sunday",
-    image: "/images/WeeklyTemplePrograms/SundayClass.jpg",
+    image: "/images/WeeklyTemplePrograms/SundayClass2.jpg",
     description: "Special kirtan, lecture, and maha-prasad distribution for all visitors."
   },
   {
