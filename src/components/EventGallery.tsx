@@ -5,7 +5,6 @@ import { useAutoScroll } from '../hooks/useAutoScroll';
 import { scrollConfig } from '../config/scrollConfig';
 import { dateConfig } from '../config/dateConfig';
 import { contactConfig } from '../config/contactConfig';
-import { externalConfig } from '../config/externalConfig';
 
 interface EventCardProps {
   title: string;
