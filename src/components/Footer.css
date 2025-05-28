@@ -120,11 +120,38 @@
   line-height: 1.6;
 }
 
-
 .phone-label {
   font-size: 0.85rem;
   color: #ff4081;
   margin-left: 0.5rem;
+}
+
+.ask-questions {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.ask-link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #ff4081;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.ask-link i {
+  font-size: 1.3rem;
+}
+
+.ask-link:hover {
+  background-color: rgba(255, 64, 129, 0.1);
+  transform: translateX(5px);
 }
 
 @media (max-width: 768px) {
@@ -144,5 +171,14 @@
   .phone-label {
     display: inline-block;
     margin-left: 0.3rem;
+  }
+
+  .ask-questions {
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+  }
+
+  .ask-link {
+    font-size: 1rem;
   }
 } 

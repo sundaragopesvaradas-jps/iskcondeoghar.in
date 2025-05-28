@@ -1,6 +1,7 @@
 import React from 'react';
 import './Footer.css';
 import { contactConfig } from '../config/contactConfig';
+import { externalConfig } from '../config/externalConfig';
 
 const Footer = () => {
   return (
@@ -53,6 +54,12 @@ const Footer = () => {
                 ))}
               </address>
             </div>
+          </div>
+          <div className="ask-questions">
+            <a href={externalConfig.askQuestions.url} className="ask-link" target="_blank" rel="noopener noreferrer">
+              <i className={externalConfig.askQuestions.icon}></i>
+              {externalConfig.askQuestions.text}
+            </a>
           </div>
         </div>
       </div>
