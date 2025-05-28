@@ -33,7 +33,15 @@ const Footer = () => {
             </div>
             <div className="contact-item">
               <i className="fas fa-phone"></i>
-              <a href={`tel:${contactConfig.phoneNumber}`}>{contactConfig.phoneNumber}</a>
+              <div>
+                {contactConfig.phoneNumbers.map((number, index) => (
+                  <React.Fragment key={index}>
+                    <a href={`tel:${number}`}>{number}</a>
+                    {index === 0 && <span className="phone-label"></span>}
+                    {index < contactConfig.phoneNumbers.length - 1 && <br />}
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
             <div className="contact-item">
               <i className="fas fa-map-marker-alt"></i>

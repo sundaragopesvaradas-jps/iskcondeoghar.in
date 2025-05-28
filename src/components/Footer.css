@@ -120,6 +120,13 @@
   line-height: 1.6;
 }
 
+
+.phone-label {
+  font-size: 0.85rem;
+  color: #ff4081;
+  margin-left: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .footer-content {
     flex-direction: column;
@@ -128,5 +135,14 @@
   
   .footer-right {
     max-width: 100%;
+  }
+
+  .phone-numbers {
+    gap: 0.3rem;
+  }
+
+  .phone-label {
+    display: inline-block;
+    margin-left: 0.3rem;
   }
 } 

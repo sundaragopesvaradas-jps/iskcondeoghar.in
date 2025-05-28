@@ -23,6 +23,7 @@ export interface WeeklyProgram {
 export interface UpcomingFestival {
   title: string;
   date: string;
+  time: string; // Time in 24-hour format (HH:mm)
   image: string;
   description: string;
 } 

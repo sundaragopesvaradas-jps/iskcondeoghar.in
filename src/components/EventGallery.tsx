@@ -4,6 +4,7 @@ import { upcomingFestival, recentEvents, eventVideos, weeklyPrograms } from '../
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { scrollConfig } from '../config/scrollConfig';
 import { dateConfig } from '../config/dateConfig';
+import { contactConfig } from '../config/contactConfig';
 
 interface EventCardProps {
   title: string;
@@ -22,6 +23,7 @@ interface VideoCardProps {
 
 interface CountdownProps {
   targetDate: string;
+  targetTime: string;
 }
 
 interface WeeklyProgramCardProps {
@@ -96,8 +98,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ title, videoUrl, date }) => {
   );
 };
 
-const calculateTimeLeft = (targetDate: string) => {
-  const targetDateTime = new Date(targetDate).getTime();
+const calculateTimeLeft = (targetDate: string, targetTime: string) => {
+  const targetDateTime = dateConfig.getISTTimestamp(targetDate, targetTime);
   const now = new Date().getTime();
   const difference = targetDateTime - now;
 
@@ -120,12 +122,12 @@ const calculateTimeLeft = (targetDate: string) => {
   };
 };
 
-const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
-  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate));
+const Countdown: React.FC<CountdownProps> = ({ targetDate, targetTime }) => {
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate, targetTime));
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const newTimeLeft = calculateTimeLeft(targetDate);
+      const newTimeLeft = calculateTimeLeft(targetDate, targetTime);
       setTimeLeft(newTimeLeft);
 
       if (newTimeLeft.isExpired) {
@@ -134,7 +136,7 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, [targetDate, targetTime]);
 
   if (timeLeft.isExpired) {
     return (
@@ -252,7 +254,7 @@ const EventGallery = () => {
               {dateConfig.displayFormat(upcomingFestival.date)}
             </p>
             <p className="festival-description">{upcomingFestival.description}</p>
-            <Countdown targetDate={upcomingFestival.date} />
+            <Countdown targetDate={upcomingFestival.date} targetTime={upcomingFestival.time} />
           </div>
         </div>
       </section>
@@ -340,6 +342,31 @@ const EventGallery = () => {
             onClick={() => scroll('next', programGridRef.current)}
           >
             <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </section>
+      
+      <section className="cta-buttons">
+        <div className="cta-container">
+          <a href={contactConfig.social.facebook} className="cta-btn facebook" target="_blank" rel="noopener noreferrer">
+            <i className="fab fa-facebook-f"></i>
+            <span>Follow Us</span>
+          </a>
+          <a href={contactConfig.social.youtube} className="cta-btn youtube" target="_blank" rel="noopener noreferrer">
+            <i className="fab fa-youtube"></i>
+            <span>Subscribe</span>
+          </a>
+          <a href={`tel:${contactConfig.phoneNumber}`} className="cta-btn call" title="Call Us">
+            <i className="fas fa-phone"></i>
+            <span>Call Now</span>
+          </a>
+          <button 
+            onClick={() => window.open(contactConfig.whatsapp.getWhatsAppLink(contactConfig.whatsapp.message), '_blank')} 
+            className="cta-btn whatsapp" 
+            title="Message on WhatsApp"
+          >
+            <i className="fab fa-whatsapp"></i>
+            <span>WhatsApp</span>
           </button>
         </div>
       </section>
