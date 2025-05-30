@@ -3,6 +3,7 @@ import './Header.css';
 import logo from '../assets/images/iskcon-logo.png';
 import spImage from '../assets/images/sp.jpg';
 import { contactConfig } from '../config/contactConfig';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const handleWhatsAppClick = () => {
@@ -12,13 +13,13 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
-        <div className="header-left">
+        <Link to="/home" className="header-left" style={{ textDecoration: 'none' }}>
           <img src={logo} alt="ISKCON Deoghar" className="logo" />
           <div className="logo-text">
             <h1>ISKCON Deoghar</h1>
             <p>International Society for Krishna Consciousness</p>
           </div>
-        </div>
+        </Link>
 
         <div className="header-right">
           <div className="social-icons">

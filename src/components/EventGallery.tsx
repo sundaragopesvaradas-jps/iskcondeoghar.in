@@ -1,37 +1,22 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './EventGallery.css';
-import { upcomingFestival, recentEvents, eventVideos, weeklyPrograms } from '../data/festivalData';
+import { upcomingFestival } from '../data/festivalData';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { scrollConfig } from '../config/scrollConfig';
 import { dateConfig } from '../config/dateConfig';
 import { contactConfig } from '../config/contactConfig';
-
-interface EventCardProps {
-  title: string;
-  date: string;
-  image: string;
-  description: string;
-  url?: string;
-  onClick?: () => void;
-}
+import { externalConfig } from '../config/externalConfig';
 
 interface VideoCardProps {
   title: string;
   videoUrl: string;
   date: string;
+  hideCaption?: boolean;
 }
 
 interface CountdownProps {
   targetDate: string;
   targetTime: string;
-}
-
-interface WeeklyProgramCardProps {
-  title: string;
-  time: string;
-  day: string;
-  image: string;
-  description: string;
 }
 
 const BANNER_STYLES = {
@@ -40,37 +25,9 @@ const BANNER_STYLES = {
 
 type BannerStyle = (typeof BANNER_STYLES)[keyof typeof BANNER_STYLES];
 
-const EventCard: React.FC<EventCardProps> = ({ title, date, image, description, url }) => {
-  const cardContent = (
-    <>
-      <img src={image} alt={title} className="event-image" />
-      <div className="event-content">
-        <h3 className="event-title">{title}</h3>
-        <p className="event-date">{dateConfig.displayFormat(date)}</p>
-        <p className="event-description">{description}</p>
-      </div>
-    </>
-  );
+const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  if (url) {
-    return (
-      <a href={url} target="_blank" rel="noopener noreferrer" className="event-card-link">
-        <div className="event-card">
-          {cardContent}
-        </div>
-      </a>
-    );
-  }
-
-  return (
-    <div className="event-card">
-      {cardContent}
-    </div>
-  );
-};
-
-const VideoCard: React.FC<VideoCardProps> = ({ title, videoUrl, date }) => {
-  // Extract video ID from YouTube URL
   const getYouTubeVideoId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
@@ -82,18 +39,53 @@ const VideoCard: React.FC<VideoCardProps> = ({ title, videoUrl, date }) => {
 
   return (
     <div className="video-card">
-      <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="video-link">
-        <div className="thumbnail-container">
-          <img src={thumbnailUrl} alt={title} className="video-thumbnail" />
-          <div className="play-button">
-            <i className="fas fa-play"></i>
+      {!isPlaying ? (
+        <div 
+          className="video-thumbnail-wrapper" 
+          onClick={() => setIsPlaying(true)}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="thumbnail-container">
+            <img src={thumbnailUrl} alt={title} className="video-thumbnail" />
+            <div className="play-button">
+              <i className="fas fa-play"></i>
+            </div>
           </div>
+          {!hideCaption && (
+            <div className="video-content">
+              <h3 className="video-title">{title}</h3>
+              <p className="video-date">{dateConfig.displayFormat(date)}</p>
+            </div>
+          )}
         </div>
-        <div className="video-content">
-          <h3 className="video-title">{title}</h3>
-          <p className="video-date">{dateConfig.displayFormat(date)}</p>
+      ) : (
+        <div>
+          <div className="video-player-container">
+            <iframe
+              width="100%"
+              height="200"
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+              title={title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+            <button 
+              onClick={() => setIsPlaying(false)} 
+              className="close-video-btn"
+              title="Close video"
+            >
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          {!hideCaption && (
+            <div className="video-content">
+              <h3 className="video-title">{title}</h3>
+              <p className="video-date">{dateConfig.displayFormat(date)}</p>
+            </div>
+          )}
         </div>
-      </a>
+      )}
     </div>
   );
 };
@@ -170,75 +162,18 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, targetTime }) => {
   );
 };
 
-const WeeklyProgramCard: React.FC<WeeklyProgramCardProps> = ({ title, time, day, image, description }) => {
-  return (
-    <div className="program-card">
-      <img src={image} alt={title} className="program-image" />
-      <div className="program-content">
-        <h3 className="program-title">{title}</h3>
-        <p className="program-time">
-          <i className="fas fa-clock"></i> {time}
-        </p>
-        <p className="program-day">
-          <i className="fas fa-calendar-day"></i> {day}
-        </p>
-        <p className="program-description">{description}</p>
-      </div>
-    </div>
-  );
-};
-
 const EventGallery = () => {
   const eventGridRef = useRef<HTMLDivElement>(null);
   const videoGridRef = useRef<HTMLDivElement>(null);
   const programGridRef = useRef<HTMLDivElement>(null);
-  const [isEventHovered, setIsEventHovered] = useState(false);
-  const [isVideoHovered, setIsVideoHovered] = useState(false);
-  const [isProgramHovered, setIsProgramHovered] = useState(false);
+  const [isEventHovered] = useState(false);
+  const [isVideoHovered] = useState(false);
+  const [isProgramHovered] = useState(false);
   const [currentStyle] = useState<BannerStyle>(BANNER_STYLES.DYNAMIC_LAYERS);
 
   useAutoScroll(eventGridRef, isEventHovered);
   useAutoScroll(videoGridRef, isVideoHovered);
   useAutoScroll(programGridRef, isProgramHovered);
-
-  const scroll = (direction: 'prev' | 'next', element: HTMLDivElement | null) => {
-    if (element) {
-      const scrollAmount = element.clientWidth;
-      const maxScroll = element.scrollWidth - element.clientWidth;
-      const currentScroll = element.scrollLeft;
-
-      if (direction === 'next') {
-        if (currentScroll >= maxScroll) {
-          // If at the end, scroll to start
-          element.style.scrollBehavior = 'auto';
-          element.scrollLeft = 0;
-          // Force a reflow
-          void element.getBoundingClientRect();
-          element.style.scrollBehavior = 'smooth';
-        } else {
-          element.scrollBy({
-            left: scrollAmount,
-            behavior: 'smooth'
-          });
-        }
-      } else { // prev direction
-        if (currentScroll === 0) {
-          // If at the start, scroll to end
-          element.style.scrollBehavior = 'auto';
-          element.scrollLeft = maxScroll;
-          // Force a reflow
-          void element.getBoundingClientRect();
-          element.style.scrollBehavior = 'smooth';
-        } else {
-          const targetScroll = Math.max(0, currentScroll - scrollAmount);
-          element.scrollTo({
-            left: targetScroll,
-            behavior: 'smooth'
-          });
-        }
-      }
-    }
-  };
 
   return (
     <div className="gallery-section">
@@ -259,93 +194,151 @@ const EventGallery = () => {
         </div>
       </section>
 
-      <section className="recent-events">
-        <h2 className="section-title">Recent Events</h2>
-        <div className="scroll-container">
-          <button 
-            className="scroll-button prev" 
-            onClick={() => scroll('prev', eventGridRef.current)}
-          >
-            <i className="fas fa-chevron-left"></i>
-          </button>
-          <div 
-            className="event-grid" 
-            ref={eventGridRef}
-            onMouseEnter={() => setIsEventHovered(true)}
-            onMouseLeave={() => setIsEventHovered(false)}
-            style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
-          >
-            {recentEvents.map((item, index) => (
-              <EventCard key={index} {...item} />
-            ))}
-          </div>
-          <button 
-            className="scroll-button next" 
-            onClick={() => scroll('next', eventGridRef.current)}
-          >
-            <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      </section>
+      <div style={{ textAlign: 'center', margin: '3rem 0' }}>
+        <a
+          href="/recentcelebrations"
+          style={{
+            display: 'inline-block',
+            background: 'linear-gradient(90deg, #ff4081, #ff80ab)',
+            color: '#fff',
+            padding: '1.2rem 2.8rem',
+            borderRadius: '30px',
+            fontSize: '1.3rem',
+            fontWeight: 700,
+            textDecoration: 'none',
+            boxShadow: '0 4px 16px rgba(255, 64, 129, 0.18)',
+            transition: 'background 0.3s, transform 0.2s',
+          }}
+        >
+          View our recent celebrations
+        </a>
+      </div>
 
-      <section className="event-videos">
-        <h2 className="section-title">Event Videos</h2>
-        <div className="scroll-container">
-          <button 
-            className="scroll-button prev" 
-            onClick={() => scroll('prev', videoGridRef.current)}
-          >
-            <i className="fas fa-chevron-left"></i>
-          </button>
-          <div 
-            className="video-grid" 
-            ref={videoGridRef}
-            onMouseEnter={() => setIsVideoHovered(true)}
-            onMouseLeave={() => setIsVideoHovered(false)}
-            style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
-          >
-            {eventVideos.map((item, index) => (
-              <VideoCard key={index} {...item} />
-            ))}
+      {externalConfig.showGallerySections && (
+        <>
+        {/* Glance Lord's Temple Section */}
+        <section style={{ margin: '3rem 0' }}>
+          <h2 className="section-title">Glance Lord's Temple</h2>
+          <div className="scroll-container">
+            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+              {/* 3 images */}
+              {[...Array(3)].map((_, idx) => (
+                <div className="event-card" key={idx}>
+                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Temple Glance ${idx+1}`} className="event-image" />
+                </div>
+              ))}
+              {/* 2 videos */}
+              {[
+                { title: 'Temple Video 1', videoUrl: 'https://www.youtube.com/watch?v=lueNvgcEhVo', date: '2024-06-01' },
+                { title: 'Temple Video 2', videoUrl: 'https://www.youtube.com/watch?v=NXFcsJ4Lo1A', date: '2024-06-02' },
+              ].map((item, idx) => (
+                <VideoCard key={`temple-video-${idx}`} {...item} hideCaption />
+              ))}
+            </div>
           </div>
-          <button 
-            className="scroll-button next" 
-            onClick={() => scroll('next', videoGridRef.current)}
-          >
-            <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      </section>
+          <div style={{ maxWidth: 700, margin: '0 auto', color: '#666', fontSize: '1.1rem', textAlign: 'center' }}>
+            A beautiful glimpse of the Lord's temple premises, architecture, and divine atmosphere at ISKCON Deoghar.
+          </div>
+        </section>
 
-      <section className="weekly-programs">
-        <h2 className="section-title">Weekly Temple Programs</h2>
-        <div className="scroll-container">
-          <button 
-            className="scroll-button prev" 
-            onClick={() => scroll('prev', programGridRef.current)}
-          >
-            <i className="fas fa-chevron-left"></i>
-          </button>
-          <div 
-            className="program-grid" 
-            ref={programGridRef}
-            onMouseEnter={() => setIsProgramHovered(true)}
-            onMouseLeave={() => setIsProgramHovered(false)}
-            style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
-          >
-            {weeklyPrograms.map((item, index) => (
-              <WeeklyProgramCard key={index} {...item} />
-            ))}
+        {/* Goshala Section */}
+        <section style={{ margin: '3rem 0' }}>
+          <h2 className="section-title">Goshala</h2>
+          <div className="scroll-container">
+            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+              {/* 3 images */}
+              {[...Array(3)].map((_, idx) => (
+                <div className="event-card" key={idx}>
+                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Goshala ${idx+1}`} className="event-image" />
+                </div>
+              ))}
+              {/* 2 videos */}
+              {[
+                { title: 'Goshala Video 1', videoUrl: 'https://www.youtube.com/watch?v=Rq8sI63Cw20', date: '2024-06-03' },
+                { title: 'Goshala Video 2', videoUrl: 'https://www.youtube.com/watch?v=1Q_Jc5cVABE', date: '2024-06-04' },
+              ].map((item, idx) => (
+                <VideoCard key={`goshala-video-${idx}`} {...item} hideCaption />
+              ))}
+            </div>
           </div>
-          <button 
-            className="scroll-button next" 
-            onClick={() => scroll('next', programGridRef.current)}
-          >
-            <i className="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      </section>
-      
+          <div style={{ maxWidth: 700, margin: '0 auto', color: '#666', fontSize: '1.1rem', textAlign: 'center' }}>
+            Our Goshala is home to protected cows, cared for with love and devotion, reflecting the spirit of cow protection in Vedic culture.
+          </div>
+        </section>
+
+        {/* Regular Programms Section */}
+        <section style={{ margin: '3rem 0' }}>
+          <h2 className="section-title">Regular Programms</h2>
+          {/* Subsection A */}
+          <h3 className="section-title" style={{ fontSize: '1.5rem', marginTop: '2rem' }}>A</h3>
+          <div className="scroll-container">
+            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+              {/* 3 images */}
+              {[...Array(3)].map((_, idx) => (
+                <div className="event-card" key={idx}>
+                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Regular Programms A ${idx+1}`} className="event-image" />
+                </div>
+              ))}
+              {/* 2 videos */}
+              {[
+                { title: 'Regular A Video 1', videoUrl: 'https://www.youtube.com/watch?v=lueNvgcEhVo', date: '2024-06-01' },
+                { title: 'Regular A Video 2', videoUrl: 'https://www.youtube.com/watch?v=NXFcsJ4Lo1A', date: '2024-06-02' },
+              ].map((item, idx) => (
+                <VideoCard key={`regular-a-video-${idx}`} {...item} hideCaption />
+              ))}
+            </div>
+          </div>
+          <div style={{ maxWidth: 700, margin: '0 auto', color: '#666', fontSize: '1.1rem', textAlign: 'center', marginBottom: '2rem' }}>
+            Daily morning and evening arati, kirtan, and darshan of the deities.
+          </div>
+          {/* Subsection B */}
+          <h3 className="section-title" style={{ fontSize: '1.5rem', marginTop: '2rem' }}>B</h3>
+          <div className="scroll-container">
+            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+              {/* 3 images */}
+              {[...Array(3)].map((_, idx) => (
+                <div className="event-card" key={idx}>
+                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Regular Programms B ${idx+1}`} className="event-image" />
+                </div>
+              ))}
+              {/* 2 videos */}
+              {[
+                { title: 'Regular B Video 1', videoUrl: 'https://www.youtube.com/watch?v=Rq8sI63Cw20', date: '2024-06-03' },
+                { title: 'Regular B Video 2', videoUrl: 'https://www.youtube.com/watch?v=1Q_Jc5cVABE', date: '2024-06-04' },
+              ].map((item, idx) => (
+                <VideoCard key={`regular-b-video-${idx}`} {...item} hideCaption />
+              ))}
+            </div>
+          </div>
+          <div style={{ maxWidth: 700, margin: '0 auto', color: '#666', fontSize: '1.1rem', textAlign: 'center', marginBottom: '2rem' }}>
+            Weekly Bhagavad Gita classes and spiritual discourses for all devotees.
+          </div>
+          {/* Subsection C */}
+          <h3 className="section-title" style={{ fontSize: '1.5rem', marginTop: '2rem' }}>C</h3>
+          <div className="scroll-container">
+            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+              {/* 3 images */}
+              {[...Array(3)].map((_, idx) => (
+                <div className="event-card" key={idx}>
+                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Regular Programms C ${idx+1}`} className="event-image" />
+                </div>
+              ))}
+              {/* 2 videos */}
+              {[
+                { title: 'Regular C Video 1', videoUrl: 'https://www.youtube.com/watch?v=lueNvgcEhVo', date: '2024-06-01' },
+                { title: 'Regular C Video 2', videoUrl: 'https://www.youtube.com/watch?v=NXFcsJ4Lo1A', date: '2024-06-02' },
+              ].map((item, idx) => (
+                <VideoCard key={`regular-c-video-${idx}`} {...item} hideCaption />
+              ))}
+            </div>
+          </div>
+          <div style={{ maxWidth: 700, margin: '0 auto', color: '#666', fontSize: '1.1rem', textAlign: 'center', marginBottom: '2rem' }}>
+            Special Sunday Love Feast and children's programs every week.
+          </div>
+        </section>
+        </>
+      )}
+
       <section className="cta-buttons">
         <div className="cta-container">
           <a href={contactConfig.social.facebook} className="cta-btn facebook" target="_blank" rel="noopener noreferrer">
