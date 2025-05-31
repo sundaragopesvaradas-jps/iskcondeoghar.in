@@ -1,18 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.fc0c082d.chunk.css",
-    "main.js": "/static/js/main.bf9d2d0c.chunk.js",
-    "main.js.map": "/static/js/main.bf9d2d0c.chunk.js.map",
-    "runtime~main.js": "/static/js/runtime~main.a1b9b0b5.js",
-    "runtime~main.js.map": "/static/js/runtime~main.a1b9b0b5.js.map",
-    "static/js/2.1a261575.chunk.js": "/static/js/2.1a261575.chunk.js",
-    "static/js/2.1a261575.chunk.js.map": "/static/js/2.1a261575.chunk.js.map",
-    "static/js/3.7426b29a.chunk.js": "/static/js/3.7426b29a.chunk.js",
-    "static/js/3.7426b29a.chunk.js.map": "/static/js/3.7426b29a.chunk.js.map",
+    "main.css": "/static/css/main.b96fb273.css",
+    "main.js": "/static/js/main.acd49bfd.js",
+    "static/js/453.fe5b1732.chunk.js": "/static/js/453.fe5b1732.chunk.js",
+    "static/media/iskcon-logo.png": "/static/media/iskcon-logo.36bef87e04de99fa9818.png",
     "index.html": "/index.html",
-    "precache-manifest.03c1b387aab164a4619e82489b45b06c.js": "/precache-manifest.03c1b387aab164a4619e82489b45b06c.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/main.fc0c082d.chunk.css.map": "/static/css/main.fc0c082d.chunk.css.map",
-    "static/media/iskcon-logo.png": "/static/media/iskcon-logo.76289e56.png"
-  }
+    "main.b96fb273.css.map": "/static/css/main.b96fb273.css.map",
+    "main.acd49bfd.js.map": "/static/js/main.acd49bfd.js.map",
+    "453.fe5b1732.chunk.js.map": "/static/js/453.fe5b1732.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b96fb273.css",
+    "static/js/main.acd49bfd.js"
+  ]
 }
