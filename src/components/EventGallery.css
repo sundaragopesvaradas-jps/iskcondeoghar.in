@@ -253,7 +253,6 @@
       left: 50%;
       right: 50%;
       height: auto;
-      min-height: 100vh;
       padding: 0;
     }
   
@@ -353,7 +352,6 @@
       left: 50%;
       right: 50%;
       height: auto;
-      min-height: 100vh;
       padding: 0;
     }
   
@@ -486,7 +484,7 @@
     padding: 2rem;
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    height: 100%;
+    height: auto;
     clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
     margin-left: -5%;
   }
