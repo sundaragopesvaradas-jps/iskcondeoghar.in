@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.b96fb273.css",
-    "main.js": "/static/js/main.acd49bfd.js",
+    "main.js": "/static/js/main.5dc7d2dd.js",
     "static/js/453.fe5b1732.chunk.js": "/static/js/453.fe5b1732.chunk.js",
     "static/media/iskcon-logo.png": "/static/media/iskcon-logo.36bef87e04de99fa9818.png",
     "index.html": "/index.html",
     "main.b96fb273.css.map": "/static/css/main.b96fb273.css.map",
-    "main.acd49bfd.js.map": "/static/js/main.acd49bfd.js.map",
+    "main.5dc7d2dd.js.map": "/static/js/main.5dc7d2dd.js.map",
     "453.fe5b1732.chunk.js.map": "/static/js/453.fe5b1732.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b96fb273.css",
-    "static/js/main.acd49bfd.js"
+    "static/js/main.5dc7d2dd.js"
   ]
 }
