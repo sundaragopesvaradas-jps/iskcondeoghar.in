@@ -55,10 +55,16 @@ const Footer = () => {
               </address>
             </div>
           </div>
-          <div className="ask-questions">
-            <a href={externalConfig.askQuestions.url} className="ask-link" target="_blank" rel="noopener noreferrer">
-              <i className={externalConfig.askQuestions.icon}></i>
-              {externalConfig.askQuestions.text}
+          <div className="ask-questions-sp-books">
+            <a href={externalConfig.askQuestionsBooks.url} className="ask-link" target="_blank" rel="noopener noreferrer">
+              <i className={externalConfig.askQuestionsBooks.icon}></i>
+              {externalConfig.askQuestionsBooks.text}
+            </a>
+          </div>
+          <div className="ask-questions-sp-letters">
+            <a href={externalConfig.askQuestionsLetters.url} className="ask-link" target="_blank" rel="noopener noreferrer">
+              <i className={externalConfig.askQuestionsLetters.icon}></i>
+              {externalConfig.askQuestionsLetters.text}
             </a>
           </div>
         </div>
