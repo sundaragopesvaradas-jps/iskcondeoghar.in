@@ -22,8 +22,12 @@ const router = createBrowserRouter([
     element: <App />
   },
   {
-    path: routes.spllm,
-    element: <ExternalRedirect to={routes.external.spllm} />
+    path: routes.spbooks,
+    element: <ExternalRedirect to={routes.external.spbooks} />
+  },
+  {
+    path: routes.spletters,
+    element: <ExternalRedirect to={routes.external.spletters} />
   },
   {
     path: '/recentcelebrations',
