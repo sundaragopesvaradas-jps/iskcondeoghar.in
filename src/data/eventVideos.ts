@@ -2,6 +2,11 @@ import { EventVideo } from './types';
 
 export const eventVideos: EventVideo[] = [
   {
+    title: "Sri Krishna Janmashtami Mahamahotsav 2025",
+    date: "2025-08-16",
+    videoUrl: "https://youtu.be/nF2wtEcixsI?t=13025"
+  },
+  {
     title: "Sri Sri Jagannath Baladeva Subhadra Maharani Snana Yatra 2025",
     date: "2024-06-11",
     videoUrl: "https://www.youtube.com/watch?v=oPfJ2qcZ9k8"
