@@ -7,7 +7,7 @@ export const contactConfig = {
         area: 'Daburgram',
         city: 'Beside Maihar Garden',
         state: 'Jharkhand',
-        pincode: '814112',
+        pincode: '814142',
         country: 'India',
         // Helper function to get formatted address
         getFormattedAddress: () => {
