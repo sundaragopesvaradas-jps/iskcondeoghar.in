@@ -134,7 +134,7 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, targetTime }) => {
     return (
       <div className="countdown-timer">
         <div className="countdown-expired">
-          Program is Live !! <strong>LIVE</strong>!
+          Program is over !! <strong>You can watch it in our Youtube Channel</strong>!
         </div>
       </div>
     );
