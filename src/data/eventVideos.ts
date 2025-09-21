@@ -2,9 +2,19 @@ import { EventVideo } from './types';
 
 export const eventVideos: EventVideo[] = [
   {
+    title: "Sri Radhashtami Mahamahotsav 2025 - Kirtan Katha",
+    date: "2025-08-31",
+    videoUrl: "https://youtu.be/HQ90aw8v8YA?t=137"
+  },  
+  {
+    title: "Sri Radhashtami Mahamahotsav 2025 - Abhishek",
+    date: "2025-08-31",
+    videoUrl: "https://youtu.be/s8IJ-wrvDnk?t=9"
+  },    
+  {
     title: "Sri Krishna Janmashtami Mahamahotsav 2025",
     date: "2025-08-16",
-    videoUrl: "https://youtu.be/nF2wtEcixsI?t=13025"
+    videoUrl: "https://youtu.be/nF2wtEcixsI?t=555"
   },
   {
     title: "Sri Sri Jagannath Baladeva Subhadra Maharani Snana Yatra 2025",
