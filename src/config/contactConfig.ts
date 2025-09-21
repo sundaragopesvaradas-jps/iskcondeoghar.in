@@ -1,7 +1,7 @@
 export const contactConfig = {
     phoneNumber: '+918016731058', // Primary number for phone icon and whatsapp link
     phoneNumbers: ['+91 8016731058', '+91 9932861184'], // All contact numbers
-    email: 'contactiskcondeoghar@gmail.com',
+    email: 'iskcondeogharofficial@g@gmail.com',
     address: {
         street: 'ISKCON Deoghar',
         area: 'Daburgram',
