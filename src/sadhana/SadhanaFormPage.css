@@ -1,5 +1,4 @@
-/* Anek Devanagari — साँझ / केसर थीम, प्रगति, गति, डेस्कटॉप साइड पैनल */
-@import url('https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&display=swap');
+/* फ़ॉन्ट: `sadhanaTypographyConfig.ts` → Google Fonts लिंक SadhanaFormPage में लोड होता है */
 
 .sadhana-page {
   /* थीम: शांत रात + केसर एक्सेंट */
@@ -17,7 +16,7 @@
   --sadhana-night: #1a1528;
   --sadhana-night-soft: rgba(26, 21, 40, 0.06);
 
-  font-family: 'Anek Devanagari', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* font-family: sadhanaTypographyConfig से इनलाइन */
   font-optical-sizing: auto;
   color: var(--sadhana-ink);
   min-height: 100vh;

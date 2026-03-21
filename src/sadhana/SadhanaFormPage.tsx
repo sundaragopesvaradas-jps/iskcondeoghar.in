@@ -21,6 +21,7 @@ import iskconDeogharLogo from '../assets/images/iskcon-logo.png';
 import srilaPrabhupadaLogo from '../assets/images/sp.jpg';
 import { SADHANA_AUTO_SCROLL_DURATION_MS } from './sadhanaAutoScrollConfig';
 import { smoothScrollElementIntoViewCenter } from './sadhanaSmoothScrollToField';
+import { getSadhanaFontPreset } from './sadhanaTypographyConfig';
 import './SadhanaFormPage.css';
 
 const FORM_ID = 'sadhana-v2-hi';
@@ -73,9 +74,12 @@ function emptyValueForField(f: FieldDef): string | boolean | string[] {
   return '';
 }
 
+const SADHANA_GOOGLE_FONT_LINK_ID = 'sadhana-form-google-font';
+
 const SadhanaFormPage: React.FC = () => {
   const scriptUrl = getSadhanaScriptUrl();
   const backgroundImageUrl = useMemo(() => getSadhanaBackgroundImageUrl(), []);
+  const fontPreset = getSadhanaFontPreset();
   const alertsRef = useRef<HTMLDivElement>(null);
   const fieldBlockRefs = useRef<Map<string, HTMLElement | null>>(new Map());
   const autoScrollInitRef = useRef(false);
@@ -132,6 +136,20 @@ const SadhanaFormPage: React.FC = () => {
       else document.documentElement.removeAttribute('lang');
     };
   }, []);
+
+  useEffect(() => {
+    let link = document.getElementById(SADHANA_GOOGLE_FONT_LINK_ID) as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement('link');
+      link.id = SADHANA_GOOGLE_FONT_LINK_ID;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    }
+    link.href = fontPreset.googleFontsHref;
+    return () => {
+      link?.remove();
+    };
+  }, [fontPreset.googleFontsHref]);
 
   useEffect(() => {
     let rafId = 0;
@@ -365,7 +383,13 @@ const SadhanaFormPage: React.FC = () => {
     `sadhana-input${hasValue ? ' filled' : ''}`;
 
   return (
-    <div className={`sadhana-page${celebrate ? ' sadhana-page--celebrate' : ''}`} lang="hi">
+    <div
+      className={`sadhana-page${celebrate ? ' sadhana-page--celebrate' : ''}`}
+      lang="hi"
+      style={{
+        fontFamily: `'${fontPreset.cssFontFamily}', system-ui, -apple-system, 'Segoe UI', sans-serif`,
+      }}
+    >
       <div
         className="sadhana-bg-image"
         style={{
