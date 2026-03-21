@@ -932,6 +932,29 @@
   font-size: 0.78rem;
 }
 
+/** Field names in first column; each further column = one submission */
+.sadhana-records-table--pivot {
+  min-width: max(100%, 22rem);
+  table-layout: auto;
+}
+
+.sadhana-records-table--pivot tbody th[scope='row'] {
+  min-width: 8.5rem;
+  max-width: 13rem;
+  white-space: normal;
+  word-break: break-word;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: rgba(255, 253, 249, 0.98);
+  box-shadow: 3px 0 8px rgba(15, 23, 42, 0.06);
+}
+
+.sadhana-records-table--pivot tbody td {
+  min-width: 6.25rem;
+  max-width: 12rem;
+}
+
 .sadhana-records-table th,
 .sadhana-records-table td {
   padding: 0.45rem 0.5rem;
@@ -947,6 +970,7 @@
   white-space: nowrap;
 }
 
+.sadhana-records-table tbody tr:last-child th[scope='row'],
 .sadhana-records-table tbody tr:last-child td {
   border-bottom: none;
 }

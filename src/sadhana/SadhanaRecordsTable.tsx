@@ -10,32 +10,32 @@ type Props = {
 };
 
 export const SadhanaRecordsTable: React.FC<Props> = ({ rows, emptyMessage }) => {
+  if (rows.length === 0) {
+    return (
+      <div className="sadhana-records-table-wrap">
+        <table className="sadhana-records-table sadhana-records-table--pivot">
+          <tbody>
+            <tr>
+              <td className="sadhana-records-empty">{emptyMessage ?? t.recordsEmpty}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   return (
     <div className="sadhana-records-table-wrap">
-      <table className="sadhana-records-table">
-        <thead>
-          <tr>
-            {SADHANA_HISTORY_TABLE_COLUMNS.map((col) => (
-              <th key={col}>{col}</th>
-            ))}
-          </tr>
-        </thead>
+      <table className="sadhana-records-table sadhana-records-table--pivot">
         <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td colSpan={SADHANA_HISTORY_TABLE_COLUMNS.length} className="sadhana-records-empty">
-                {emptyMessage ?? t.recordsEmpty}
-              </td>
+          {SADHANA_HISTORY_TABLE_COLUMNS.map((field) => (
+            <tr key={field}>
+              <th scope="row">{field}</th>
+              {rows.map((row, ri) => (
+                <td key={ri}>{row[field] || '—'}</td>
+              ))}
             </tr>
-          ) : (
-            rows.map((row, i) => (
-              <tr key={`${row.Date}-${i}`}>
-                {SADHANA_HISTORY_TABLE_COLUMNS.map((col) => (
-                  <td key={col}>{row[col] || '—'}</td>
-                ))}
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>
