@@ -16,7 +16,12 @@ You do **not** need to “program” the sheet itself. You will:
 2. Click **Blank** to create a new spreadsheet (or open an existing one).
 3. Optional: rename the file (top left) to something like `ISKCON Deoghar — Sadhana responses`.
 
-You can leave **Sheet1** as it is. The script will add a **second tab** called **Sadhana Responses** automatically the first time a submission succeeds.
+You can leave **Sheet1** as it is. The script will add tabs automatically:
+
+- **Sadhana Responses** — full form rows (first successful submit creates headers).
+- **Sadhana Unique Names** — one column **Name**, unique devotee names (updated on each submit; used for the name autocomplete on the site).
+
+After changing the script, use **Deploy → Manage deployments → Edit (pencil) → New version → Deploy** so both `SADHANA_SUBMIT` and `SADHANA_NAMES` work.
 
 ### Step 2: Open Apps Script **from this spreadsheet** (important)
 
@@ -113,3 +118,5 @@ export const SADHANA_GOOGLE_SCRIPT_URL =
 After that, each submit from `/sadhana` should append one row to **Sadhana Responses**.
 
 **New fields:** Headers come from `sadhanaFormConfig.ts` (e.g. conditional fields such as **कौन-सी पुस्तकें पढ़ीं?** when reading time is not `0`). After you ship a new field, the **first** submission that includes it will align columns; if the sheet already had a header row from an older form version, you may need to add the new column manually or use a fresh sheet tab.
+
+**Name autocomplete:** The live site sends `{ "action": "SADHANA_NAMES" }` to the same Web App URL to load suggestions. If names never appear, the deployment is still on an old script version, or the browser blocked the request (check DevTools → Network). Until the sheet has rows in **Sadhana Unique Names**, the list may be empty except for names cached in the browser after successful submits.

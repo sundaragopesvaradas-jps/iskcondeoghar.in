@@ -10,6 +10,9 @@ export const sadhanaStrings = {
   submitting: 'जमा हो रहा है…',
   checkboxYes: 'हाँ',
 
+  /** नाम autocomplete सूची (स्क्रीन रीडर) */
+  nameComboboxListHint: 'पहले से दर्ज नाम — चुनने के लिए',
+
   /** प्रगति — सिर्फ़ x/y */
   progressFilled: (done: number, total: number) => `${done}/${total} filled`,
 

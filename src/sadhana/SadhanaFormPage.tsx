@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { sadhanaFormFields } from './sadhanaFormConfig';
+import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { getSadhanaScriptUrl, submitSadhanaResponse } from './submitSadhanaResponse';
+import { SadhanaNameCombobox } from './SadhanaNameCombobox';
+import { SADHANA_NAME_FIELD_ID, SADHANA_NAMES_SESSION_KEY } from './sadhanaNameFieldConstants';
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
 import { sadhanaStrings as t } from './sadhanaStrings';
@@ -22,6 +25,29 @@ function chunkFields(fields: FieldDef[], size: number): FieldDef[][] {
     groups.push(fields.slice(i, i + size));
   }
   return groups;
+}
+
+function dedupeSortedNames(arr: string[]): string[] {
+  const map = new Map<string, string>();
+  for (const n of arr) {
+    const t = n.trim();
+    if (!t) continue;
+    const k = t.toLowerCase();
+    if (!map.has(k)) map.set(k, t);
+  }
+  return Array.from(map.values()).sort((a, b) => a.localeCompare(b, 'hi'));
+}
+
+function readCachedNamesFromSession(key: string): string[] {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return [];
+    const p = JSON.parse(raw) as unknown;
+    if (!Array.isArray(p)) return [];
+    return dedupeSortedNames(p.map((x) => String(x)));
+  } catch {
+    return [];
+  }
 }
 
 function emptyValueForField(f: FieldDef): string | boolean | string[] {
@@ -53,6 +79,9 @@ const SadhanaFormPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const [celebrate, setCelebrate] = useState(false);
+  const [nameSuggestions, setNameSuggestions] = useState<string[]>(() =>
+    typeof window !== 'undefined' ? readCachedNamesFromSession(SADHANA_NAMES_SESSION_KEY) : []
+  );
 
   const labels = useMemo(() => {
     const m: Record<string, string> = {};
@@ -145,6 +174,30 @@ const SadhanaFormPage: React.FC = () => {
     });
   }, [values.sp_books_minutes]);
 
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SADHANA_NAMES_SESSION_KEY, JSON.stringify(nameSuggestions));
+    } catch {
+      /* ignore quota / private mode */
+    }
+  }, [nameSuggestions]);
+
+  useEffect(() => {
+    if (!scriptUrl) return;
+    let cancelled = false;
+    fetchSadhanaNameSuggestions(scriptUrl)
+      .then((names) => {
+        if (cancelled) return;
+        setNameSuggestions((prev) => dedupeSortedNames([...prev, ...names]));
+      })
+      .catch(() => {
+        /* ऑफ़लाइन / पुराना स्क्रिप्ट — मौन */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [scriptUrl]);
+
   const setText = (id: string, v: string) => {
     setValues((prev) => ({ ...prev, [id]: v }));
   };
@@ -203,6 +256,7 @@ const SadhanaFormPage: React.FC = () => {
       return;
     }
     setSubmitting(true);
+    const submittedName = String(values[SADHANA_NAME_FIELD_ID] ?? '').trim();
     try {
       await submitSadhanaResponse(scriptUrl, {
         action: 'SADHANA_SUBMIT',
@@ -211,6 +265,9 @@ const SadhanaFormPage: React.FC = () => {
         labels,
         responses: values,
       });
+      if (submittedName) {
+        setNameSuggestions((prev) => dedupeSortedNames([...prev, submittedName]));
+      }
       setMessage({ type: 'ok', text: t.success });
       setCelebrate(true);
       const reset: Record<string, string | boolean | string[]> = {};
@@ -328,7 +385,18 @@ const SadhanaFormPage: React.FC = () => {
                       </div>
 
                       <div className="sadhana-answer">
-                        {f.type === 'text' && (
+                        {f.type === 'text' && f.id === SADHANA_NAME_FIELD_ID && (
+                          <SadhanaNameCombobox
+                            id={f.id}
+                            value={String(values[f.id] ?? '')}
+                            onChange={(v) => setText(f.id, v)}
+                            suggestions={nameSuggestions}
+                            disabled={submitting}
+                            inputClassName={inputClass(!!values[f.id] && String(values[f.id]).trim() !== '')}
+                            listHint={t.nameComboboxListHint}
+                          />
+                        )}
+                        {f.type === 'text' && f.id !== SADHANA_NAME_FIELD_ID && (
                           <input
                             id={f.id}
                             type="text"

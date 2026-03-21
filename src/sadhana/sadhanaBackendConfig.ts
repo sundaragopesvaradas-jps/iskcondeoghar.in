@@ -6,4 +6,4 @@
  *
  * Example: https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec
  */
-export const SADHANA_GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDPzaWvtniE7wYri21QFU77McTmzmdl2fxSFkKPJbefQMhNMGAiJExHPfK7xbM7grC/exec";
+export const SADHANA_GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbo5L8SQfpddgQyOIWC9NpYcyDaKcWwP6GeXwFY2RSsmReNnQ1OXRrzDUg-1ur2_C9/exec";
