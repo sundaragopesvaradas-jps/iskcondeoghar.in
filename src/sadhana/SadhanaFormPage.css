@@ -363,6 +363,13 @@
   opacity: 0;
   animation: sadhanaGroupIn 0.5s ease forwards;
   animation-delay: calc(var(--g, 0) * 0.07s);
+  overflow: visible;
+}
+
+/* नाम autocomplete खुला हो तो यह खंड नीचे वाले कार्ड के ऊपर पेंट हो (स्टैकिंग) */
+.sadhana-group:has(.sadhana-combobox:focus-within) {
+  position: relative;
+  z-index: 30;
 }
 
 @keyframes sadhanaGroupIn {
@@ -546,6 +553,7 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  z-index: 1;
 }
 
 .sadhana-combobox__list {
@@ -553,7 +561,7 @@
   left: 0;
   right: 0;
   top: calc(100% + 4px);
-  z-index: 40;
+  z-index: 100;
   margin: 0;
   padding: 0.25rem 0;
   list-style: none;

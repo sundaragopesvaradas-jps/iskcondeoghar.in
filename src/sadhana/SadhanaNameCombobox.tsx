@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 const MAX_SUGGESTIONS_SHOWN = 120;
+/** कम से कम इतने अक्षर टाइप करने के बाद ही सुझाव दिखें */
+const MIN_QUERY_LENGTH = 3;
 
 export type SadhanaNameComboboxProps = {
   id: string;
@@ -29,11 +31,14 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
   const blurTimer = useRef<number | undefined>(undefined);
 
   const filtered = useMemo(() => {
-    const q = value.trim().toLowerCase();
-    const base = q
-      ? suggestions.filter((n) => n.trim().toLowerCase().startsWith(q))
-      : suggestions.slice();
-    return base.slice(0, MAX_SUGGESTIONS_SHOWN);
+    const q = value.trim();
+    if (q.length < MIN_QUERY_LENGTH) {
+      return [];
+    }
+    const qLower = q.toLowerCase();
+    return suggestions
+      .filter((n) => n.trim().toLowerCase().startsWith(qLower))
+      .slice(0, MAX_SUGGESTIONS_SHOWN);
   }, [suggestions, value]);
 
   const close = useCallback(() => {
