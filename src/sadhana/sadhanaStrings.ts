@@ -1,5 +1,6 @@
 /**
- * सभी यूज़र-दिखने वाले टेक्स्ट (हिंदी)। फ़ील्ड के लेबल `sadhanaFormConfig.ts` में हैं।
+ * User-visible copy: mostly Hindi; **admin overview** (`admin*`, `adminRecordsError`, `adminCharts*`) is English.
+ * Field labels live in `sadhanaFormConfig.ts`.
  */
 export const sadhanaStrings = {
   documentTitle: 'दैनिक साधना भरें · इस्कॉन देवघर',
@@ -38,6 +39,54 @@ export const sadhanaStrings = {
 
   /** पिछली साधना रिकॉर्ड */
   recordsOpenButton: 'अपनी साधना रिकॉर्ड देखें',
+  recordsDocumentTitle: 'पिछली साधना देखें · इस्कॉन देवघर',
+  recordsBackToForm: 'फ़ॉर्म पर वापस',
+
+  /** Admin overview — /sadhana/overview (English UI) */
+  adminDocumentTitle: 'Sadhana overview · ISKCON Deoghar',
+  adminPageTitle: "View all devotees' sadhana",
+  adminKeyLabel: 'Admin key',
+  adminKeyPlaceholder: 'Enter key',
+  adminLoadNames: 'Load name list',
+  adminBackToForm: 'Back to form',
+  adminNamesHeading: 'Choose a devotee',
+  adminBackToNames: 'All names',
+  adminChangeKey: 'Change key',
+  adminNotConfigured: 'Script URL is not set.',
+  adminErrorForbidden: 'Invalid admin key.',
+  adminErrorInvalidMode: 'Invalid request mode.',
+  /** API errors on admin overview (English) */
+  adminErrorGeneric: 'Something went wrong. Please try again.',
+  adminRecordsError: (code: string | undefined) => {
+    switch (code) {
+      case 'WRONG_PIN':
+        return 'Wrong PIN.';
+      case 'NAME_NOT_FOUND':
+        return 'This name is not in the list.';
+      case 'INVALID_PIN':
+        return 'PIN must be digits only, with the correct length.';
+      case 'NAME_REQUIRED':
+        return 'Name is required.';
+      case 'PIN_UNCHANGED':
+        return 'New PIN must differ from the old one.';
+      case 'FORBIDDEN':
+        return 'Access denied — invalid key.';
+      case 'INVALID_MODE':
+        return 'Invalid request.';
+      case 'UNKNOWN_ACTION':
+        return 'Unknown action.';
+      case 'SERVER_ERROR':
+        return 'Server error. Please try again later.';
+      default:
+        return 'Request failed.';
+    }
+  },
+  adminRecordsEmpty: 'No data yet.',
+  adminChartsHeading: 'Trends (charts)',
+  adminChartsHint:
+    'X: time order (left = older or newer depending on this page), Y: option order (lower = less, higher = more). Multiple entries on the same day are separate points. Up to 30 points.',
+  adminChartNoData: 'Not enough points for this measure.',
+  adminChartAria: (columnTitle: string) => `${columnTitle} — trend chart`,
   recordsTitle: 'पिछली साधना देखें',
   recordsNameLabel: 'नाम',
   recordsPinLabel: 'PIN',
@@ -52,7 +101,7 @@ export const sadhanaStrings = {
   recordsPinSaved: 'नया PIN सहेज लिया गया। अगली बार से नया PIN उपयोग करें।',
   recordsChartsHeading: 'रुझान (ग्राफ़)',
   recordsChartsHint:
-    'X: तारीख (नई बाएँ), Y: विकल्प क्रम (नीचे = कम, ऊपर = अधिक)। आज छोड़ा गया। अधिकतम ३० दिन।',
+    'X: समय क्रम (बाएँ = पुराना या नया — पृष्ठ के अनुसार), Y: विकल्प क्रम (नीचे = कम, ऊपर = अधिक)। एक ही दिन की कई प्रविष्टियाँ अलग बिंदु हैं। अधिकतम ३० बिंदु।',
   recordsChartNoData: 'इस माप के लिए पर्याप्त बिंदु नहीं।',
   recordsChartAria: (columnTitle: string) => `${columnTitle} — रुझान ग्राफ़`,
   recordsErrorGeneric: 'कुछ गलत हो गया। पुनः प्रयास करें।',
@@ -68,6 +117,10 @@ export const sadhanaStrings = {
         return 'नाम आवश्यक है।';
       case 'PIN_UNCHANGED':
         return 'नया PIN पुराने से अलग होना चाहिए।';
+      case 'FORBIDDEN':
+        return 'अनुमति नहीं — गलत कुंजी।';
+      case 'INVALID_MODE':
+        return 'अमान्य अनुरोध।';
       default:
         return 'अनुरोध असफल।';
     }

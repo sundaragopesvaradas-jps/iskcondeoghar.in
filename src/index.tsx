@@ -8,16 +8,14 @@ import { routes } from './config/routes';
 import ExternalRedirect from './components/ExternalRedirect';
 import RecentCelebrationsPage from './RecentCelebrationsPage';
 import SadhanaFormPage from './sadhana/SadhanaFormPage';
+import SadhanaRecordsPage from './sadhana/SadhanaRecordsPage';
+import SadhanaAdminOverviewPage from './sadhana/SadhanaAdminOverviewPage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
 const router = createBrowserRouter([
-  {
-    path: '*',
-    element: <Navigate to={routes.default} replace />
-  },
   {
     path: routes.home,
     element: <App />
@@ -37,6 +35,18 @@ const router = createBrowserRouter([
   {
     path: routes.sadhana,
     element: <SadhanaFormPage />
+  },
+  {
+    path: routes.sadhanaRecords,
+    element: <SadhanaRecordsPage />
+  },
+  {
+    path: routes.sadhanaAdmin,
+    element: <SadhanaAdminOverviewPage />
+  },
+  {
+    path: '*',
+    element: <Navigate to={routes.default} replace />
   }
 ]);
 

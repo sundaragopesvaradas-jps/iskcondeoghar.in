@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { sadhanaFormFields } from './sadhanaFormConfig';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { getSadhanaScriptUrl, submitSadhanaResponse } from './submitSadhanaResponse';
@@ -22,7 +23,7 @@ import srilaPrabhupadaLogo from '../assets/images/sp.jpg';
 import { SADHANA_AUTO_SCROLL_DURATION_MS } from './sadhanaAutoScrollConfig';
 import { smoothScrollElementIntoViewCenter } from './sadhanaSmoothScrollToField';
 import { getSadhanaFontPreset } from './sadhanaTypographyConfig';
-import { SadhanaRecordsModal } from './SadhanaRecordsModal';
+import { routes } from '../config/routes';
 import './SadhanaFormPage.css';
 
 const FORM_ID = 'sadhana-v2-hi';
@@ -103,8 +104,6 @@ const SadhanaFormPage: React.FC = () => {
   const [nameSuggestions, setNameSuggestions] = useState<string[]>(() =>
     typeof window !== 'undefined' ? readCachedNamesFromSession(SADHANA_NAMES_SESSION_KEY) : []
   );
-  const [recordsOpen, setRecordsOpen] = useState(false);
-
   const labels = useMemo(() => {
     const m: Record<string, string> = {};
     sadhanaFormFields.forEach((f) => {
@@ -441,17 +440,10 @@ const SadhanaFormPage: React.FC = () => {
             </div>
 
             <div className="sadhana-records-entry">
-              <button type="button" className="sadhana-records-open-btn" onClick={() => setRecordsOpen(true)}>
+              <Link to={routes.sadhanaRecords} className="sadhana-records-open-btn">
                 {t.recordsOpenButton}
-              </button>
+              </Link>
             </div>
-
-            <SadhanaRecordsModal
-              open={recordsOpen}
-              onClose={() => setRecordsOpen(false)}
-              scriptUrl={scriptUrl}
-              nameSuggestions={nameSuggestions}
-            />
 
             <div ref={alertsRef} className="sadhana-alerts">
               {!scriptUrl && (

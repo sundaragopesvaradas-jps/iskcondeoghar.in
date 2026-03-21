@@ -766,8 +766,14 @@
 .sadhana-records-entry {
   margin-bottom: 0.85rem;
   text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem 1rem;
 }
 
+/* Link या button — फ़ॉर्म से /sadhana/records */
 .sadhana-records-open-btn {
   display: inline-flex;
   align-items: center;
@@ -783,11 +789,27 @@
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   transition: background 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
 }
 
 .sadhana-records-open-btn:hover {
   background: #fff;
   border-color: rgba(194, 65, 12, 0.55);
+}
+
+.sadhana-records-page-main {
+  max-width: 960px;
+}
+
+.sadhana-records-page-panel {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.1rem 1rem 1.25rem;
+  border-radius: 16px;
+  background: var(--sadhana-surface);
+  border: 1px solid var(--sadhana-panel-border);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
 }
 
 .sadhana-records-backdrop {
@@ -1061,6 +1083,135 @@
   fill: var(--sadhana-ink-muted);
   font-size: 8px;
   font-weight: 500;
+}
+
+/* Admin — सभी भक्तों की साधना */
+.sadhana-admin-main {
+  max-width: 960px;
+}
+
+.sadhana-admin-nav {
+  margin: 0 0 0.75rem;
+}
+
+.sadhana-admin-back-link {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sadhana-ink-muted);
+  text-decoration: none;
+}
+
+.sadhana-admin-back-link:hover {
+  color: var(--sadhana-accent);
+  text-decoration: underline;
+}
+
+.sadhana-admin-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  text-align: center;
+  color: var(--sadhana-ink);
+}
+
+.sadhana-admin-gate {
+  max-width: 360px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sadhana-admin-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.sadhana-admin-list-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem 1rem;
+}
+
+.sadhana-admin-subtitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--sadhana-ink);
+}
+
+.sadhana-admin-text-btn {
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--sadhana-ink-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.sadhana-admin-text-btn:hover {
+  color: var(--sadhana-accent);
+}
+
+.sadhana-admin-name-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.sadhana-admin-name-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  color: var(--sadhana-ink);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--sadhana-panel-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sadhana-admin-name-btn:hover:not(:disabled) {
+  border-color: rgba(194, 65, 12, 0.45);
+  background: #fff;
+}
+
+.sadhana-admin-name-btn--active {
+  color: var(--sadhana-accent);
+  border-color: rgba(194, 65, 12, 0.55);
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(194, 65, 12, 0.2);
+}
+
+.sadhana-admin-name-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sadhana-admin-detail-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.sadhana-admin-loading {
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+  color: var(--sadhana-ink-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

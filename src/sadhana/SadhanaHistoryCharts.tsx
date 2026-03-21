@@ -9,6 +9,13 @@ import { sadhanaStrings as t } from './sadhanaStrings';
 
 type Props = {
   series: SadhanaHistoryRow[];
+  /** Admin overview (English) — overrides default Hindi copy */
+  copy?: {
+    chartsHeading: string;
+    chartsHint: string;
+    chartNoData: string;
+    chartAria: (columnTitle: string) => string;
+  };
 };
 
 /** Wide left margin for Hindi Y-axis labels */
@@ -22,10 +29,16 @@ function truncateYLabel(s: string, maxChars: number): string {
   return `${t.slice(0, Math.max(0, maxChars - 1))}…`;
 }
 
+function normalizeOptionLabel(s: string): string {
+  return s.normalize('NFC').trim().replace(/\s+/g, ' ');
+}
+
 function ordinalIndex(options: readonly string[], value: string): number {
-  const v = value.trim();
+  const v = normalizeOptionLabel(value);
   if (!v) return -1;
-  return options.findIndex((o) => o.trim() === v);
+  let i = options.findIndex((o) => normalizeOptionLabel(o) === v);
+  if (i >= 0) return i;
+  return options.findIndex((o) => normalizeOptionLabel(o).localeCompare(v, 'hi') === 0);
 }
 
 function buildPointCoords(
@@ -60,9 +73,13 @@ function buildPointCoords(
 function SadhanaOrdinalChart({
   column,
   series,
+  chartNoData,
+  chartAria,
 }: {
   column: SadhanaHistoryChartColumnKey;
   series: SadhanaHistoryRow[];
+  chartNoData: string;
+  chartAria: (columnTitle: string) => string;
 }) {
   const options = SADHANA_OPTION_ORDER_BY_CHART_COLUMN[column];
   const pts = useMemo(() => buildPointCoords(series, column, options), [series, column, options]);
@@ -89,14 +106,14 @@ function SadhanaOrdinalChart({
     <div className="sadhana-chart-card">
       <h4 className="sadhana-chart-card__title">{column}</h4>
       {pts.length === 0 ? (
-        <p className="sadhana-chart-card__empty">{t.recordsChartNoData}</p>
+        <p className="sadhana-chart-card__empty">{chartNoData}</p>
       ) : (
         <svg
           className="sadhana-chart-svg"
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label={t.recordsChartAria(column)}
+          aria-label={chartAria(column)}
         >
           <line
             x1={PAD.L}
@@ -166,18 +183,29 @@ function SadhanaOrdinalChart({
   );
 }
 
-export const SadhanaHistoryCharts: React.FC<Props> = ({ series }) => {
+export const SadhanaHistoryCharts: React.FC<Props> = ({ series, copy }) => {
   if (series.length === 0) {
     return null;
   }
 
+  const chartsHeading = copy?.chartsHeading ?? t.recordsChartsHeading;
+  const chartsHint = copy?.chartsHint ?? t.recordsChartsHint;
+  const chartNoData = copy?.chartNoData ?? t.recordsChartNoData;
+  const chartAria = copy?.chartAria ?? t.recordsChartAria;
+
   return (
-    <section className="sadhana-records-charts" aria-label={t.recordsChartsHeading}>
-      <h3 className="sadhana-records-subtitle">{t.recordsChartsHeading}</h3>
-      <p className="sadhana-records-charts-hint">{t.recordsChartsHint}</p>
+    <section className="sadhana-records-charts" aria-label={chartsHeading}>
+      <h3 className="sadhana-records-subtitle">{chartsHeading}</h3>
+      <p className="sadhana-records-charts-hint">{chartsHint}</p>
       <div className="sadhana-records-charts-grid">
         {SADHANA_HISTORY_CHART_COLUMNS.map((col) => (
-          <SadhanaOrdinalChart key={col} column={col} series={series} />
+          <SadhanaOrdinalChart
+            key={col}
+            column={col}
+            series={series}
+            chartNoData={chartNoData}
+            chartAria={chartAria}
+          />
         ))}
       </div>
     </section>

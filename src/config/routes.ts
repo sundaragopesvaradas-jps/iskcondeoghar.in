@@ -1,6 +1,10 @@
 export const routes = {
   home: '/home',
   sadhana: '/sadhana',
+  /** व्यक्तिगत पिछली साधना (नाम + PIN) */
+  sadhanaRecords: '/sadhana/records',
+  /** Admin: सभी भक्तों की साधना (प्रशासन कुंजी) */
+  sadhanaAdmin: '/sadhana/overview',
   spbooks: '/spbooks',
   spletters: '/spletters',
   default: '/home',

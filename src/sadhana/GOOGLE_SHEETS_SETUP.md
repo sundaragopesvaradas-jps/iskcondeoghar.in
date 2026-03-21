@@ -21,7 +21,7 @@ You can leave **Sheet1** as it is. The script will add tabs automatically:
 - **Sadhana Responses** — full form rows (first successful submit creates headers).
 - **Sadhana Unique Names** — columns **Name** | **PIN**. Unique devotee names (updated on each submit; used for autocomplete). The script adds the **PIN** column automatically if it is missing. An empty PIN cell means the default PIN **1111** until the user logs in to “past records” or changes their PIN.
 
-After changing the script, use **Deploy → Manage deployments → Edit (pencil) → New version → Deploy** so `SADHANA_SUBMIT`, `SADHANA_NAMES`, `SADHANA_LOOKUP`, and `SADHANA_CHANGE_PIN` all work.
+After changing the script, use **Deploy → Manage deployments → Edit (pencil) → New version → Deploy** so `SADHANA_SUBMIT`, `SADHANA_NAMES`, `SADHANA_LOOKUP`, `SADHANA_CHANGE_PIN`, and `seeAllSadhanas` (admin overview) all work.
 
 ### Step 2: Open Apps Script **from this spreadsheet** (important)
 
@@ -76,6 +76,16 @@ export const SADHANA_GOOGLE_SCRIPT_URL =
 
 3. **Save the file**, commit, and push (or run your usual deploy). The URL is included when the app is **built** — after you change it, run a new build/deploy so the live site picks it up.
 
+### Admin overview (optional — one person reviews everyone’s sadhana)
+
+1. In the **same Google Sheet**, add a tab named **`Sadhana Admin`** (exact name).
+2. Put your long random secret in cell **`B1`** (row 1, column B). Optionally set **`A1`** to a label such as `Admin key` — only **B1** is read by the script.
+3. Deploy or update the web app if you changed the script file; **no** admin key is stored in the website repo — coordinators enter the same secret on **`/sadhana/overview`** when prompted.
+
+The value in **B1** is compared to the key sent from the admin page. It may be cached by Apps Script for about **2 minutes** after a successful read; if you change **B1**, wait briefly or redeploy to clear cache.
+
+Treat **B1** like a password: only share with trusted coordinators.
+
 ### Test locally
 
 1. After editing `sadhanaBackendConfig.ts`, run `npm start`.
@@ -95,6 +105,9 @@ export const SADHANA_GOOGLE_SCRIPT_URL =
 - Tab: **Sadhana Unique Names**
 - Row 1: **Name** | **PIN** (PIN may be added on first script run after an upgrade).
 - One row per known devotee; **PIN** can be empty (= use default **1111** on the site).
+
+- Tab: **Sadhana Admin** (optional, for `/sadhana/overview`)
+- Cell **B1**: admin secret for `seeAllSadhanas` (see **Admin overview** above).
 
 ### “Past sadhana records” on `/sadhana`
 

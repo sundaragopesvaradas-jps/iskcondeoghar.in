@@ -4,30 +4,37 @@ import { sadhanaHistoryDateSortKey } from './sadhanaRecordsUtils';
 /** Max points along X (distinct dates, newest first in chart). */
 export const SADHANA_CHART_MAX_POINTS = 30;
 
-export function todayYmdLocal(): string {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
+export type SadhanaChartDateOrder = 'newestFirst' | 'oldestFirst';
+
+export type PrepareChartSeriesOptions = {
+  /** X-axis: left = newest (default) or left = oldest (admin overview). */
+  dateOrder?: SadhanaChartDateOrder;
+};
 
 /**
- * One row per calendar Date (latest submission wins), exclude today, sort by date descending, cap length.
+ * One point per **submission** (row), up to `SADHANA_CHART_MAX_POINTS` rows — includes **today**
+ * and **multiple submissions on the same calendar day** (each row is a point).
+ * Sort: by date, then by submission time within the same day.
  */
-export function prepareRowsForChartSeries(rows: SadhanaHistoryRow[]): SadhanaHistoryRow[] {
-  const today = todayYmdLocal();
-  const map = new Map<string, SadhanaHistoryRow>();
-  for (const r of rows) {
-    const dk = (r.Date || '').trim();
-    if (!dk || dk === today) continue;
-    const prev = map.get(dk);
-    const ts = r._submissionTimeMs ?? 0;
-    if (!prev || ts > (prev._submissionTimeMs ?? 0)) {
-      map.set(dk, r);
+export function prepareRowsForChartSeries(
+  rows: SadhanaHistoryRow[],
+  options?: PrepareChartSeriesOptions
+): SadhanaHistoryRow[] {
+  const dateOrder = options?.dateOrder ?? 'newestFirst';
+  const list = rows.filter((r) => (r.Date || '').trim());
+  list.sort((a, b) => {
+    const ka = sadhanaHistoryDateSortKey(a.Date);
+    const kb = sadhanaHistoryDateSortKey(b.Date);
+    if (ka !== kb) {
+      const cmp = kb - ka;
+      return dateOrder === 'newestFirst' ? cmp : -cmp;
     }
-  }
-  const arr = Array.from(map.values());
-  arr.sort((a, b) => sadhanaHistoryDateSortKey(b.Date) - sadhanaHistoryDateSortKey(a.Date));
-  return arr.slice(0, SADHANA_CHART_MAX_POINTS);
+    const tsA = a._submissionTimeMs ?? 0;
+    const tsB = b._submissionTimeMs ?? 0;
+    if (tsA !== tsB) {
+      return dateOrder === 'newestFirst' ? tsB - tsA : tsA - tsB;
+    }
+    return 0;
+  });
+  return list.slice(0, SADHANA_CHART_MAX_POINTS);
 }

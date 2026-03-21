@@ -27,8 +27,17 @@ export function sadhanaHistoryDateSortKey(s: string | undefined): number {
   return Number.isNaN(ms) ? Number.POSITIVE_INFINITY : ms;
 }
 
-/** Newest sadhana date first; same date → latest submission first; empty dates last */
-export function sortSadhanaHistoryRowsByDate(rows: SadhanaHistoryRow[]): SadhanaHistoryRow[] {
+export type SadhanaDateTableOrder = 'newestFirst' | 'oldestFirst';
+
+/**
+ * Sort table rows by Date column.
+ * `newestFirst`: default user view; `oldestFirst`: admin overview (opposite sequence).
+ */
+export function sortSadhanaHistoryRowsByDateOrder(
+  rows: SadhanaHistoryRow[],
+  order: SadhanaDateTableOrder
+): SadhanaHistoryRow[] {
+  const desc = order === 'newestFirst';
   return [...rows].sort((a, b) => {
     const da = (a.Date || '').trim();
     const db = (b.Date || '').trim();
@@ -37,7 +46,16 @@ export function sortSadhanaHistoryRowsByDate(rows: SadhanaHistoryRow[]): Sadhana
     if (!db) return -1;
     const ka = sadhanaHistoryDateSortKey(da);
     const kb = sadhanaHistoryDateSortKey(db);
-    if (ka !== kb) return kb - ka;
-    return (b._submissionTimeMs ?? 0) - (a._submissionTimeMs ?? 0);
+    if (ka !== kb) {
+      const cmp = kb - ka;
+      return desc ? cmp : -cmp;
+    }
+    const ts = (b._submissionTimeMs ?? 0) - (a._submissionTimeMs ?? 0);
+    return desc ? ts : -ts;
   });
+}
+
+/** Newest sadhana date first; same date → latest submission first; empty dates last */
+export function sortSadhanaHistoryRowsByDate(rows: SadhanaHistoryRow[]): SadhanaHistoryRow[] {
+  return sortSadhanaHistoryRowsByDateOrder(rows, 'newestFirst');
 }

@@ -11,20 +11,27 @@
  * Tabs:
  * - "Sadhana Responses" — one row per submit (Timestamp + fields).
  * - "Sadhana Unique Names" — columns "Name" | "PIN" (PIN optional; empty = default 1111).
+ * - "Sadhana Admin" — optional; cell **B1** = admin overview secret key (`seeAllSadhanas`). If missing/empty, admin actions return FORBIDDEN.
  *
  * Actions (POST JSON):
  * - { "action": "SADHANA_SUBMIT", ... } — append row + upsert name + append same row to that devotee’s tab (incremental).
  * - { "action": "SADHANA_NAMES" } — return { names: string[] } for autocomplete.
  * - { "action": "SADHANA_LOOKUP", "name", "pin", "pinLength" } — past rows (prefers per-devotee tab if present, else filters Sadhana Responses).
  * - { "action": "SADHANA_CHANGE_PIN", "name", "oldPin", "newPin", "pinLength" } — update PIN.
+ * - { "action": "seeAllSadhanas", "adminKey", "mode": "names" | "lookup", "name"?(lookup) } — admin overview (key in sheet "Sadhana Admin" cell B1).
  */
 
 var UNIQUE_NAMES_SHEET = 'Sadhana Unique Names';
 var RESPONSES_SHEET = 'Sadhana Responses';
+/** Admin key for `seeAllSadhanas`: read from this tab, cell B1 (see getStoredAdminKey_). */
+var ADMIN_CONFIG_SHEET = 'Sadhana Admin';
 var NAME_FIELD_ID = 'devotee_name';
 var MAX_NAMES_RETURN = 2000;
 
 var DEFAULT_PIN = '1111';
+
+var ADMIN_KEY_CACHE_KEY = 'sadhana_admin_key_sheet_b1';
+var ADMIN_KEY_CACHE_SECONDS = 120;
 
 /** Hindi headers in Sadhana Responses — must match sadhanaFormConfig.ts labels */
 var HINDI_NAME_HEADER = 'आपका नाम';
@@ -65,6 +72,10 @@ function doPost(e) {
 
     if (data.action === 'SADHANA_CHANGE_PIN') {
       return jsonOut(handleChangePin_(data));
+    }
+
+    if (data.action === 'seeAllSadhanas') {
+      return jsonOut(handleSeeAllSadhanas_(data));
     }
 
     if (data.action !== 'SADHANA_SUBMIT') {
@@ -316,6 +327,62 @@ function handleChangePin_(data) {
 
   sheet.getRange(row, 2).setValue(newPin);
   return { status: 'success' };
+}
+
+/**
+ * Secret for `seeAllSadhanas`: tab `Sadhana Admin` (ADMIN_CONFIG_SHEET), cell **B1** (A1 can be a label e.g. "Admin key").
+ * Cached ~2 min after first successful read. Change B1 in the sheet; wait for cache or re-deploy to pick up immediately.
+ */
+function getStoredAdminKey_() {
+  var cache = CacheService.getScriptCache();
+  var cached = cache.get(ADMIN_KEY_CACHE_KEY);
+  if (cached !== null && cached !== '') {
+    return cached;
+  }
+  var doc = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = doc.getSheetByName(ADMIN_CONFIG_SHEET);
+  if (!sheet) {
+    return '';
+  }
+  var key = String(sheet.getRange(1, 2).getValue() || '').trim();
+  if (key) {
+    cache.put(ADMIN_KEY_CACHE_KEY, key, ADMIN_KEY_CACHE_SECONDS);
+  }
+  return key;
+}
+
+/**
+ * Admin: same name list or same row shape as SADHANA_LOOKUP, but PIN not required.
+ * `mode`: "names" | "lookup"
+ */
+function handleSeeAllSadhanas_(data) {
+  var key = String(data.adminKey || '').trim();
+  var stored = getStoredAdminKey_();
+  if (!stored || key !== stored) {
+    return { status: 'error', message: 'Invalid admin key', code: 'FORBIDDEN' };
+  }
+  var mode = String(data.mode || '').trim();
+  var doc = SpreadsheetApp.getActiveSpreadsheet();
+
+  if (mode === 'names') {
+    return { status: 'success', names: readUniqueNames(doc) };
+  }
+
+  if (mode === 'lookup') {
+    var name = normalizeName_(data.name);
+    if (!name) {
+      return { status: 'error', message: 'Name required', code: 'NAME_REQUIRED' };
+    }
+    var sheet = ensureUniqueNamesSheet(doc);
+    var row = findNameRowInUniqueSheet_(sheet, name);
+    if (row < 0) {
+      return { status: 'error', message: 'Name not found in list', code: 'NAME_NOT_FOUND' };
+    }
+    var rows = filterResponseRowsForName_(doc, name);
+    return { status: 'success', rows: rows };
+  }
+
+  return { status: 'error', message: 'Invalid mode', code: 'INVALID_MODE' };
 }
 
 /** Trim + collapse spaces so sheet headers still match if spacing differs */
