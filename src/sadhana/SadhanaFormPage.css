@@ -761,3 +761,311 @@
   border-radius: 5px;
   background: rgba(0, 0, 0, 0.06);
 }
+
+/* पिछली साधना रिकॉर्ड मोडल */
+.sadhana-records-entry {
+  margin-bottom: 0.85rem;
+  text-align: center;
+}
+
+.sadhana-records-open-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sadhana-accent);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(194, 65, 12, 0.35);
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.sadhana-records-open-btn:hover {
+  background: #fff;
+  border-color: rgba(194, 65, 12, 0.55);
+}
+
+.sadhana-records-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: max(1rem, env(safe-area-inset-top)) 0.75rem max(1rem, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.48);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.sadhana-records-modal {
+  width: 100%;
+  max-width: 960px;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1rem 1.25rem;
+  border-radius: 16px;
+  background: var(--sadhana-surface);
+  border: 1px solid var(--sadhana-panel-border);
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.18);
+  max-height: min(92vh, 900px);
+  overflow-y: auto;
+}
+
+.sadhana-records-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.sadhana-records-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--sadhana-ink);
+  line-height: 1.25;
+}
+
+.sadhana-records-close {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -0.25rem -0.25rem 0 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--sadhana-ink-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.sadhana-records-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--sadhana-ink);
+}
+
+.sadhana-records-warn {
+  margin: 0 0 0.75rem;
+  font-size: 0.86rem;
+  color: #9a3412;
+}
+
+.sadhana-records-error {
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.86rem;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.sadhana-records-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sadhana-records-pin-label {
+  margin-top: 0.35rem;
+}
+
+.sadhana-records-submit {
+  margin-top: 0.5rem;
+}
+
+.sadhana-records-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sadhana-records-who {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--sadhana-ink-muted);
+}
+
+.sadhana-records-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.sadhana-records-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.sadhana-records-table th,
+.sadhana-records-table td {
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  text-align: left;
+  vertical-align: top;
+}
+
+.sadhana-records-table th {
+  font-weight: 700;
+  color: var(--sadhana-ink);
+  background: rgba(248, 250, 252, 0.95);
+  white-space: nowrap;
+}
+
+.sadhana-records-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.sadhana-records-empty {
+  text-align: center;
+  color: var(--sadhana-ink-muted);
+  font-weight: 500;
+}
+
+.sadhana-records-change-pin {
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sadhana-records-subtitle {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--sadhana-ink);
+}
+
+.sadhana-records-ok {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #065f46;
+  font-weight: 600;
+}
+
+.sadhana-records-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sadhana-records-secondary {
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--sadhana-ink-muted);
+  background: transparent;
+  border: none;
+  padding: 0.35rem 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sadhana-records-secondary:hover {
+  color: var(--sadhana-accent);
+}
+
+.sadhana-records-charts {
+  margin-top: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.sadhana-records-charts-hint {
+  margin: 0 0 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--sadhana-ink-faint);
+  line-height: 1.35;
+}
+
+.sadhana-records-charts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.sadhana-chart-card {
+  padding: 0.65rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.sadhana-chart-card__title {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sadhana-ink);
+}
+
+.sadhana-chart-card__empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--sadhana-ink-muted);
+}
+
+.sadhana-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+}
+
+.sadhana-chart-svg__axis {
+  stroke: rgba(148, 163, 184, 0.65);
+  stroke-width: 1;
+}
+
+.sadhana-chart-svg__axis-label {
+  fill: var(--sadhana-ink-muted);
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.sadhana-chart-svg__y-label {
+  fill: var(--sadhana-ink-muted);
+  font-size: 7px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.sadhana-chart-svg__line {
+  stroke: var(--sadhana-accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sadhana-chart-svg__dot {
+  fill: var(--sadhana-accent-bright);
+  stroke: #fff;
+  stroke-width: 1;
+}
+
+.sadhana-chart-svg__x-label {
+  fill: var(--sadhana-ink-muted);
+  font-size: 8px;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sadhana-records-backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

@@ -19,9 +19,9 @@ You do **not** need to “program” the sheet itself. You will:
 You can leave **Sheet1** as it is. The script will add tabs automatically:
 
 - **Sadhana Responses** — full form rows (first successful submit creates headers).
-- **Sadhana Unique Names** — one column **Name**, unique devotee names (updated on each submit; used for the name autocomplete on the site).
+- **Sadhana Unique Names** — columns **Name** | **PIN**. Unique devotee names (updated on each submit; used for autocomplete). The script adds the **PIN** column automatically if it is missing. An empty PIN cell means the default PIN **1111** until the user logs in to “past records” or changes their PIN.
 
-After changing the script, use **Deploy → Manage deployments → Edit (pencil) → New version → Deploy** so both `SADHANA_SUBMIT` and `SADHANA_NAMES` work.
+After changing the script, use **Deploy → Manage deployments → Edit (pencil) → New version → Deploy** so `SADHANA_SUBMIT`, `SADHANA_NAMES`, `SADHANA_LOOKUP`, and `SADHANA_CHANGE_PIN` all work.
 
 ### Step 2: Open Apps Script **from this spreadsheet** (important)
 
@@ -91,6 +91,26 @@ export const SADHANA_GOOGLE_SCRIPT_URL =
 - Tab: **Sadhana Responses**
 - Row 1: **Timestamp**, then column headers matching your form field labels (from `sadhanaFormConfig.ts`).
 - Each submit adds **one new row** underneath.
+
+- Tab: **Sadhana Unique Names**
+- Row 1: **Name** | **PIN** (PIN may be added on first script run after an upgrade).
+- One row per known devotee; **PIN** can be empty (= use default **1111** on the site).
+
+### “Past sadhana records” on `/sadhana`
+
+The site sends the same Web App URL with JSON actions:
+
+| Action | Purpose |
+|--------|----------------|
+| `SADHANA_NAMES` | Load name list for autocomplete. |
+| `SADHANA_LOOKUP` | Name + PIN → rows from that devotee’s tab if it exists, else filtered from **Sadhana Responses** (tab title = `sheetTitleForDevotee_` in the script: max **31** chars, no `\ / ? * [ ]`). |
+| `SADHANA_CHANGE_PIN` | Update **PIN** in **Sadhana Unique Names** after a successful login. |
+
+**Per-devotee tabs:** Each successful submit also **appends** that row to the devotee’s tab (`appendLastSubmitToDevoteeTab_`). New tabs get the same header row as **Sadhana Responses**. If the tab append fails, the main row is still saved.
+
+**Manual `syncNameSheets`:** Run from the Apps Script editor to **rebuild all** devotee tabs from **Sadhana Responses** (e.g. after schema changes). Not run on each submit.
+
+PIN length and default are defined in `src/sadhana/sadhanaPinConfig.ts` and must stay in sync with `pinLen_` / `DEFAULT_PIN` in `google-apps-script-sadhana.js` when you change them.
 
 ---
 

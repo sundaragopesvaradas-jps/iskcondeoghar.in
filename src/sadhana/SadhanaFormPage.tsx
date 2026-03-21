@@ -22,6 +22,7 @@ import srilaPrabhupadaLogo from '../assets/images/sp.jpg';
 import { SADHANA_AUTO_SCROLL_DURATION_MS } from './sadhanaAutoScrollConfig';
 import { smoothScrollElementIntoViewCenter } from './sadhanaSmoothScrollToField';
 import { getSadhanaFontPreset } from './sadhanaTypographyConfig';
+import { SadhanaRecordsModal } from './SadhanaRecordsModal';
 import './SadhanaFormPage.css';
 
 const FORM_ID = 'sadhana-v2-hi';
@@ -102,6 +103,7 @@ const SadhanaFormPage: React.FC = () => {
   const [nameSuggestions, setNameSuggestions] = useState<string[]>(() =>
     typeof window !== 'undefined' ? readCachedNamesFromSession(SADHANA_NAMES_SESSION_KEY) : []
   );
+  const [recordsOpen, setRecordsOpen] = useState(false);
 
   const labels = useMemo(() => {
     const m: Record<string, string> = {};
@@ -437,6 +439,19 @@ const SadhanaFormPage: React.FC = () => {
               </div>
               {t.heroSubtitle ? <p>{t.heroSubtitle}</p> : null}
             </div>
+
+            <div className="sadhana-records-entry">
+              <button type="button" className="sadhana-records-open-btn" onClick={() => setRecordsOpen(true)}>
+                {t.recordsOpenButton}
+              </button>
+            </div>
+
+            <SadhanaRecordsModal
+              open={recordsOpen}
+              onClose={() => setRecordsOpen(false)}
+              scriptUrl={scriptUrl}
+              nameSuggestions={nameSuggestions}
+            />
 
             <div ref={alertsRef} className="sadhana-alerts">
               {!scriptUrl && (

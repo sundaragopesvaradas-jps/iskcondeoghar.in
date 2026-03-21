@@ -135,3 +135,28 @@ export const sadhanaFormFields: SadhanaFieldDefinition[] = [
     required: true,
   },
 ];
+
+/** English table column keys used for trend charts (ordinal Y = option order in config). */
+export const SADHANA_HISTORY_CHART_COLUMNS = [
+  'Sleeping Time',
+  'Waking up Time',
+  'Chanting Rounds',
+  'Chanting Completed',
+  'Book Reading',
+  'Hearing',
+] as const;
+
+export type SadhanaHistoryChartColumnKey = (typeof SADHANA_HISTORY_CHART_COLUMNS)[number];
+
+/** Low → high on Y matches index 0 → last in each array. */
+export const SADHANA_OPTION_ORDER_BY_CHART_COLUMN: Record<
+  SadhanaHistoryChartColumnKey,
+  readonly string[]
+> = {
+  'Sleeping Time': SLEEP_TIME_OPTIONS,
+  'Waking up Time': WAKE_TIME_OPTIONS,
+  'Chanting Rounds': MALA_COUNT_OPTIONS,
+  'Chanting Completed': MALA_BY_TIME_OPTIONS,
+  'Book Reading': MINUTES_OPTIONS,
+  Hearing: MINUTES_OPTIONS,
+};

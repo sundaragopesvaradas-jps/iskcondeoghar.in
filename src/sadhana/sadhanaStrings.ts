@@ -35,4 +35,41 @@ export const sadhanaStrings = {
   devBannerBeforeCode: 'जब तक फ़ाइल',
   devBannerAfterCode:
     'में Google Apps Script का वेब ऐप URL नहीं जोड़ा जाता, जमा करना बंद रहेगा।',
+
+  /** पिछली साधना रिकॉर्ड */
+  recordsOpenButton: 'अपनी साधना रिकॉर्ड देखें',
+  recordsTitle: 'पिछली साधना देखें',
+  recordsNameLabel: 'नाम',
+  recordsPinLabel: 'PIN',
+  recordsSubmit: 'देखें',
+  recordsClose: 'बंद करें',
+  recordsDifferentName: 'दूसरे नाम से देखें',
+  recordsLoading: 'लोड हो रहा है…',
+  recordsEmpty: 'अभी कोई डेटा नहीं मिला।',
+  recordsChangePinSection: 'PIN बदलें',
+  recordsNewPin: 'नया PIN',
+  recordsSavePin: 'नया PIN सहेजें',
+  recordsPinSaved: 'नया PIN सहेज लिया गया। अगली बार से नया PIN उपयोग करें।',
+  recordsChartsHeading: 'रुझान (ग्राफ़)',
+  recordsChartsHint:
+    'X: तारीख (नई बाएँ), Y: विकल्प क्रम (नीचे = कम, ऊपर = अधिक)। आज छोड़ा गया। अधिकतम ३० दिन।',
+  recordsChartNoData: 'इस माप के लिए पर्याप्त बिंदु नहीं।',
+  recordsChartAria: (columnTitle: string) => `${columnTitle} — रुझान ग्राफ़`,
+  recordsErrorGeneric: 'कुछ गलत हो गया। पुनः प्रयास करें।',
+  recordsError: (code: string | undefined) => {
+    switch (code) {
+      case 'WRONG_PIN':
+        return 'गलत PIN।';
+      case 'NAME_NOT_FOUND':
+        return 'यह नाम सूची में नहीं है। पहले फ़ॉर्म से नाम दर्ज करें।';
+      case 'INVALID_PIN':
+        return 'PIN केवल अंक और सही लंबाई में हो।';
+      case 'NAME_REQUIRED':
+        return 'नाम आवश्यक है।';
+      case 'PIN_UNCHANGED':
+        return 'नया PIN पुराने से अलग होना चाहिए।';
+      default:
+        return 'अनुरोध असफल।';
+    }
+  },
 } as const;

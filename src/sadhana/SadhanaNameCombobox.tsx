@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 const MAX_SUGGESTIONS_SHOWN = 120;
-/** कम से कम इतने अक्षर टाइप करने के बाद ही सुझाव दिखें */
-const MIN_QUERY_LENGTH = 3;
+/** डिफ़ॉल्ट: इतने अक्षरों के बाद ही सुझाव दिखें */
+const DEFAULT_MIN_QUERY_LENGTH = 3;
 
 export type SadhanaNameComboboxProps = {
   id: string;
@@ -12,6 +12,8 @@ export type SadhanaNameComboboxProps = {
   disabled?: boolean;
   inputClassName: string;
   listHint: string;
+  /** कम से कम इतने अक्षर टाइप करने के बाद सुझाव (डिफ़ॉल्ट 3) */
+  minQueryLength?: number;
   /** फ़ोकस हटने के बाद (ड्रॉपडाउन बंद होने के बाद) — पैरेंट स्क्रॉल आदि */
   onBlurComplete?: () => void;
 };
@@ -24,6 +26,7 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
   disabled,
   inputClassName,
   listHint,
+  minQueryLength = DEFAULT_MIN_QUERY_LENGTH,
   onBlurComplete,
 }) => {
   const listId = useId();
@@ -37,14 +40,14 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
 
   const filtered = useMemo(() => {
     const q = value.trim();
-    if (q.length < MIN_QUERY_LENGTH) {
+    if (q.length < minQueryLength) {
       return [];
     }
     const qLower = q.toLowerCase();
     return suggestions
       .filter((n) => n.trim().toLowerCase().startsWith(qLower))
       .slice(0, MAX_SUGGESTIONS_SHOWN);
-  }, [suggestions, value]);
+  }, [suggestions, value, minQueryLength]);
 
   const close = useCallback(() => {
     setOpen(false);
