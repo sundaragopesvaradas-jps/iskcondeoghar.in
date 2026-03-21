@@ -16,21 +16,29 @@
  * Actions (POST JSON):
  * - { "action": "SADHANA_SUBMIT", ... } — append row + upsert name + append same row to that devotee’s tab (incremental).
  * - { "action": "SADHANA_NAMES" } — return { names: string[] } for autocomplete.
- * - { "action": "SADHANA_LOOKUP", "name", "pin", "pinLength" } — past rows (prefers per-devotee tab if present, else filters Sadhana Responses).
+ * - { "action": "SADHANA_LOOKUP", "name", "pin", "pinLength" } — past rows (prefers per-devotee tab if present, else filters Sadhana Responses); capped at MAX_HISTORY_ROWS_RETURN (newest first).
  * - { "action": "SADHANA_CHANGE_PIN", "name", "oldPin", "newPin", "pinLength" } — update PIN.
  * - { "action": "seeAllSadhanas", "adminKey", "mode": "names" | "lookup", "name"?(lookup) } — admin overview (key in sheet "Sadhana Admin" cell B1).
  */
 
+/**
+ * Max rows returned for `SADHANA_LOOKUP` and `seeAllSadhanas` (lookup). Rows are read in
+ * **sheet order** (top → bottom); new submits are appended at the **bottom**, so we keep the
+ * **last N** rows only. Then rows are sorted by **`Date` only**, **newest → oldest** (not timestamp).
+ * Change here and redeploy the web app — no frontend rebuild required.
+ */
+var MAX_HISTORY_ROWS_RETURN = 30;
+
+/** Admin key for `seeAllSadhanas`: read from this tab, cell F2 (see getStoredAdminKey_). */
 var UNIQUE_NAMES_SHEET = 'Sadhana Unique Names';
 var RESPONSES_SHEET = 'Sadhana Responses';
-/** Admin key for `seeAllSadhanas`: read from this tab, cell B1 (see getStoredAdminKey_). */
-var ADMIN_CONFIG_SHEET = 'Sadhana Admin';
 var NAME_FIELD_ID = 'devotee_name';
 var MAX_NAMES_RETURN = 2000;
 
+
 var DEFAULT_PIN = '1111';
 
-var ADMIN_KEY_CACHE_KEY = 'sadhana_admin_key_sheet_b1';
+var ADMIN_KEY_CACHE_KEY = 'sadhana_admin_key_sheet_f2';
 var ADMIN_KEY_CACHE_SECONDS = 120;
 
 /** Hindi headers in Sadhana Responses — must match sadhanaFormConfig.ts labels */
@@ -330,8 +338,8 @@ function handleChangePin_(data) {
 }
 
 /**
- * Secret for `seeAllSadhanas`: tab `Sadhana Admin` (ADMIN_CONFIG_SHEET), cell **B1** (A1 can be a label e.g. "Admin key").
- * Cached ~2 min after first successful read. Change B1 in the sheet; wait for cache or re-deploy to pick up immediately.
+ * Secret for `seeAllSadhanas`: tab `Sadhana Admin` (UNIQUE_NAMES_SHEET), cell **F2** (E2 can be a label e.g. "Admin key").
+ * Cached ~2 min after first successful read. Change F2 in the sheet; wait for cache or re-deploy to pick up immediately.
  */
 function getStoredAdminKey_() {
   var cache = CacheService.getScriptCache();
@@ -340,11 +348,11 @@ function getStoredAdminKey_() {
     return cached;
   }
   var doc = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = doc.getSheetByName(ADMIN_CONFIG_SHEET);
+  var sheet = doc.getSheetByName(UNIQUE_NAMES_SHEET);
   if (!sheet) {
     return '';
   }
-  var key = String(sheet.getRange(1, 2).getValue() || '').trim();
+  var key = String(sheet.getRange(2, 6).getValue() || '').trim();
   if (key) {
     cache.put(ADMIN_KEY_CACHE_KEY, key, ADMIN_KEY_CACHE_SECONDS);
   }
@@ -423,20 +431,6 @@ function formatCellForDisplay_(val) {
   return String(val);
 }
 
-/** For comparing two date strings (non-empty). */
-function dateSortKeyFromString_(s) {
-  s = String(s || '').trim();
-  if (!s) {
-    return 0;
-  }
-  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
-  if (m) {
-    return new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10)).getTime();
-  }
-  var t = Date.parse(s);
-  return isNaN(t) ? 0 : t;
-}
-
 function buildHistoryColMaps_(headers) {
   var colMaps = [];
   for (var h = 0; h < HINDI_LABELS_HISTORY.length; h++) {
@@ -475,27 +469,37 @@ function rowToHistoryObj_(row, colMaps) {
   return obj;
 }
 
-/** Newest Date first; same date → latest submission first; rows with empty Date last */
-function sortHistoryRowsDesc_(out) {
-  out.sort(function (a, b) {
-    var da = String(a.Date || '').trim();
-    var db = String(b.Date || '').trim();
-    if (!da && !db) {
-      return 0;
-    }
-    if (!da) {
-      return 1;
-    }
-    if (!db) {
-      return -1;
-    }
-    var cmp = dateSortKeyFromString_(db) - dateSortKeyFromString_(da);
-    if (cmp !== 0) {
-      return cmp;
-    }
-    return (b._submissionTimeMs || 0) - (a._submissionTimeMs || 0);
+/** Sort key from `Date` column only (yyyy-MM-dd or parseable); empty / invalid → `Infinity` (handled in sort). */
+function historyDateSortKeyFromString_(s) {
+  s = String(s || '').trim();
+  if (!s) {
+    return Number.POSITIVE_INFINITY;
+  }
+  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+  if (m) {
+    return new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10)).getTime();
+  }
+  var t = Date.parse(s);
+  return isNaN(t) ? Number.POSITIVE_INFINITY : t;
+}
+
+/**
+ * Newest → oldest by **Date** field only. Same calendar date keeps sheet order (stable sort).
+ * Empty dates last. Does not use `_submissionTimeMs`.
+ */
+function sortHistoryRowsByDateOnly_(rows) {
+  if (!rows || rows.length < 2) {
+    return rows;
+  }
+  var copy = rows.slice();
+  copy.sort(function (a, b) {
+    var ka = historyDateSortKeyFromString_(a.Date);
+    var kb = historyDateSortKeyFromString_(b.Date);
+    if (ka === Number.POSITIVE_INFINITY) ka = Number.NEGATIVE_INFINITY;
+    if (kb === Number.POSITIVE_INFINITY) kb = Number.NEGATIVE_INFINITY;
+    return kb - ka;
   });
-  return out;
+  return copy;
 }
 
 /**
@@ -557,13 +561,27 @@ function filterResponseRowsFromMainSheet_(doc, name) {
   return out;
 }
 
+/**
+ * Keep only the last N rows in **sheet order** (bottom of the sheet = most recently appended).
+ */
+function limitHistoryRowsToMax_(rows) {
+  if (!rows || rows.length <= MAX_HISTORY_ROWS_RETURN) {
+    return rows;
+  }
+  return rows.slice(-MAX_HISTORY_ROWS_RETURN);
+}
+
 function filterResponseRowsForName_(doc, name) {
   var fromTab = readHistoryFromPerDevoteeSheetIfExists_(doc, name);
+  var combined;
   if (fromTab !== null && fromTab.length > 0) {
-    return sortHistoryRowsDesc_(fromTab);
+    combined = fromTab;
+  } else {
+    // Fallback when the devotee tab is missing — read from Sadhana Responses (scan top → bottom).
+    combined = filterResponseRowsFromMainSheet_(doc, name);
   }
-  var fromMain = filterResponseRowsFromMainSheet_(doc, name);
-  return sortHistoryRowsDesc_(fromMain);
+  var capped = limitHistoryRowsToMax_(combined);
+  return sortHistoryRowsByDateOnly_(capped);
 }
 
 function upsertDevoteeName(doc, rawName) {

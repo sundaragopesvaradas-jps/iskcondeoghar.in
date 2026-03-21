@@ -15,11 +15,7 @@ import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
 import { SadhanaRecordsTable } from './SadhanaRecordsTable';
 import { fetchSadhanaHistory, submitSadhanaPinChange } from './sadhanaHistoryApi';
 import type { SadhanaHistoryErrorCode } from './sadhanaHistoryApi';
-import {
-  isDevoteeNameInList,
-  resolveCanonicalDevoteeName,
-  sortSadhanaHistoryRowsByDate,
-} from './sadhanaRecordsUtils';
+import { isDevoteeNameInList, resolveCanonicalDevoteeName } from './sadhanaRecordsUtils';
 import { sadhanaStrings as t } from './sadhanaStrings';
 import './SadhanaFormPage.css';
 
@@ -158,7 +154,7 @@ const SadhanaRecordsPage: React.FC = () => {
     setLoading(true);
     try {
       const data = await fetchSadhanaHistory(scriptUrl, canonicalName, pin);
-      setRows(sortSadhanaHistoryRowsByDate(data));
+      setRows(data);
       setSessionPin(pin);
       setPhase('table');
     } catch (e) {

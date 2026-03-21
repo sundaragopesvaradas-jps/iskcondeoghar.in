@@ -10,7 +10,6 @@ import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
 import { prepareRowsForChartSeries } from './sadhanaHistoryChartPrep';
 import { SadhanaHistoryCharts } from './SadhanaHistoryCharts';
 import { SadhanaRecordsTable } from './SadhanaRecordsTable';
-import { sortSadhanaHistoryRowsByDateOrder } from './sadhanaRecordsUtils';
 import { sadhanaStrings as t } from './sadhanaStrings';
 import './SadhanaFormPage.css';
 
@@ -48,7 +47,7 @@ const SadhanaAdminOverviewPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const chartSeries = useMemo(
-    () => prepareRowsForChartSeries(rows, { dateOrder: 'oldestFirst' }),
+    () => prepareRowsForChartSeries(rows, { dateOrder: 'newestFirst' }),
     [rows]
   );
 
@@ -173,7 +172,7 @@ const SadhanaAdminOverviewPage: React.FC = () => {
       setPhase('detail');
       try {
         const raw = await fetchSeeAllSadhanasLookup(scriptUrl, adminKeyInput, name);
-        setRows(sortSadhanaHistoryRowsByDateOrder(raw, 'oldestFirst'));
+        setRows(raw);
       } catch (e) {
         setError(mapAdminErr(e));
         setRows([]);

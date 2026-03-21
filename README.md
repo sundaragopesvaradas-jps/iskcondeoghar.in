@@ -2,6 +2,10 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Sadhana ↔ Google Sheets
+
+Sadhana form integration, Apps Script, and **how many past rows** are returned (`MAX_HISTORY_ROWS_RETURN` in `src/sadhana/google-apps-script-sadhana.js`) are documented in **`src/sadhana/GOOGLE_SHEETS_SETUP.md`**. Change the limit in the script and redeploy the web app — no frontend rebuild needed for that setting.
+
 ## Available Scripts
 
 In the project directory, you can run:

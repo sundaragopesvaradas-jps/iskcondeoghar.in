@@ -1,9 +1,6 @@
 import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
 import { sadhanaHistoryDateSortKey } from './sadhanaRecordsUtils';
 
-/** Max points along X (distinct dates, newest first in chart). */
-export const SADHANA_CHART_MAX_POINTS = 30;
-
 export type SadhanaChartDateOrder = 'newestFirst' | 'oldestFirst';
 
 export type PrepareChartSeriesOptions = {
@@ -12,8 +9,7 @@ export type PrepareChartSeriesOptions = {
 };
 
 /**
- * One point per **submission** (row), up to `SADHANA_CHART_MAX_POINTS` rows — includes **today**
- * and **multiple submissions on the same calendar day** (each row is a point).
+ * One point per **submission** (row). Row count is already capped by Apps Script (`MAX_HISTORY_ROWS_RETURN`).
  * Sort: by date, then by submission time within the same day.
  */
 export function prepareRowsForChartSeries(
@@ -36,5 +32,5 @@ export function prepareRowsForChartSeries(
     }
     return 0;
   });
-  return list.slice(0, SADHANA_CHART_MAX_POINTS);
+  return list;
 }

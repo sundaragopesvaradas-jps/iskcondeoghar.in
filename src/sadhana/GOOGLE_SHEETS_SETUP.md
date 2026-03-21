@@ -23,6 +23,15 @@ You can leave **Sheet1** as it is. The script will add tabs automatically:
 
 After changing the script, use **Deploy → Manage deployments → Edit (pencil) → New version → Deploy** so `SADHANA_SUBMIT`, `SADHANA_NAMES`, `SADHANA_LOOKUP`, `SADHANA_CHANGE_PIN`, and `seeAllSadhanas` (admin overview) all work.
 
+### History row limit (table + charts)
+
+Near the top of `google-apps-script-sadhana.js`, **`MAX_HISTORY_ROWS_RETURN`** (default **30**) caps how many rows are returned for each devotee for:
+
+- `SADHANA_LOOKUP` (past records on `/sadhana/records`), and  
+- `seeAllSadhanas` with `mode: "lookup"` (admin detail view).
+
+Submissions are stored **append order** (new rows at the **bottom**). The script collects rows in **sheet order** (top → bottom); for the per-devotee tab or when filtering **Sadhana Responses** by name, it keeps only the **last N** rows (`slice(-N)`), i.e. the **N most recent appends**. Before the JSON response, those rows are sorted **only by the `Date` column** (**newest → oldest**); **submission timestamp is not** used for ordering. The website **does not re-sort** this list for the table. Change **`MAX_HISTORY_ROWS_RETURN`** in the script only — **redeploy** the web app; no website rebuild is required for that limit.
+
 ### Step 2: Open Apps Script **from this spreadsheet** (important)
 
 The script must be opened **from the same file** so it can write into it.
@@ -116,7 +125,7 @@ The site sends the same Web App URL with JSON actions:
 | Action | Purpose |
 |--------|----------------|
 | `SADHANA_NAMES` | Load name list for autocomplete. |
-| `SADHANA_LOOKUP` | Name + PIN → rows from that devotee’s tab if it exists, else filtered from **Sadhana Responses** (tab title = `sheetTitleForDevotee_` in the script: max **31** chars, no `\ / ? * [ ]`). |
+| `SADHANA_LOOKUP` | Name + PIN → rows from that devotee’s tab if it exists, else filtered from **Sadhana Responses**; response limited to **`MAX_HISTORY_ROWS_RETURN`** newest rows (see above). Tab title = `sheetTitleForDevotee_` in the script: max **31** chars, no `\ / ? * [ ]`. |
 | `SADHANA_CHANGE_PIN` | Update **PIN** in **Sadhana Unique Names** after a successful login. |
 
 **Per-devotee tabs:** Each successful submit also **appends** that row to the devotee’s tab (`appendLastSubmitToDevoteeTab_`). New tabs get the same header row as **Sadhana Responses**. If the tab append fails, the main row is still saved.
