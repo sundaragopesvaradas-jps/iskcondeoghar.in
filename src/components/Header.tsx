@@ -1,4 +1,7 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookF, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import './Header.css';
 import logo from '../assets/images/iskcon-logo.png';
 import spImage from '../assets/images/sp.jpg';
@@ -14,7 +17,7 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <Link to="/home" className="header-left" style={{ textDecoration: 'none' }}>
-          <img src={logo} alt="ISKCON Deoghar" className="logo" />
+          <img src={logo} alt="ISKCON Deoghar" className="logo" decoding="async" />
           <div className="logo-text">
             <h1>ISKCON Deoghar</h1>
             <p>International Society for Krishna Consciousness</p>
@@ -24,21 +27,27 @@ const Header = () => {
         <div className="header-right">
           <div className="social-icons">
             <a href={contactConfig.social.facebook} className="social-icon facebook" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-facebook-f"></i>
+              <FontAwesomeIcon icon={faFacebookF} />
             </a>
             <a href={contactConfig.social.youtube} className="social-icon youtube" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-youtube"></i>
+              <FontAwesomeIcon icon={faYoutube} />
             </a>
           </div>
           <a href={`tel:${contactConfig.phoneNumber}`} className="contact-btn" title="Call Us">
-            <i className="fas fa-phone"></i>
+            <FontAwesomeIcon icon={faPhone} />
             <span>Contact</span>
           </a>
           <button onClick={handleWhatsAppClick} className="whatsapp-btn" title="Message on WhatsApp">
-            <i className="fab fa-whatsapp"></i>
+            <FontAwesomeIcon icon={faWhatsapp} />
             <span>WhatsApp</span>
           </button>
-          <img src={spImage} alt="Srila Prabhupada" className="sp-image" title="His Divine Grace A.C. Bhaktivedanta Swami Prabhupada" />
+          <img
+            src={spImage}
+            alt="Srila Prabhupada"
+            className="sp-image"
+            title="His Divine Grace A.C. Bhaktivedanta Swami Prabhupada"
+            decoding="async"
+          />
         </div>
       </div>
     </header>
