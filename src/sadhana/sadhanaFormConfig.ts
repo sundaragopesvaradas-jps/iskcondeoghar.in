@@ -12,6 +12,14 @@ export interface SadhanaFieldDefinition {
   description?: string;
   required?: boolean;
   options?: string[];
+  /**
+   * When set: this field is shown and required only if the parent field is set
+   * and its value is not `skipWhenParentEquals` (e.g. show "which books" when reading minutes ≠ "0").
+   */
+  conditionalRequired?: {
+    parentFieldId: string;
+    skipWhenParentEquals: string;
+  };
 }
 
 /** रेडियो विकल्प — समय सीमा (सोने / उठने) */
@@ -49,6 +57,14 @@ const MINUTES_OPTIONS = [
   '1 घंटे तक',
   '2 घंटे तक',
   '2 घंटे से अधिक',
+];
+
+/** श्रील प्रभुपाद की पुस्तकें — कौन-सी पढ़ीं (केवल जब पढ़ने का समय > 0) */
+const SP_BOOKS_WHICH_OPTIONS = [
+  'भगवद्-गीता',
+  'श्रीमद् भागवतम्',
+  'श्रील प्रभुपाद की छोटी पुस्तकें',
+  'अन्य',
 ];
 
 export const sadhanaFormFields: SadhanaFieldDefinition[] = [
@@ -99,6 +115,16 @@ export const sadhanaFormFields: SadhanaFieldDefinition[] = [
     label: 'आपने कितने मिनट श्रीला प्रभुपाद की किताबें पढ़ीं?',
     options: MINUTES_OPTIONS,
     required: true,
+  },
+  {
+    id: 'sp_books_which',
+    type: 'checkbox',
+    label: 'कौन-सी पुस्तकें पढ़ीं?',
+    options: SP_BOOKS_WHICH_OPTIONS,
+    conditionalRequired: {
+      parentFieldId: 'sp_books_minutes',
+      skipWhenParentEquals: '0',
+    },
   },
   {
     id: 'sravanam_duration',

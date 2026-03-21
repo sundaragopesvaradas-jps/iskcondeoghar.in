@@ -111,3 +111,5 @@ export const SADHANA_GOOGLE_SCRIPT_URL =
 - [ ] Rebuilt/redeployed the website after changing that file  
 
 After that, each submit from `/sadhana` should append one row to **Sadhana Responses**.
+
+**New fields:** Headers come from `sadhanaFormConfig.ts` (e.g. conditional fields such as **कौन-सी पुस्तकें पढ़ीं?** when reading time is not `0`). After you ship a new field, the **first** submission that includes it will align columns; if the sheet already had a header row from an older form version, you may need to add the new column manually or use a fresh sheet tab.

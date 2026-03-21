@@ -4,7 +4,7 @@ import { getSadhanaScriptUrl, submitSadhanaResponse } from './submitSadhanaRespo
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
 import { sadhanaStrings as t } from './sadhanaStrings';
-import { countCompletedRequired } from './sadhanaFormUtils';
+import { countCompletedRequired, isFieldRequired, isFieldVisible } from './sadhanaFormUtils';
 import iskconDeogharLogo from '../assets/images/iskcon-logo.png';
 import srilaPrabhupadaLogo from '../assets/images/sp.jpg';
 import './SadhanaFormPage.css';
@@ -135,6 +135,16 @@ const SadhanaFormPage: React.FC = () => {
     });
   }, [message]);
 
+  useEffect(() => {
+    const m = values.sp_books_minutes;
+    if (m !== '0' && m !== '') return;
+    setValues((prev) => {
+      const cur = prev.sp_books_which;
+      if (!Array.isArray(cur) || cur.length === 0) return prev;
+      return { ...prev, sp_books_which: [] };
+    });
+  }, [values.sp_books_minutes]);
+
   const setText = (id: string, v: string) => {
     setValues((prev) => ({ ...prev, [id]: v }));
   };
@@ -159,7 +169,7 @@ const SadhanaFormPage: React.FC = () => {
 
   const validate = (): string | null => {
     for (const f of sadhanaFormFields) {
-      if (!f.required) continue;
+      if (!isFieldRequired(f, values)) continue;
       const v = values[f.id];
       if ((f.type === 'text' || f.type === 'date') && (!v || String(v).trim() === '')) {
         return t.validateText(f.label);
@@ -284,31 +294,33 @@ const SadhanaFormPage: React.FC = () => {
             </div>
 
             <form className="sadhana-form" onSubmit={handleSubmit} noValidate>
-              {fieldGroups.map((group, groupIndex) => (
+              {fieldGroups.map((group, groupIndex) => {
+                const visible = group.filter((f) => isFieldVisible(f, values));
+                return (
                 <section
                   key={groupIndex}
                   style={{ ['--g' as string]: groupIndex } as React.CSSProperties}
                   className={`sadhana-group sadhana-group--${groupIndex % 4} sadhana-group--enter`}
                   aria-label={`फ़ॉर्म खंड ${groupIndex + 1}`}
                 >
-                  {group.map((f) => (
+                  {visible.map((f) => (
                     <div
                       key={f.id}
-                      className={`sadhana-field-block${group.length === 1 ? ' sadhana-field-block--full' : ''}`}
+                      className={`sadhana-field-block${visible.length === 1 ? ' sadhana-field-block--full' : ''}`}
                     >
                       <div className="sadhana-question">
                         {f.type === 'text' || f.type === 'date' ? (
                           <label className="sadhana-label" htmlFor={f.id} id={`${f.id}-label`}>
                             <span className="sadhana-label-text">
                               {f.label}
-                              {f.required ? <span className="sadhana-required" aria-hidden> *</span> : null}
+                              {isFieldRequired(f, values) ? <span className="sadhana-required" aria-hidden> *</span> : null}
                             </span>
                           </label>
                         ) : (
                           <div className="sadhana-label" id={`${f.id}-label`}>
                             <span className="sadhana-label-text">
                               {f.label}
-                              {f.required ? <span className="sadhana-required" aria-hidden> *</span> : null}
+                              {isFieldRequired(f, values) ? <span className="sadhana-required" aria-hidden> *</span> : null}
                             </span>
                           </div>
                         )}
@@ -396,7 +408,8 @@ const SadhanaFormPage: React.FC = () => {
                     </div>
                   ))}
                 </section>
-              ))}
+                );
+              })}
 
               <div className="sadhana-form-footer">
                 <div className="sadhana-progress-wrap sadhana-progress-wrap--bottom">
