@@ -2,6 +2,8 @@
 
 .sadhana-page {
   /* थीम: शांत रात + केसर एक्सेंट */
+  overflow-x: hidden;
+  max-width: 100%;
   --sadhana-accent: #c2410c;
   --sadhana-accent-bright: #ea580c;
   --sadhana-accent-soft: rgba(194, 65, 12, 0.1);
@@ -647,6 +649,8 @@
 
 .sadhana-option-text {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .sadhana-option-row input[type='radio'],

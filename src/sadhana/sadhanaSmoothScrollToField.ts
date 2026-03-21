@@ -13,7 +13,8 @@ export function smoothScrollElementIntoViewCenter(
 ): void {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) {
-    el.scrollIntoView({ block: 'center', behavior: 'auto' });
+    el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+    window.scrollTo({ top: window.scrollY, left: 0 });
     return;
   }
 
@@ -40,6 +41,15 @@ export function smoothScrollElementIntoViewCenter(
     window.scrollTo({ top: startY + delta * eased, left: 0, behavior: 'auto' });
     if (t < 1) {
       requestAnimationFrame(frame);
+    } else {
+      window.scrollTo({ top: startY + delta, left: 0, behavior: 'auto' });
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollLeft = 0;
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: window.scrollY, left: 0, behavior: 'auto' });
+        document.documentElement.scrollLeft = 0;
+        document.body.scrollLeft = 0;
+      });
     }
   }
 
