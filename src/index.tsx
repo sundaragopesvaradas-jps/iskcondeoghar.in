@@ -1,15 +1,36 @@
-import React from 'react';
+import React, { Suspense, lazy, ComponentType, LazyExoticComponent } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { routes } from './config/routes';
-import ExternalRedirect from './components/ExternalRedirect';
-import RecentCelebrationsPage from './RecentCelebrationsPage';
-import SadhanaFormPage from './sadhana/SadhanaFormPage';
-import SadhanaRecordsPage from './sadhana/SadhanaRecordsPage';
-import SadhanaAdminOverviewPage from './sadhana/SadhanaAdminOverviewPage';
+
+const App = lazy(() => import('./App'));
+const ExternalRedirect = lazy(() => import('./components/ExternalRedirect'));
+const RecentCelebrationsPage = lazy(() => import('./RecentCelebrationsPage'));
+const SadhanaFormPage = lazy(() => import('./sadhana/SadhanaFormPage'));
+const SadhanaRecordsPage = lazy(() => import('./sadhana/SadhanaRecordsPage'));
+const SadhanaAdminOverviewPage = lazy(() => import('./sadhana/SadhanaAdminOverviewPage'));
+
+/** CRA + TS 3.9 + React 19 types: JSX on `lazy()` components is mis-inferred; `createElement` is typed correctly. */
+function lazyEl(C: LazyExoticComponent<ComponentType>) {
+  return React.createElement(C);
+}
+
+function RouteFallback() {
+  return (
+    <div
+      style={{
+        padding: '3rem 1rem',
+        textAlign: 'center',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        color: '#444',
+      }}
+    >
+      Loading…
+    </div>
+  );
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -18,36 +39,68 @@ const root = ReactDOM.createRoot(
 const router = createBrowserRouter([
   {
     path: routes.home,
-    element: <App />
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {lazyEl(App)}
+      </Suspense>
+    ),
   },
   {
     path: routes.spbooks,
-    element: <ExternalRedirect to={routes.external.spbooks} />
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {React.createElement(ExternalRedirect as unknown as React.ComponentType<{ to: string }>, {
+          to: routes.external.spbooks,
+        })}
+      </Suspense>
+    ),
   },
   {
     path: routes.spletters,
-    element: <ExternalRedirect to={routes.external.spletters} />
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {React.createElement(ExternalRedirect as unknown as React.ComponentType<{ to: string }>, {
+          to: routes.external.spletters,
+        })}
+      </Suspense>
+    ),
   },
   {
     path: '/recentcelebrations',
-    element: <RecentCelebrationsPage />
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {lazyEl(RecentCelebrationsPage)}
+      </Suspense>
+    ),
   },
   {
     path: routes.sadhana,
-    element: <SadhanaFormPage />
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {lazyEl(SadhanaFormPage)}
+      </Suspense>
+    ),
   },
   {
     path: routes.sadhanaRecords,
-    element: <SadhanaRecordsPage />
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {lazyEl(SadhanaRecordsPage)}
+      </Suspense>
+    ),
   },
   {
     path: routes.sadhanaAdmin,
-    element: <SadhanaAdminOverviewPage />
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {lazyEl(SadhanaAdminOverviewPage)}
+      </Suspense>
+    ),
   },
   {
     path: '*',
-    element: <Navigate to={routes.default} replace />
-  }
+    element: <Navigate to={routes.default} replace />,
+  },
 ]);
 
 root.render(
@@ -56,7 +109,4 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

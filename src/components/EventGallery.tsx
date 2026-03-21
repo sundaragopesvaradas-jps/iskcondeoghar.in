@@ -1,4 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookF, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faCalendarAlt, faPhone, faPlay, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './EventGallery.css';
 import { upcomingFestival } from '../data/festivalData';
 import { useAutoScroll } from '../hooks/useAutoScroll';
@@ -35,7 +38,7 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
   };
 
   const videoId = getYouTubeVideoId(videoUrl);
-  const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '';
+  const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '';
 
   return (
     <div className="video-card">
@@ -46,9 +49,15 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
           style={{ cursor: 'pointer' }}
         >
           <div className="thumbnail-container">
-            <img src={thumbnailUrl} alt={title} className="video-thumbnail" />
+            <img
+              src={thumbnailUrl}
+              alt={title}
+              className="video-thumbnail"
+              loading="lazy"
+              decoding="async"
+            />
             <div className="play-button">
-              <i className="fas fa-play"></i>
+              <FontAwesomeIcon icon={faPlay} />
             </div>
           </div>
           {!hideCaption && (
@@ -75,7 +84,7 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
               className="close-video-btn"
               title="Close video"
             >
-              <i className="fas fa-times"></i>
+              <FontAwesomeIcon icon={faXmark} />
             </button>
           </div>
           {!hideCaption && (
@@ -163,29 +172,35 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, targetTime }) => {
 };
 
 const EventGallery = () => {
-  const eventGridRef = useRef<HTMLDivElement>(null);
-  const videoGridRef = useRef<HTMLDivElement>(null);
-  const programGridRef = useRef<HTMLDivElement>(null);
-  const [isEventHovered] = useState(false);
-  const [isVideoHovered] = useState(false);
-  const [isProgramHovered] = useState(false);
+  const templeGridRef = useRef<HTMLDivElement>(null);
+  const goshalaGridRef = useRef<HTMLDivElement>(null);
+  const regularAGridRef = useRef<HTMLDivElement>(null);
+  const regularBGridRef = useRef<HTMLDivElement>(null);
+  const regularCGridRef = useRef<HTMLDivElement>(null);
   const [currentStyle] = useState<BannerStyle>(BANNER_STYLES.DYNAMIC_LAYERS);
 
-  useAutoScroll(eventGridRef, isEventHovered);
-  useAutoScroll(videoGridRef, isVideoHovered);
-  useAutoScroll(programGridRef, isProgramHovered);
+  useAutoScroll(templeGridRef, false);
+  useAutoScroll(goshalaGridRef, false);
+  useAutoScroll(regularAGridRef, false);
+  useAutoScroll(regularBGridRef, false);
+  useAutoScroll(regularCGridRef, false);
 
   return (
     <div className="gallery-section">
       <section className={`upcoming-festival ${currentStyle}`}>
         <div className="festival-banner">
-          <img src={upcomingFestival.image} alt={upcomingFestival.title} />
+          <img
+            src={upcomingFestival.image}
+            alt={upcomingFestival.title}
+            decoding="async"
+            fetchPriority="high"
+          />
         </div>
         <div className="festival-content-wrapper">
           <div className="festival-content">
             <h2 className="festival-title">{upcomingFestival.title}</h2>
             <p className="festival-date">
-              <i className="fas fa-calendar-alt"></i>
+              <FontAwesomeIcon icon={faCalendarAlt} />
               {dateConfig.displayFormat(upcomingFestival.date)}
             </p>
             <p className="festival-description">{upcomingFestival.description}</p>
@@ -220,11 +235,21 @@ const EventGallery = () => {
         <section style={{ margin: '3rem 0' }}>
           <h2 className="section-title">Glance Lord's Temple</h2>
           <div className="scroll-container">
-            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+            <div
+              className="event-grid"
+              ref={templeGridRef}
+              style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
+            >
               {/* 3 images */}
               {[...Array(3)].map((_, idx) => (
                 <div className="event-card" key={idx}>
-                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Temple Glance ${idx+1}`} className="event-image" />
+                  <img
+                    src="/images/UpcomingEventBanner/event-photo.jpg"
+                    alt={`Temple Glance ${idx + 1}`}
+                    className="event-image"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               ))}
               {/* 2 videos */}
@@ -245,11 +270,21 @@ const EventGallery = () => {
         <section style={{ margin: '3rem 0' }}>
           <h2 className="section-title">Goshala</h2>
           <div className="scroll-container">
-            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+            <div
+              className="event-grid"
+              ref={goshalaGridRef}
+              style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
+            >
               {/* 3 images */}
               {[...Array(3)].map((_, idx) => (
                 <div className="event-card" key={idx}>
-                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Goshala ${idx+1}`} className="event-image" />
+                  <img
+                    src="/images/UpcomingEventBanner/event-photo.jpg"
+                    alt={`Goshala ${idx + 1}`}
+                    className="event-image"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               ))}
               {/* 2 videos */}
@@ -272,11 +307,21 @@ const EventGallery = () => {
           {/* Subsection A */}
           <h3 className="section-title" style={{ fontSize: '1.5rem', marginTop: '2rem' }}>A</h3>
           <div className="scroll-container">
-            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+            <div
+              className="event-grid"
+              ref={regularAGridRef}
+              style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
+            >
               {/* 3 images */}
               {[...Array(3)].map((_, idx) => (
                 <div className="event-card" key={idx}>
-                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Regular Programms A ${idx+1}`} className="event-image" />
+                  <img
+                    src="/images/UpcomingEventBanner/event-photo.jpg"
+                    alt={`Regular Programms A ${idx + 1}`}
+                    className="event-image"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               ))}
               {/* 2 videos */}
@@ -294,11 +339,21 @@ const EventGallery = () => {
           {/* Subsection B */}
           <h3 className="section-title" style={{ fontSize: '1.5rem', marginTop: '2rem' }}>B</h3>
           <div className="scroll-container">
-            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+            <div
+              className="event-grid"
+              ref={regularBGridRef}
+              style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
+            >
               {/* 3 images */}
               {[...Array(3)].map((_, idx) => (
                 <div className="event-card" key={idx}>
-                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Regular Programms B ${idx+1}`} className="event-image" />
+                  <img
+                    src="/images/UpcomingEventBanner/event-photo.jpg"
+                    alt={`Regular Programms B ${idx + 1}`}
+                    className="event-image"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               ))}
               {/* 2 videos */}
@@ -316,11 +371,21 @@ const EventGallery = () => {
           {/* Subsection C */}
           <h3 className="section-title" style={{ fontSize: '1.5rem', marginTop: '2rem' }}>C</h3>
           <div className="scroll-container">
-            <div className="event-grid" style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}>
+            <div
+              className="event-grid"
+              ref={regularCGridRef}
+              style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
+            >
               {/* 3 images */}
               {[...Array(3)].map((_, idx) => (
                 <div className="event-card" key={idx}>
-                  <img src="/images/UpcomingEventBanner/event-photo.jpg" alt={`Regular Programms C ${idx+1}`} className="event-image" />
+                  <img
+                    src="/images/UpcomingEventBanner/event-photo.jpg"
+                    alt={`Regular Programms C ${idx + 1}`}
+                    className="event-image"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               ))}
               {/* 2 videos */}
@@ -342,15 +407,15 @@ const EventGallery = () => {
       <section className="cta-buttons">
         <div className="cta-container">
           <a href={contactConfig.social.facebook} className="cta-btn facebook" target="_blank" rel="noopener noreferrer">
-            <i className="fab fa-facebook-f"></i>
+            <FontAwesomeIcon icon={faFacebookF} />
             <span>Follow Us</span>
           </a>
           <a href={contactConfig.social.youtube} className="cta-btn youtube" target="_blank" rel="noopener noreferrer">
-            <i className="fab fa-youtube"></i>
+            <FontAwesomeIcon icon={faYoutube} />
             <span>Subscribe</span>
           </a>
           <a href={`tel:${contactConfig.phoneNumber}`} className="cta-btn call" title="Call Us">
-            <i className="fas fa-phone"></i>
+            <FontAwesomeIcon icon={faPhone} />
             <span>Call Now</span>
           </a>
           <button 
@@ -358,7 +423,7 @@ const EventGallery = () => {
             className="cta-btn whatsapp" 
             title="Message on WhatsApp"
           >
-            <i className="fab fa-whatsapp"></i>
+            <FontAwesomeIcon icon={faWhatsapp} />
             <span>WhatsApp</span>
           </button>
         </div>

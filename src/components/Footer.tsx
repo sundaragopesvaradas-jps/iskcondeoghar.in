@@ -1,4 +1,8 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookF, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faBookReader, faMapMarkerAlt, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import './Footer.css';
 import { contactConfig } from '../config/contactConfig';
 import { externalConfig } from '../config/externalConfig';
@@ -17,10 +21,10 @@ const Footer = () => {
           </div>
           <div className="social-icons">
             <a href={contactConfig.social.facebook} className="social-icon facebook" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-facebook-f"></i>
+              <FontAwesomeIcon icon={faFacebookF} />
             </a>
             <a href={contactConfig.social.youtube} className="social-icon youtube" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-youtube"></i>
+              <FontAwesomeIcon icon={faYoutube} />
             </a>
           </div>
         </div>
@@ -29,11 +33,11 @@ const Footer = () => {
           <h2 className="contact-title">Contact Info</h2>
           <div className="contact-info">
             <div className="contact-item">
-              <i className="far fa-envelope"></i>
+              <FontAwesomeIcon icon={faEnvelope} />
               <a href={`mailto:${contactConfig.email}`}>{contactConfig.email}</a>
             </div>
             <div className="contact-item">
-              <i className="fas fa-phone"></i>
+              <FontAwesomeIcon icon={faPhone} />
               <div>
                 {contactConfig.phoneNumbers.map((number, index) => (
                   <React.Fragment key={index}>
@@ -45,7 +49,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="contact-item">
-              <i className="fas fa-map-marker-alt"></i>
+              <FontAwesomeIcon icon={faMapMarkerAlt} />
               <address>
                 {contactConfig.address.getFormattedAddress().split('\n').map((line, index) => (
                   <React.Fragment key={index}>
@@ -57,13 +61,13 @@ const Footer = () => {
           </div>
           <div className="ask-questions-sp-books">
             <a href={externalConfig.askQuestionsBooks.url} className="ask-link" target="_blank" rel="noopener noreferrer">
-              <i className={externalConfig.askQuestionsBooks.icon}></i>
+              <FontAwesomeIcon icon={faBookReader} />
               {externalConfig.askQuestionsBooks.text}
             </a>
           </div>
           <div className="ask-questions-sp-letters">
             <a href={externalConfig.askQuestionsLetters.url} className="ask-link" target="_blank" rel="noopener noreferrer">
-              <i className={externalConfig.askQuestionsLetters.icon}></i>
+              <FontAwesomeIcon icon={faBookReader} />
               {externalConfig.askQuestionsLetters.text}
             </a>
           </div>

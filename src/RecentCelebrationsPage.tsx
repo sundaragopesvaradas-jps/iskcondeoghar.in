@@ -1,16 +1,34 @@
 import React, { useRef, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookF, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import {
+  faCalendarDay,
+  faChevronLeft,
+  faChevronRight,
+  faClock,
+  faPhone,
+  faPlay,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { recentEvents, eventVideos, weeklyPrograms } from './data/festivalData';
 import { dateConfig } from './config/dateConfig';
 import { scrollConfig } from './config/scrollConfig';
 import { contactConfig } from './config/contactConfig';
+import './components/EventGallery.css';
 
 const EventCard = ({ title, date, image, description, url }: any) => (
   url ? (
     <a href={url} target="_blank" rel="noopener noreferrer" className="event-card-link">
       <div className="event-card">
-        <img src={image} alt={title} className="event-image" />
+        <img
+          src={image}
+          alt={title}
+          className="event-image"
+          loading="lazy"
+          decoding="async"
+        />
         <div className="event-content">
           <h3 className="event-title">{title}</h3>
           <p className="event-date">{dateConfig.displayFormat(date)}</p>
@@ -20,7 +38,13 @@ const EventCard = ({ title, date, image, description, url }: any) => (
     </a>
   ) : (
     <div className="event-card">
-      <img src={image} alt={title} className="event-image" />
+      <img
+        src={image}
+        alt={title}
+        className="event-image"
+        loading="lazy"
+        decoding="async"
+      />
       <div className="event-content">
         <h3 className="event-title">{title}</h3>
         <p className="event-date">{dateConfig.displayFormat(date)}</p>
@@ -40,7 +64,7 @@ const VideoCard = ({ title, videoUrl, date }: any) => {
   };
 
   const videoId = getYouTubeVideoId(videoUrl);
-  const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '';
+  const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '';
 
   return (
     <div className="video-card">
@@ -51,9 +75,15 @@ const VideoCard = ({ title, videoUrl, date }: any) => {
           style={{ cursor: 'pointer' }}
         >
           <div className="thumbnail-container">
-            <img src={thumbnailUrl} alt={title} className="video-thumbnail" />
+            <img
+              src={thumbnailUrl}
+              alt={title}
+              className="video-thumbnail"
+              loading="lazy"
+              decoding="async"
+            />
             <div className="play-button">
-              <i className="fas fa-play"></i>
+              <FontAwesomeIcon icon={faPlay} />
             </div>
           </div>
           <div className="video-content">
@@ -78,7 +108,7 @@ const VideoCard = ({ title, videoUrl, date }: any) => {
               className="close-video-btn"
               title="Close video"
             >
-              <i className="fas fa-times"></i>
+              <FontAwesomeIcon icon={faXmark} />
             </button>
           </div>
           <div className="video-content">
@@ -93,11 +123,21 @@ const VideoCard = ({ title, videoUrl, date }: any) => {
 
 const WeeklyProgramCard = ({ title, time, day, image, description }: any) => (
   <div className="program-card">
-    <img src={image} alt={title} className="program-image" />
+    <img
+      src={image}
+      alt={title}
+      className="program-image"
+      loading="lazy"
+      decoding="async"
+    />
     <div className="program-content">
       <h3 className="program-title">{title}</h3>
-      <p className="program-time"><i className="fas fa-clock"></i> {time}</p>
-      <p className="program-day"><i className="fas fa-calendar-day"></i> {day}</p>
+      <p className="program-time">
+        <FontAwesomeIcon icon={faClock} /> {time}
+      </p>
+      <p className="program-day">
+        <FontAwesomeIcon icon={faCalendarDay} /> {day}
+      </p>
       <p className="program-description">{description}</p>
     </div>
   </div>
@@ -107,9 +147,6 @@ const RecentCelebrationsPage: React.FC = () => {
   const eventGridRef = useRef<HTMLDivElement>(null);
   const videoGridRef = useRef<HTMLDivElement>(null);
   const programGridRef = useRef<HTMLDivElement>(null);
-  const [isEventHovered, setIsEventHovered] = useState(false);
-  const [isVideoHovered, setIsVideoHovered] = useState(false);
-  const [isProgramHovered, setIsProgramHovered] = useState(false);
 
   const scroll = (direction: 'prev' | 'next', element: HTMLDivElement | null) => {
     if (element) {
@@ -148,13 +185,11 @@ const RecentCelebrationsPage: React.FC = () => {
           <h2 className="section-title">Recent Events</h2>
           <div className="scroll-container">
             <button className="scroll-button prev" onClick={() => scroll('prev', eventGridRef.current)}>
-              <i className="fas fa-chevron-left"></i>
+              <FontAwesomeIcon icon={faChevronLeft} />
             </button>
             <div
               className="event-grid"
               ref={eventGridRef}
-              onMouseEnter={() => setIsEventHovered(true)}
-              onMouseLeave={() => setIsEventHovered(false)}
               style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
             >
               {recentEvents.map((item, index) => (
@@ -162,7 +197,7 @@ const RecentCelebrationsPage: React.FC = () => {
               ))}
             </div>
             <button className="scroll-button next" onClick={() => scroll('next', eventGridRef.current)}>
-              <i className="fas fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} />
             </button>
           </div>
         </section>
@@ -170,13 +205,11 @@ const RecentCelebrationsPage: React.FC = () => {
           <h2 className="section-title">Watch Event Videos</h2>
           <div className="scroll-container">
             <button className="scroll-button prev" onClick={() => scroll('prev', videoGridRef.current)}>
-              <i className="fas fa-chevron-left"></i>
+              <FontAwesomeIcon icon={faChevronLeft} />
             </button>
             <div
               className="video-grid"
               ref={videoGridRef}
-              onMouseEnter={() => setIsVideoHovered(true)}
-              onMouseLeave={() => setIsVideoHovered(false)}
               style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
             >
               {eventVideos.map((item, index) => (
@@ -184,7 +217,7 @@ const RecentCelebrationsPage: React.FC = () => {
               ))}
             </div>
             <button className="scroll-button next" onClick={() => scroll('next', videoGridRef.current)}>
-              <i className="fas fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} />
             </button>
           </div>
         </section>
@@ -192,13 +225,11 @@ const RecentCelebrationsPage: React.FC = () => {
           <h2 className="section-title">Weekly Temple Programs</h2>
           <div className="scroll-container">
             <button className="scroll-button prev" onClick={() => scroll('prev', programGridRef.current)}>
-              <i className="fas fa-chevron-left"></i>
+              <FontAwesomeIcon icon={faChevronLeft} />
             </button>
             <div
               className="program-grid"
               ref={programGridRef}
-              onMouseEnter={() => setIsProgramHovered(true)}
-              onMouseLeave={() => setIsProgramHovered(false)}
               style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
             >
               {weeklyPrograms.map((item, index) => (
@@ -206,7 +237,7 @@ const RecentCelebrationsPage: React.FC = () => {
               ))}
             </div>
             <button className="scroll-button next" onClick={() => scroll('next', programGridRef.current)}>
-              <i className="fas fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} />
             </button>
           </div>
         </section>
@@ -232,15 +263,15 @@ const RecentCelebrationsPage: React.FC = () => {
         <section className="cta-buttons">
           <div className="cta-container">
             <a href={contactConfig.social.facebook} className="cta-btn facebook" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-facebook-f"></i>
+              <FontAwesomeIcon icon={faFacebookF} />
               <span>Follow Us</span>
             </a>
             <a href={contactConfig.social.youtube} className="cta-btn youtube" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-youtube"></i>
+              <FontAwesomeIcon icon={faYoutube} />
               <span>Subscribe</span>
             </a>
             <a href={`tel:${contactConfig.phoneNumber}`} className="cta-btn call" title="Call Us">
-              <i className="fas fa-phone"></i>
+              <FontAwesomeIcon icon={faPhone} />
               <span>Call Now</span>
             </a>
             <button
@@ -248,7 +279,7 @@ const RecentCelebrationsPage: React.FC = () => {
               className="cta-btn whatsapp"
               title="Message on WhatsApp"
             >
-              <i className="fab fa-whatsapp"></i>
+              <FontAwesomeIcon icon={faWhatsapp} />
               <span>WhatsApp</span>
             </button>
           </div>

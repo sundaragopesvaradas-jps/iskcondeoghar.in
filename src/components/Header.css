@@ -186,7 +186,10 @@
   transform: translateY(-2px);
 }
 
-.contact-btn i, .whatsapp-btn i {
+.contact-btn i,
+.contact-btn svg,
+.whatsapp-btn i,
+.whatsapp-btn svg {
   font-size: 1.2rem;
 }
 
@@ -333,7 +336,10 @@
     display: flex;
   }
 
-  .contact-btn i, .whatsapp-btn i {
+  .contact-btn i,
+  .contact-btn svg,
+  .whatsapp-btn i,
+  .whatsapp-btn svg {
     font-size: 1.3rem;
   }
 

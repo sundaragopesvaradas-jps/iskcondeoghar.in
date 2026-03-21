@@ -99,7 +99,8 @@
   color: #666;
 }
 
-.contact-item i {
+.contact-item i,
+.contact-item svg {
   font-size: 1.2rem;
   color: #666;
   margin-top: 0.2rem;
@@ -145,7 +146,8 @@
   border-radius: 8px;
 }
 
-.ask-link i {
+.ask-link i,
+.ask-link svg {
   font-size: 1.3rem;
 }
 

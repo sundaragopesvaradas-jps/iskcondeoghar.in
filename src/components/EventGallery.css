@@ -238,7 +238,8 @@
     right: 0;
   }
   
-  .scroll-button i {
+  .scroll-button i,
+  .scroll-button svg {
     font-size: 1.2rem;
   }
   
@@ -663,7 +664,8 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .cta-btn i {
+  .cta-btn i,
+  .cta-btn svg {
     font-size: 1.3rem;
   }
   
@@ -758,7 +760,8 @@
       font-size: 0.9rem;
     }
   
-    .cta-btn i {
+    .cta-btn i,
+    .cta-btn svg {
       font-size: 1.1rem;
     }
   }
