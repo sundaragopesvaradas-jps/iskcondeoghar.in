@@ -136,3 +136,47 @@ function readUniqueNames(doc) {
 function jsonOut(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
+
+function syncNameSheets() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const mainSheet = ss.getSheetByName("Sadhana Responses"); // change if needed
+  const uniqueSheet = ss.getSheetByName("Sadhana Unique Names");
+
+  const data = mainSheet.getDataRange().getValues();
+  const headers = data[0];
+
+  const names = uniqueSheet.getRange("A2:A").getValues().flat().filter(String);
+
+  names.forEach(name => {
+    let sheet = ss.getSheetByName(name);
+
+    // Create sheet if not exists
+    if (!sheet) {
+      sheet = ss.insertSheet(name);
+    }
+
+    // Clear old data
+    sheet.clearContents();
+
+    // Add headers
+    sheet.appendRow(headers);
+
+    // ✅ FIXED matching logic (handles spaces + case)
+    const filtered = data.filter((row, i) =>
+      i === 0 ||
+      row[1].toString().trim().toLowerCase() === name.toString().trim().toLowerCase()
+    );
+
+    if (filtered.length > 1) {
+      sheet.getRange(2, 1, filtered.length - 1, filtered[0].length)
+           .setValues(filtered.slice(1));
+    }
+  });
+}
+
+function createTrigger() {
+  ScriptApp.newTrigger("syncNameSheets")
+    .timeBased()
+    .everyMinutes(30) // you can change to 1, 10, etc.
+    .create();
+}

@@ -12,6 +12,8 @@ export type SadhanaNameComboboxProps = {
   disabled?: boolean;
   inputClassName: string;
   listHint: string;
+  /** फ़ोकस हटने के बाद (ड्रॉपडाउन बंद होने के बाद) — पैरेंट स्क्रॉल आदि */
+  onBlurComplete?: () => void;
 };
 
 export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
@@ -22,6 +24,7 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
   disabled,
   inputClassName,
   listHint,
+  onBlurComplete,
 }) => {
   const listId = useId();
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -84,7 +87,10 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
 
   const onInputBlur = () => {
     if (blurTimer.current) window.clearTimeout(blurTimer.current);
-    blurTimer.current = window.setTimeout(() => close(), 150);
+    blurTimer.current = window.setTimeout(() => {
+      close();
+      onBlurComplete?.();
+    }, 150);
   };
 
   const onInputFocus = () => {

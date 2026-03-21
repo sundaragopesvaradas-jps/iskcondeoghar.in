@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { sadhanaFormFields } from './sadhanaFormConfig';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { getSadhanaScriptUrl, submitSadhanaResponse } from './submitSadhanaResponse';
@@ -7,7 +7,12 @@ import { SADHANA_NAME_FIELD_ID, SADHANA_NAMES_SESSION_KEY } from './sadhanaNameF
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
 import { sadhanaStrings as t } from './sadhanaStrings';
-import { countCompletedRequired, isFieldRequired, isFieldVisible } from './sadhanaFormUtils';
+import {
+  countCompletedRequired,
+  isFieldRequired,
+  isFieldVisible,
+  isFieldValueFilled,
+} from './sadhanaFormUtils';
 import iskconDeogharLogo from '../assets/images/iskcon-logo.png';
 import srilaPrabhupadaLogo from '../assets/images/sp.jpg';
 import './SadhanaFormPage.css';
@@ -18,6 +23,8 @@ const BG = SADHANA_BACKGROUND_CONFIG;
 type FieldDef = (typeof sadhanaFormFields)[number];
 
 const QUESTIONS_PER_GROUP = 2;
+/** Q1=0, Q2=1, Q3=2 — पहले दो प्रश्नों के बाद स्क्रॉल नहीं; Q3 (विकल्प) चुनने के बाद से स्क्रॉल */
+const AUTO_SCROLL_AFTER_FIELD_INDEX = 2;
 
 function chunkFields(fields: FieldDef[], size: number): FieldDef[][] {
   const groups: FieldDef[][] = [];
@@ -64,6 +71,9 @@ const SadhanaFormPage: React.FC = () => {
   const scriptUrl = getSadhanaScriptUrl();
   const backgroundImageUrl = useMemo(() => getSadhanaBackgroundImageUrl(), []);
   const alertsRef = useRef<HTMLDivElement>(null);
+  const fieldBlockRefs = useRef<Map<string, HTMLElement | null>>(new Map());
+  const autoScrollInitRef = useRef(false);
+  const prevFieldFilledRef = useRef<Record<string, boolean>>({});
 
   const [bgBlur, setBgBlur] = useState<number>(BG.blur.initial);
   const [bgOverlayOpacity, setBgOverlayOpacity] = useState<number>(BG.overlay.initial);
@@ -197,6 +207,65 @@ const SadhanaFormPage: React.FC = () => {
       cancelled = true;
     };
   }, [scriptUrl]);
+
+  const scrollNextFieldIntoView = useCallback((completedFieldId: string) => {
+    const idx = sadhanaFormFields.findIndex((f) => f.id === completedFieldId);
+    if (idx === -1 || idx < AUTO_SCROLL_AFTER_FIELD_INDEX) return;
+    for (let j = idx + 1; j < sadhanaFormFields.length; j++) {
+      const f = sadhanaFormFields[j];
+      if (!isFieldVisible(f, values)) continue;
+      const el = fieldBlockRefs.current.get(f.id);
+      if (el) {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.requestAnimationFrame(() => {
+          el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+        });
+        return;
+      }
+    }
+  }, [values]);
+
+  const handleTextFieldBlur = useCallback(
+    (fieldId: string) => {
+      const f = sadhanaFormFields.find((x) => x.id === fieldId);
+      if (!f || f.type !== 'text') return;
+      if (!isFieldVisible(f, values)) return;
+      if (!isFieldValueFilled(f, values[fieldId], values)) return;
+      scrollNextFieldIntoView(fieldId);
+    },
+    [values, scrollNextFieldIntoView]
+  );
+
+  useEffect(() => {
+    if (!autoScrollInitRef.current) {
+      autoScrollInitRef.current = true;
+      sadhanaFormFields.forEach((f) => {
+        if (!isFieldVisible(f, values)) return;
+        prevFieldFilledRef.current[f.id] = isFieldValueFilled(f, values[f.id], values);
+      });
+      return;
+    }
+
+    let scrolled = false;
+    for (const f of sadhanaFormFields) {
+      if (!isFieldVisible(f, values)) continue;
+      if (f.type === 'text') continue;
+      const was = prevFieldFilledRef.current[f.id] === true;
+      const now = isFieldValueFilled(f, values[f.id], values);
+      if (!was && now && !scrolled) {
+        scrollNextFieldIntoView(f.id);
+        scrolled = true;
+      }
+    }
+
+    sadhanaFormFields.forEach((f) => {
+      if (!isFieldVisible(f, values)) {
+        delete prevFieldFilledRef.current[f.id];
+        return;
+      }
+      prevFieldFilledRef.current[f.id] = isFieldValueFilled(f, values[f.id], values);
+    });
+  }, [values, scrollNextFieldIntoView]);
 
   const setText = (id: string, v: string) => {
     setValues((prev) => ({ ...prev, [id]: v }));
@@ -363,6 +432,10 @@ const SadhanaFormPage: React.FC = () => {
                   {visible.map((f) => (
                     <div
                       key={f.id}
+                      ref={(el) => {
+                        if (el) fieldBlockRefs.current.set(f.id, el);
+                        else fieldBlockRefs.current.delete(f.id);
+                      }}
                       className={`sadhana-field-block${visible.length === 1 ? ' sadhana-field-block--full' : ''}`}
                     >
                       <div className="sadhana-question">
@@ -394,6 +467,7 @@ const SadhanaFormPage: React.FC = () => {
                             disabled={submitting}
                             inputClassName={inputClass(!!values[f.id] && String(values[f.id]).trim() !== '')}
                             listHint={t.nameComboboxListHint}
+                            onBlurComplete={() => handleTextFieldBlur(f.id)}
                           />
                         )}
                         {f.type === 'text' && f.id !== SADHANA_NAME_FIELD_ID && (
@@ -404,6 +478,7 @@ const SadhanaFormPage: React.FC = () => {
                             className={inputClass(!!values[f.id] && String(values[f.id]).trim() !== '')}
                             value={String(values[f.id] ?? '')}
                             onChange={(e) => setText(f.id, e.target.value)}
+                            onBlur={() => handleTextFieldBlur(f.id)}
                           />
                         )}
 
