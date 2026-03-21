@@ -118,6 +118,7 @@
   width: 100%;
   max-width: 760px;
   margin: 0 auto;
+  min-width: 0;
 }
 
 @media (min-width: 1024px) {
@@ -346,6 +347,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+  min-width: 0;
 }
 
 .sadhana-group {
@@ -357,6 +359,7 @@
   border: 1px solid transparent;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   align-items: start;
+  min-width: 0;
   opacity: 0;
   animation: sadhanaGroupIn 0.5s ease forwards;
   animation-delay: calc(var(--g, 0) * 0.07s);
@@ -410,6 +413,8 @@
 
 .sadhana-field-block {
   counter-increment: sadhana-q;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sadhana-field-block + .sadhana-field-block {
@@ -473,10 +478,14 @@
 
 .sadhana-answer {
   padding-left: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sadhana-input {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   border-radius: 10px;
   border: 1px solid var(--sadhana-panel-border);
@@ -491,9 +500,31 @@
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
+/* मोबाइल WebKit: date कंट्रोल की चौड़ाई कार्ड में रखें */
+.sadhana-input-date-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.sadhana-input-date-wrap .sadhana-input[type='date'] {
+  margin: 0;
+}
+
 .sadhana-input[type='date'] {
   min-height: 2.5rem;
   color-scheme: light;
+  display: block;
+}
+
+.sadhana-input[type='date']::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+.sadhana-input[type='date']::-webkit-calendar-picker-indicator {
+  margin-inline-start: 0.25rem;
 }
 
 .sadhana-input:focus {

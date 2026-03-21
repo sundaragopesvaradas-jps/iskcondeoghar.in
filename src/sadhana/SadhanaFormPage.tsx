@@ -328,13 +328,15 @@ const SadhanaFormPage: React.FC = () => {
                         )}
 
                         {f.type === 'date' && (
-                          <input
-                            id={f.id}
-                            type="date"
-                            className={inputClass(!!values[f.id] && String(values[f.id]).trim() !== '')}
-                            value={String(values[f.id] ?? '')}
-                            onChange={(e) => setText(f.id, e.target.value)}
-                          />
+                          <div className="sadhana-input-date-wrap">
+                            <input
+                              id={f.id}
+                              type="date"
+                              className={inputClass(!!values[f.id] && String(values[f.id]).trim() !== '')}
+                              value={String(values[f.id] ?? '')}
+                              onChange={(e) => setText(f.id, e.target.value)}
+                            />
+                          </div>
                         )}
 
                         {f.type === 'radio' && f.options && (
