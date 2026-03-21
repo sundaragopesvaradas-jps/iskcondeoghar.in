@@ -3,7 +3,11 @@ import { sadhanaFormFields } from './sadhanaFormConfig';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { getSadhanaScriptUrl, submitSadhanaResponse } from './submitSadhanaResponse';
 import { SadhanaNameCombobox } from './SadhanaNameCombobox';
-import { SADHANA_NAME_FIELD_ID, SADHANA_NAMES_SESSION_KEY } from './sadhanaNameFieldConstants';
+import {
+  normalizeDevoteeName,
+  SADHANA_NAME_FIELD_ID,
+  SADHANA_NAMES_SESSION_KEY,
+} from './sadhanaNameFieldConstants';
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
 import { sadhanaStrings as t } from './sadhanaStrings';
@@ -325,17 +329,21 @@ const SadhanaFormPage: React.FC = () => {
       return;
     }
     setSubmitting(true);
-    const submittedName = String(values[SADHANA_NAME_FIELD_ID] ?? '').trim();
+    const normalizedName = normalizeDevoteeName(String(values[SADHANA_NAME_FIELD_ID] ?? ''));
+    const responsesForSubmit: Record<string, string | boolean | string[]> = {
+      ...values,
+      [SADHANA_NAME_FIELD_ID]: normalizedName,
+    };
     try {
       await submitSadhanaResponse(scriptUrl, {
         action: 'SADHANA_SUBMIT',
         formId: FORM_ID,
         fieldOrder,
         labels,
-        responses: values,
+        responses: responsesForSubmit,
       });
-      if (submittedName) {
-        setNameSuggestions((prev) => dedupeSortedNames([...prev, submittedName]));
+      if (normalizedName) {
+        setNameSuggestions((prev) => dedupeSortedNames([...prev, normalizedName]));
       }
       setMessage({ type: 'ok', text: t.success });
       setCelebrate(true);
