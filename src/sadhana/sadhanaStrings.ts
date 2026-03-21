@@ -84,7 +84,7 @@ export const sadhanaStrings = {
   adminRecordsEmpty: 'No data yet.',
   adminChartsHeading: 'Trends (charts)',
   adminChartsHint:
-    'X: time order (left = older or newer depending on this page), Y: option order (lower = less, higher = more). Multiple entries on the same day are separate points. Up to 30 points.',
+    'Last 30 Days data in graph. X: Date (in descending order), Y: Values for the column',
   adminChartNoData: 'Not enough points for this measure.',
   adminChartAria: (columnTitle: string) => `${columnTitle} — trend chart`,
   recordsTitle: 'पिछली साधना देखें',
@@ -101,7 +101,7 @@ export const sadhanaStrings = {
   recordsPinSaved: 'नया PIN सहेज लिया गया। अगली बार से नया PIN उपयोग करें।',
   recordsChartsHeading: 'रुझान (ग्राफ़)',
   recordsChartsHint:
-    'X: समय क्रम (बाएँ = पुराना या नया — पृष्ठ के अनुसार), Y: विकल्प क्रम (नीचे = कम, ऊपर = अधिक)। एक ही दिन की कई प्रविष्टियाँ अलग बिंदु हैं। अधिकतम ३० बिंदु।',
+    'Last 30 Days data in graph. X: Date (in descending order), Y: Values for the column',
   recordsChartNoData: 'इस माप के लिए पर्याप्त बिंदु नहीं।',
   recordsChartAria: (columnTitle: string) => `${columnTitle} — रुझान ग्राफ़`,
   recordsErrorGeneric: 'कुछ गलत हो गया। पुनः प्रयास करें।',
