@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { routes } from './config/routes';
 import ExternalRedirect from './components/ExternalRedirect';
 import RecentCelebrationsPage from './RecentCelebrationsPage';
+import SadhanaFormPage from './sadhana/SadhanaFormPage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: '/recentcelebrations',
     element: <RecentCelebrationsPage />
+  },
+  {
+    path: routes.sadhana,
+    element: <SadhanaFormPage />
   }
 ]);
 

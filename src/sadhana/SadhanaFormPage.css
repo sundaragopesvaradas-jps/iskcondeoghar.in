@@ -1,0 +1,667 @@
+/* Anek Devanagari — साँझ / केसर थीम, प्रगति, गति, डेस्कटॉप साइड पैनल */
+@import url('https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&display=swap');
+
+.sadhana-page {
+  /* थीम: शांत रात + केसर एक्सेंट */
+  --sadhana-accent: #c2410c;
+  --sadhana-accent-bright: #ea580c;
+  --sadhana-accent-soft: rgba(194, 65, 12, 0.1);
+  --sadhana-accent-ring: rgba(251, 146, 60, 0.38);
+  --sadhana-ink: #0c1222;
+  --sadhana-ink-muted: #5c6578;
+  --sadhana-ink-faint: #8b95a8;
+  --sadhana-surface: #fffdf9;
+  --sadhana-surface-2: #f6f0e8;
+  --sadhana-panel: #f3f4f6;
+  --sadhana-panel-border: #d8dee9;
+  --sadhana-night: #1a1528;
+  --sadhana-night-soft: rgba(26, 21, 40, 0.06);
+
+  font-family: 'Anek Devanagari', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-optical-sizing: auto;
+  color: var(--sadhana-ink);
+  min-height: 100vh;
+  position: relative;
+  background: radial-gradient(ellipse 120% 80% at 50% -10%, #fff5eb 0%, #ede6dc 45%, #e2dcd4 100%);
+  line-height: 1.4;
+  font-size: 1rem;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  transition: filter 0.5s ease;
+}
+
+.sadhana-page--celebrate {
+  animation: sadhanaCelebrate 0.85s ease;
+}
+
+@keyframes sadhanaCelebrate {
+  0% {
+    filter: saturate(1);
+  }
+  35% {
+    filter: saturate(1.15) brightness(1.03);
+  }
+  100% {
+    filter: saturate(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sadhana-page--celebrate {
+    animation: none;
+  }
+}
+
+.sadhana-bg-image {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  pointer-events: none;
+  transition: filter 0.5s ease, opacity 0.5s ease;
+}
+
+.sadhana-bg-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 252, 247, 0.94) 0%,
+    rgba(245, 238, 228, 0.9) 50%,
+    rgba(230, 224, 214, 0.92) 100%
+  );
+}
+
+.sadhana-bg-white {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: #f8f4ef;
+  transition: opacity 0.5s ease;
+}
+
+.sadhana-content {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-top: 1.5rem;
+  padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
+  padding-left: max(0.65rem, env(safe-area-inset-left));
+  padding-right: max(0.65rem, env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+
+/* तीन कॉलम: बाएँ सजावट | फ़ॉर्म | दाएँ सजावट */
+.sadhana-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .sadhana-stage {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 760px) minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.sadhana-main {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .sadhana-main {
+    grid-column: 2;
+    max-width: none;
+  }
+}
+
+/* साइड कॉलम — केवल चौड़ी स्क्रीन */
+.sadhana-side {
+  display: none;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 2.5rem;
+  min-height: 12rem;
+}
+
+@media (min-width: 1024px) {
+  .sadhana-side {
+    display: flex;
+  }
+
+  .sadhana-side--left {
+    grid-column: 1;
+  }
+
+  .sadhana-side--right {
+    grid-column: 3;
+  }
+}
+
+.sadhana-side__inner {
+  position: sticky;
+  top: 1.5rem;
+  padding: 1.25rem 1rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 248, 240, 0.45) 100%);
+  border: 1px solid rgba(194, 65, 12, 0.15);
+  box-shadow: 0 4px 24px var(--sadhana-night-soft);
+  backdrop-filter: blur(8px);
+}
+
+.sadhana-side--right .sadhana-side__inner {
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.5) 0%, rgba(245, 235, 255, 0.35) 100%);
+  border-color: rgba(124, 58, 237, 0.12);
+}
+
+.sadhana-side__mantra {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--sadhana-night);
+  text-align: center;
+  white-space: pre-line;
+  opacity: 0.9;
+}
+
+/* हीरो */
+.sadhana-hero {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 1.25rem 1.1rem;
+  background: rgba(255, 253, 249, 0.9);
+  border: 1px solid rgba(194, 65, 12, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 4px 28px rgba(26, 21, 40, 0.07);
+  backdrop-filter: blur(10px);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.sadhana-hero--pulse {
+  animation: sadhanaHeroPulse 0.65s ease;
+}
+
+@keyframes sadhanaHeroPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 28px rgba(26, 21, 40, 0.07);
+  }
+  45% {
+    transform: scale(1.02);
+    box-shadow: 0 8px 36px rgba(194, 65, 12, 0.18);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 28px rgba(26, 21, 40, 0.07);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sadhana-hero--pulse {
+    animation: none;
+  }
+}
+
+.sadhana-hero__row {
+  --hero-logo-size: clamp(3rem, 12vw, 3.75rem);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem 1rem;
+  margin-bottom: 0.45rem;
+}
+
+/* दोनों लोगो एक ही बाहरी आकार — गोल फ़्रेम */
+.sadhana-hero__logo-frame {
+  flex-shrink: 0;
+  width: var(--hero-logo-size);
+  height: var(--hero-logo-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.sadhana-hero__logo-frame--iskcon {
+  background: var(--sadhana-night);
+  box-shadow: 0 1px 4px rgba(26, 21, 40, 0.18);
+}
+
+.sadhana-hero__logo-frame--sp {
+  background: rgba(255, 253, 249, 0.95);
+  border: 2px solid rgba(194, 65, 12, 0.32);
+  box-shadow: 0 1px 4px rgba(26, 21, 40, 0.06);
+}
+
+.sadhana-hero__logo {
+  display: block;
+  object-fit: contain;
+}
+
+.sadhana-hero__logo--iskcon {
+  width: 68%;
+  height: 68%;
+  max-width: 68%;
+  max-height: 68%;
+  object-fit: contain;
+}
+
+.sadhana-hero__logo--sp {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  border-radius: 50%;
+}
+
+.sadhana-hero__title {
+  margin: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  font-size: clamp(1.65rem, 5.2vw + 0.2rem, 2.35rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--sadhana-ink);
+}
+
+.sadhana-hero p {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--sadhana-ink-muted);
+  line-height: 1.45;
+  max-width: 38ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* प्रगति */
+.sadhana-progress-wrap {
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--sadhana-panel-border);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.sadhana-progress-wrap--bottom {
+  margin-bottom: 0;
+}
+
+.sadhana-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.sadhana-progress-count {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--sadhana-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.sadhana-progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);
+  overflow: hidden;
+}
+
+.sadhana-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--sadhana-accent) 0%, #f59e0b 100%);
+  transition: width 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sadhana-progress-fill {
+    transition: none;
+  }
+}
+
+/* फ़ॉर्म */
+.sadhana-form {
+  counter-reset: sadhana-q;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sadhana-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.85rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  align-items: start;
+  opacity: 0;
+  animation: sadhanaGroupIn 0.5s ease forwards;
+  animation-delay: calc(var(--g, 0) * 0.07s);
+}
+
+@keyframes sadhanaGroupIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sadhana-group {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+.sadhana-field-block--full {
+  grid-column: 1 / -1;
+}
+
+.sadhana-group--0 {
+  background: linear-gradient(160deg, #fffdfb 0%, #fff4e6 100%);
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.08);
+}
+
+.sadhana-group--1 {
+  background: linear-gradient(165deg, #f8fafc 0%, #eef2f7 100%);
+  border-color: rgba(148, 163, 184, 0.5);
+  box-shadow: 0 2px 12px rgba(100, 116, 139, 0.07);
+}
+
+.sadhana-group--2 {
+  background: linear-gradient(165deg, #f0fdf9 0%, #e8faf5 100%);
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.07);
+}
+
+.sadhana-group--3 {
+  background: linear-gradient(165deg, #fafaff 0%, #f3f0ff 100%);
+  border-color: rgba(167, 139, 250, 0.4);
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.08);
+}
+
+.sadhana-field-block {
+  counter-increment: sadhana-q;
+}
+
+.sadhana-field-block + .sadhana-field-block {
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.sadhana-question {
+  margin-bottom: 0.35rem;
+}
+
+.sadhana-label {
+  display: block;
+  cursor: default;
+}
+
+.sadhana-label-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  line-height: 1.28;
+  color: var(--sadhana-ink);
+}
+
+.sadhana-label-text::before {
+  content: counter(sadhana-q);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  margin-inline-end: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #fff;
+  background: linear-gradient(145deg, var(--sadhana-accent) 0%, #ea580c 100%);
+  border-radius: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(194, 65, 12, 0.35);
+}
+
+.sadhana-required {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 1.05em;
+}
+
+.sadhana-hint {
+  margin: 0.28rem 0 0;
+  padding-left: 1.85rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--sadhana-ink-faint);
+  line-height: 1.35;
+}
+
+.sadhana-answer {
+  padding-left: 0;
+}
+
+.sadhana-input {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid var(--sadhana-panel-border);
+  padding: 0.55rem 0.75rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--sadhana-ink);
+  background: var(--sadhana-surface);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.sadhana-input[type='date'] {
+  min-height: 2.5rem;
+  color-scheme: light;
+}
+
+.sadhana-input:focus {
+  outline: none;
+  border-color: #fb923c;
+  box-shadow: 0 0 0 3px var(--sadhana-accent-ring);
+  background: #fffbeb;
+}
+
+.sadhana-input.filled {
+  border-color: #34d399;
+  background: #ecfdf5;
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.35);
+}
+
+.sadhana-options-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.4rem 0.45rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.sadhana-options-panel--single {
+  padding: 0.35rem 0.45rem;
+}
+
+.sadhana-option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--sadhana-ink-muted);
+  line-height: 1.32;
+  transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+  border: 1px solid transparent;
+}
+
+.sadhana-option-row:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--sadhana-ink);
+}
+
+.sadhana-option-row--active {
+  background: var(--sadhana-accent-soft);
+  border-color: rgba(251, 146, 60, 0.4);
+  color: var(--sadhana-ink);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(194, 65, 12, 0.1);
+}
+
+.sadhana-option-text {
+  flex: 1;
+}
+
+.sadhana-option-row input[type='radio'],
+.sadhana-option-row input[type='checkbox'] {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--sadhana-accent);
+  cursor: pointer;
+}
+
+@media (max-width: 479px) {
+  .sadhana-option-row {
+    min-height: 44px;
+    align-items: center;
+    touch-action: manipulation;
+  }
+
+  .sadhana-submit {
+    min-height: 48px;
+  }
+}
+
+.sadhana-form-footer {
+  margin-top: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sadhana-actions {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.sadhana-submit {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--sadhana-accent) 0%, #ea580c 100%);
+  box-shadow: 0 3px 12px rgba(194, 65, 12, 0.38);
+  transition: transform 0.1s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.sadhana-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(194, 65, 12, 0.42);
+}
+
+.sadhana-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.sadhana-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* जमा / वैलिडेशन संदेश — स्क्रॉल लक्ष्य */
+.sadhana-alerts {
+  scroll-margin-top: max(1rem, env(safe-area-inset-top));
+}
+
+.sadhana-banner {
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.45;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  margin-bottom: 0.85rem;
+}
+
+.sadhana-banner.warn {
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #9a3412;
+}
+
+.sadhana-banner.ok {
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+}
+
+.sadhana-banner.err {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.sadhana-code {
+  font-size: 0.8em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  padding: 0.1em 0.35em;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.06);
+}

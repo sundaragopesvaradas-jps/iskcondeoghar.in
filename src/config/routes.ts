@@ -1,5 +1,6 @@
 export const routes = {
   home: '/home',
+  sadhana: '/sadhana',
   spbooks: '/spbooks',
   spletters: '/spletters',
   default: '/home',
