@@ -19,6 +19,8 @@ import {
 } from './sadhanaFormUtils';
 import iskconDeogharLogo from '../assets/images/iskcon-logo.png';
 import srilaPrabhupadaLogo from '../assets/images/sp.jpg';
+import { SADHANA_AUTO_SCROLL_DURATION_MS } from './sadhanaAutoScrollConfig';
+import { smoothScrollElementIntoViewCenter } from './sadhanaSmoothScrollToField';
 import './SadhanaFormPage.css';
 
 const FORM_ID = 'sadhana-v2-hi';
@@ -220,9 +222,8 @@ const SadhanaFormPage: React.FC = () => {
       if (!isFieldVisible(f, values)) continue;
       const el = fieldBlockRefs.current.get(f.id);
       if (el) {
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         window.requestAnimationFrame(() => {
-          el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+          smoothScrollElementIntoViewCenter(el, SADHANA_AUTO_SCROLL_DURATION_MS);
         });
         return;
       }
