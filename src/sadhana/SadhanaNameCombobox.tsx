@@ -29,6 +29,8 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const blurTimer = useRef<number | undefined>(undefined);
+  /** चुनने के तुरंत बाद auto-open वाला effect दोबारा खोल देता है — उसे रोकने के लिए */
+  const suppressAutoOpenAfterPick = useRef(false);
 
   const filtered = useMemo(() => {
     const q = value.trim();
@@ -48,6 +50,10 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
 
   useEffect(() => {
     if (disabled) return;
+    if (suppressAutoOpenAfterPick.current) {
+      suppressAutoOpenAfterPick.current = false;
+      return;
+    }
     const el = inputRef.current;
     if (!el || document.activeElement !== el) return;
     if (filtered.length > 0) setOpen(true);
@@ -71,6 +77,7 @@ export const SadhanaNameCombobox: React.FC<SadhanaNameComboboxProps> = ({
   }, [close]);
 
   const selectName = (name: string) => {
+    suppressAutoOpenAfterPick.current = true;
     onChange(name);
     close();
   };
