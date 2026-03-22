@@ -21,7 +21,7 @@
  * - { "action": "seeAllSadhanas", "adminKey", "mode": "names" | "lookup", "name"?(lookup) } — admin overview (key in sheet "Sadhana Admin" cell B1).
  *
  * Optional — reduce web app cold starts:
- * - Function `sadhanaKeepWarm_` — add a **time-driven trigger** (Triggers → Add trigger → e.g. every 15 minutes).
+ * - Function `sadhanaKeepWarm` — add a **time-driven trigger** (Triggers → Add trigger → e.g. every 15 minutes).
  *   See GOOGLE_SHEETS_SETUP.md ("Cold starts").
  */
 
@@ -640,10 +640,10 @@ function jsonOut(obj) {
 /**
  * Keep-warm: touches the bound spreadsheet so scheduled runs exercise the script + Sheets binding.
  * Does not call the web app URL — add an **installable time-driven trigger** on this function
- * (Editor → Triggers → Add trigger → `sadhanaKeepWarm_` → time-driven, e.g. every 15 minutes).
+ * (Editor → Triggers → Add trigger → `sadhanaKeepWarm` → time-driven, e.g. every 15 minutes).
  * Uses small daily quota; mitigates (does not remove) cold starts for `doPost` visitors.
  */
-function sadhanaKeepWarm_() {
+function sadhanaKeepWarm() {
   SpreadsheetApp.getActiveSpreadsheet().getName();
 }
 
