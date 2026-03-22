@@ -84,7 +84,7 @@ export const sadhanaStrings = {
   adminRecordsEmpty: 'No data yet.',
   adminChartsHeading: 'Trends (charts)',
   adminChartsHint:
-    'X: time order, Y: option order. Same row cap as the table — set in Apps Script (see GOOGLE_SHEETS_SETUP.md).',
+    'X: time order, Y: Sadhana Values',
   adminChartNoData: 'Not enough points for this measure.',
   adminChartAria: (columnTitle: string) => `${columnTitle} — trend chart`,
   recordsTitle: 'पिछली साधना देखें',
@@ -101,7 +101,7 @@ export const sadhanaStrings = {
   recordsPinSaved: 'नया PIN सहेज लिया गया। अगली बार से नया PIN उपयोग करें।',
   recordsChartsHeading: 'रुझान (ग्राफ़)',
   recordsChartsHint:
-    'X: time order, Y: option order (lower = less, higher = more). Data volume is limited by the Apps Script (see GOOGLE_SHEETS_SETUP.md).',
+    'X: time order, Y: Sadhana Values',
   recordsChartNoData: 'इस माप के लिए पर्याप्त बिंदु नहीं।',
   recordsChartAria: (columnTitle: string) => `${columnTitle} — रुझान ग्राफ़`,
   recordsErrorGeneric: 'कुछ गलत हो गया। पुनः प्रयास करें।',
