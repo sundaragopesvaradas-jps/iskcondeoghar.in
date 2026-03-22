@@ -1,7 +1,9 @@
 import React, { Suspense, lazy, ComponentType, LazyExoticComponent } from 'react';
 import ReactDOM from 'react-dom/client';
+import './appInsights';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { getAppInsights } from './appInsights';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { routes } from './config/routes';
 
@@ -109,4 +111,13 @@ root.render(
   </React.StrictMode>
 );
 
-reportWebVitals();
+reportWebVitals((metric) => {
+  const ai = getAppInsights();
+  if (!ai) {
+    return;
+  }
+  ai.trackMetric(
+    { name: `WebVital/${metric.name}`, average: metric.value },
+    { id: metric.id, delta: String(metric.delta) }
+  );
+});
