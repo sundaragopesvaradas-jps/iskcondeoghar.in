@@ -134,6 +134,17 @@ The site sends the same Web App URL with JSON actions:
 
 PIN length and default are defined in `src/sadhana/sadhanaPinConfig.ts` and must stay in sync with `pinLen_` / `DEFAULT_PIN` in `google-apps-script-sadhana.js` when you change them.
 
+### Cold starts (optional keep-warm)
+
+Google Apps Script web apps can be slow or fail on the first request after idle. The script includes **`sadhanaKeepWarm_`**, which only reads the bound spreadsheet’s name (minimal work).
+
+1. In Apps Script: **Triggers** (clock icon) → **Add trigger**.
+2. Function: **`sadhanaKeepWarm_`**
+3. Event: **Time-driven** → e.g. **Every 15 minutes** (tune vs [quota](https://developers.google.com/apps-script/guides/services/quotas)).
+4. Save and complete authorization if prompted.
+
+**Redeploy** the web app only if you changed `doPost` or other deployed code; triggers run the function directly. This mitigates cold starts; it does not remove them entirely.
+
 ---
 
 ## If something does not work
