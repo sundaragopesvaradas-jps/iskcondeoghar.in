@@ -1051,6 +1051,8 @@
   border-radius: 12px;
   border: 1px solid rgba(226, 232, 240, 0.95);
   background: rgba(255, 255, 255, 0.55);
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 .sadhana-chart-card__title {
@@ -1068,14 +1070,22 @@
 
 .sadhana-chart-svg {
   display: block;
+  min-width: 100%;
   width: 100%;
   height: auto;
-  max-height: 220px;
+  max-height: 270px;
 }
 
 .sadhana-chart-svg__axis {
   stroke: rgba(148, 163, 184, 0.65);
   stroke-width: 1;
+}
+
+.sadhana-chart-svg__grid {
+  stroke: rgba(148, 163, 184, 0.35);
+  stroke-width: 0.75;
+  stroke-dasharray: 3 4;
+  pointer-events: none;
 }
 
 .sadhana-chart-svg__axis-label {
@@ -1091,22 +1101,18 @@
   line-height: 1.2;
 }
 
-.sadhana-chart-svg__line {
-  stroke: var(--sadhana-accent);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.sadhana-chart-svg__dot {
-  fill: var(--sadhana-accent-bright);
-  stroke: #fff;
-  stroke-width: 1;
+/* Histogram bars — same data mapping as former line+points chart */
+.sadhana-chart-svg__bar {
+  fill: rgba(201, 162, 39, 0.88);
+  stroke: rgba(227, 195, 77, 0.55);
+  stroke-width: 0.75;
 }
 
 .sadhana-chart-svg__x-label {
   fill: var(--sadhana-ink-muted);
   font-size: 8px;
   font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 /* Admin — सभी भक्तों की साधना */
