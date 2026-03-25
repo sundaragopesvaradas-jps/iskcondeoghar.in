@@ -72,7 +72,7 @@ export const sadhanaFormFields: SadhanaFieldDefinition[] = [
     id: 'devotee_name',
     type: 'text',
     label: 'आपका नाम',
-    description: 'नाम टाइप करना शुरू करें, ऑटोफ़िल आएगा।',
+    description: 'यदि आपने पहले ‘साधना’ फ़ॉर्म भरा है, तो नाम टाइप करें और ड्रॉप-डाउन से चुनें।',
     required: true,
   },
   {
