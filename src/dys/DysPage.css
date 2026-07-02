@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300..700&display=swap');
+
+.dys-page {
+  --dys-primary: #9a4f00;
+  --dys-primary-bright: #c2410c;
+  --dys-on-primary: #ffffff;
+  --dys-surface: #fffaf5;
+  --dys-surface-variant: #f6e3d6;
+  --dys-ink: #1f1b16;
+  --dys-ink-muted: #53443b;
+  --dys-outline: #857468;
+  --dys-accent-ring: rgba(251, 146, 60, 0.38);
+
+  font-family: "Roboto Flex", system-ui, -apple-system, Segoe UI, sans-serif;
+  font-optical-sizing: auto;
+  color: var(--dys-ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Blurred poster background */
+.dys-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) brightness(1.05) saturate(0.8);
+  transform: scale(1.1);
+  pointer-events: none;
+}
+
+/* Left pane - poster */
+.dys-left {
+  position: sticky;
+  top: 0;
+  flex: 0 0 42%;
+  max-width: 42%;
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  z-index: 1;
+}
+
+.dys-left::-webkit-scrollbar {
+  display: none;
+}
+
+.dys-left__poster-wrap {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dys-left__poster {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* Right pane - form */
+.dys-right {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 2rem 1.5rem 3rem;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  z-index: 1;
+}
+
+/* Header section */
+.dys-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 1rem;
+  background: rgba(255, 253, 249, 0.88);
+  border: 1px solid rgba(154, 79, 0, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 4px 28px rgba(26, 21, 40, 0.07);
+  backdrop-filter: blur(12px);
+}
+
+.dys-header__title {
+  margin: 0 0 0.25rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--dys-ink);
+}
+
+.dys-header__subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--dys-ink-muted);
+  line-height: 1.45;
+}
+
+/* Form card */
+.dys-form-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(133, 116, 104, 0.25);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.dys-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.dys-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.dys-field--full {
+  grid-column: 1 / -1;
+}
+
+.dys-field__label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dys-ink-muted);
+  margin-bottom: 0.4rem;
+}
+
+.dys-field__input {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1px solid var(--dys-outline);
+  padding: 0.6rem 0.85rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--dys-ink);
+  background: var(--dys-surface-variant);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.dys-field__input:focus {
+  outline: none;
+  border-color: #fb923c;
+  box-shadow: 0 0 0 3px var(--dys-accent-ring);
+  background: #fffbeb;
+}
+
+.dys-field__input.filled {
+  border-color: #34d399;
+  background: #ecfdf5;
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.35);
+}
+
+/* Gender radio group */
+.dys-gender-group {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--dys-outline);
+  background: var(--dys-surface-variant);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.dys-gender-group.filled {
+  border-color: #34d399;
+  background: #ecfdf5;
+}
+
+.dys-gender-group:focus-within {
+  border-color: #fb923c;
+  background: #fffbeb;
+}
+
+.dys-gender-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  transition: background 0.12s ease;
+}
+
+.dys-gender-option:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.dys-gender-option input[type="radio"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--dys-primary);
+  cursor: pointer;
+}
+
+.dys-gender-option span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--dys-ink);
+}
+
+/* Submit button */
+.dys-submit-section {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dys-submit-btn {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 0.85rem 1.5rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  color: var(--dys-on-primary);
+  background: linear-gradient(135deg, var(--dys-primary) 0%, var(--dys-primary-bright) 100%);
+  box-shadow: 0 3px 12px rgba(154, 79, 0, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dys-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(154, 79, 0, 0.42);
+}
+
+.dys-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.dys-submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Error */
+.dys-error {
+  margin-top: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  text-align: center;
+}
+
+/* Spinner */
+.dys-spinner {
+  animation: dysSpin 1s linear infinite;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@keyframes dysSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  .dys-page {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .dys-left {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    position: relative;
+    overflow: visible;
+  }
+
+  .dys-left__poster {
+    width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+  }
+
+  .dys-right {
+    height: auto;
+    overflow: visible;
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .dys-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
