@@ -1,7 +1,21 @@
 import { FestivalEvent } from './types';
 
 export const recentEvents: FestivalEvent[] = [
-    {
+  {
+    title: "Snana Yatra 2026",
+    date: "2025-06-29",
+    image: "/images/RecentEvents/snana2026.jpg",
+    description: "Witnessed the sacred bathing ceremony of Lord Jagannath, marking the beginning of preparations for the grand Ratha Yatra festival.",
+    url: "https://www.instagram.com/p/DaLIrzTGTep/"
+  },
+  {
+    title: "Gaura Purnima 2025",
+    date: "2026-03-03",
+    image: "/images/RecentEvents/gp2025.jpg",
+    description: "Celebrated the divine appearance day of Sri Chaitanya Mahaprabhu with grand abhishek, maha-kirtan, and special feast distribution.",
+    url: "https://www.facebook.com/media/set/?set=a.959924299696264&type=3"
+  },
+  {
     title: "Snana Yatra 2025",
     date: "2025-06-11",
     image: "/images/RecentEvents/snana2025.jpg",

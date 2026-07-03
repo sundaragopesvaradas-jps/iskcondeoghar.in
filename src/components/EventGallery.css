@@ -814,3 +814,64 @@
 .video-thumbnail-wrapper:hover {
   transform: translateY(-5px);
 }
+
+.route-section,
+.donation-section {
+  margin: 2.5rem auto;
+  padding: 2rem;
+  border-radius: 16px;
+  background: linear-gradient(to right, rgba(255, 64, 129, 0.06), rgba(255, 128, 171, 0.08));
+  box-shadow: 0 6px 16px rgba(255, 64, 129, 0.12);
+  text-align: center;
+}
+
+.route-title,
+.donation-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.route-info,
+.donation-info {
+  margin: 0 auto 1.3rem;
+  max-width: 900px;
+  color: #5c4f56;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.route-image {
+  width: min(100%, 980px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 64, 129, 0.2);
+  background: #fff;
+}
+
+.donation-image {
+  width: min(100%, 520px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 64, 129, 0.2);
+  background: #fff;
+}
+
+@media (max-width: 767px) {
+  .route-section,
+  .donation-section {
+    margin: 1.8rem 0.8rem;
+    padding: 1.2rem;
+  }
+
+  .route-title,
+  .donation-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+    text-align: center;
+  }
+
+  .route-info,
+  .donation-info {
+    font-size: 0.98rem;
+    margin-bottom: 1rem;
+  }
+}

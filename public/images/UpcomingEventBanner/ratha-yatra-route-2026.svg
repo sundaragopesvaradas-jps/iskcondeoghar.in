@@ -1,0 +1,75 @@
+<svg width="1400" height="800" viewBox="0 0 1400 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ratha Yatra 2026 Route Map</title>
+  <desc id="desc">Route from Jhosagarhi to ISKCON Deoghar via Tower Chowk, VIP Chowk and Satsang Chowk.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff0f7"/>
+      <stop offset="100%" stop-color="#ffe2ef"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff6ea8"/>
+      <stop offset="100%" stop-color="#ff2e86"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-opacity="0.2"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L14,7 L0,14 z" fill="#ff2e86"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="800" fill="url(#bg)"/>
+  <text x="700" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="56" font-weight="700" fill="#b7125a">
+    Ratha Yatra 2026 Route
+  </text>
+  <text x="700" y="138" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#7a3152">
+    16 July 2026, 12:00 PM
+  </text>
+
+  <path
+    d="M170 510 C 320 340, 490 620, 680 470 C 840 350, 980 610, 1220 430"
+    fill="none"
+    stroke="url(#road)"
+    stroke-width="22"
+    stroke-linecap="round"
+    filter="url(#shadow)"
+    marker-end="url(#arrow)"
+  />
+
+  <g font-family="Arial, sans-serif">
+    <g transform="translate(170,510)">
+      <circle r="22" fill="#ff2e86" />
+      <circle r="10" fill="#fff" />
+      <rect x="-120" y="-98" rx="14" ry="14" width="240" height="52" fill="#ffffff" stroke="#ff8dbd" stroke-width="2"/>
+      <text x="0" y="-64" text-anchor="middle" font-size="26" font-weight="700" fill="#b7125a">Jhosagarhi</text>
+    </g>
+
+    <g transform="translate(420,450)">
+      <circle r="18" fill="#ff4a98" />
+      <circle r="8" fill="#fff" />
+      <rect x="-110" y="-92" rx="12" ry="12" width="220" height="48" fill="#ffffff" stroke="#ff8dbd" stroke-width="2"/>
+      <text x="0" y="-61" text-anchor="middle" font-size="24" font-weight="700" fill="#b7125a">Tower Chowk</text>
+    </g>
+
+    <g transform="translate(680,470)">
+      <circle r="18" fill="#ff4a98" />
+      <circle r="8" fill="#fff" />
+      <rect x="-90" y="34" rx="12" ry="12" width="180" height="48" fill="#ffffff" stroke="#ff8dbd" stroke-width="2"/>
+      <text x="0" y="66" text-anchor="middle" font-size="24" font-weight="700" fill="#b7125a">VIP Chowk</text>
+    </g>
+
+    <g transform="translate(930,470)">
+      <circle r="18" fill="#ff4a98" />
+      <circle r="8" fill="#fff" />
+      <rect x="-120" y="-94" rx="12" ry="12" width="240" height="48" fill="#ffffff" stroke="#ff8dbd" stroke-width="2"/>
+      <text x="0" y="-62" text-anchor="middle" font-size="24" font-weight="700" fill="#b7125a">Satsang Chowk</text>
+    </g>
+
+    <g transform="translate(1220,430)">
+      <circle r="24" fill="#d31563" />
+      <circle r="11" fill="#fff" />
+      <rect x="-140" y="34" rx="14" ry="14" width="280" height="54" fill="#ffffff" stroke="#ff8dbd" stroke-width="2"/>
+      <text x="0" y="68" text-anchor="middle" font-size="26" font-weight="700" fill="#a10f4a">ISKCON Deoghar</text>
+    </g>
+  </g>
+</svg>

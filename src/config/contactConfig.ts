@@ -26,6 +26,7 @@ export const contactConfig = {
     },
     social: {
         facebook: 'https://www.facebook.com/iskcondeogharofficial/',
-        youtube: 'https://www.youtube.com/@iskcondeogharofficial'
+        youtube: 'https://www.youtube.com/@iskcondeogharofficial',
+        instagram: 'http://instagram.com/iskcondeoghar.official/'
     }
 }; 

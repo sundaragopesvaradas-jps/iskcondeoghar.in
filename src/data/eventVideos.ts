@@ -2,6 +2,21 @@ import { EventVideo } from './types';
 
 export const eventVideos: EventVideo[] = [
   {
+    title: "Snana Yatra 2026",
+    date: "2026-06-29",
+    videoUrl: "https://www.youtube.com/watch?v=BdE0O_Cvh0Q"
+  },
+  {
+    title: "Gaura Purnima 2026",
+    date: "2026-03-03",
+    videoUrl: "https://www.youtube.com/watch?v=TMFtUVsSNC8"
+  },
+  {
+    title: "Nityananda Trayodashi 2026",
+    date: "2026-08-31",
+    videoUrl: "https://www.youtube.com/watch?v=CN8FVGkU6V8"
+  },
+  {
     title: "Sri Radhashtami Mahamahotsav 2025 - Kirtan Katha",
     date: "2025-08-31",
     videoUrl: "https://youtu.be/HQ90aw8v8YA?t=137"

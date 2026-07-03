@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
-import { faCalendarAlt, faPhone, faPlay, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faFacebookF, faInstagram, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faCalendarAlt, faPlay, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './EventGallery.css';
 import { upcomingFestival } from '../data/festivalData';
 import { useAutoScroll } from '../hooks/useAutoScroll';
@@ -201,12 +201,38 @@ const EventGallery = () => {
             <h2 className="festival-title">{upcomingFestival.title}</h2>
             <p className="festival-date">
               <FontAwesomeIcon icon={faCalendarAlt} />
-              {dateConfig.displayFormat(upcomingFestival.date)}
+              {dateConfig.displayFormat(upcomingFestival.date)} at 12:00 PM
             </p>
             <p className="festival-description">{upcomingFestival.description}</p>
             <Countdown targetDate={upcomingFestival.date} targetTime={upcomingFestival.time} />
           </div>
         </div>
+      </section>
+      <section className="route-section">
+        <h2 className="section-title route-title">Ratha Yatra Route</h2>
+        <p className="route-info">
+          Jhosagarhi to ISKCON Deoghar via Tower Chowk, VIP Chowk and Satsang Chowk.
+        </p>
+        <img
+          src="/images/UpcomingEventBanner/ratha-yatra-route-2026.svg"
+          alt="Ratha Yatra route from Jhosagarhi to ISKCON Deoghar via Tower Chowk, VIP Chowk and Satsang Chowk"
+          className="route-image"
+          loading="lazy"
+          decoding="async"
+        />
+      </section>
+      <section className="donation-section">
+        <h2 className="section-title donation-title">Donate For Ratha Yatra 2026</h2>
+        <p className="donation-info">
+          If you would like to support the festival seva, you can donate using this UPI QR code.
+        </p>
+        <img
+          src="/images/UpcomingEventBanner/ratha-yatra-donation-qr.png"
+          alt="Ratha Yatra donation UPI QR code"
+          className="donation-image"
+          loading="lazy"
+          decoding="async"
+        />
       </section>
 
       <div style={{ textAlign: 'center', margin: '3rem 0' }}>
@@ -414,9 +440,9 @@ const EventGallery = () => {
             <FontAwesomeIcon icon={faYoutube} />
             <span>Subscribe</span>
           </a>
-          <a href={`tel:${contactConfig.phoneNumber}`} className="cta-btn call" title="Call Us">
-            <FontAwesomeIcon icon={faPhone} />
-            <span>Call Now</span>
+          <a href={contactConfig.social.instagram} className="cta-btn call" title="Visit Instagram" target="_blank" rel="noopener noreferrer">
+            <FontAwesomeIcon icon={faInstagram} />
+            <span>Instagram</span>
           </a>
           <button 
             onClick={() => window.open(contactConfig.whatsapp.getWhatsAppLink(contactConfig.whatsapp.message), '_blank')} 

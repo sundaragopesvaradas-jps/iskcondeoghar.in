@@ -1,13 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faFacebookF, faInstagram, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
   faCalendarDay,
   faChevronLeft,
   faChevronRight,
   faClock,
-  faPhone,
-  faPlay,
+    faPlay,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import Header from './components/Header';
@@ -270,9 +269,9 @@ const RecentCelebrationsPage: React.FC = () => {
               <FontAwesomeIcon icon={faYoutube} />
               <span>Subscribe</span>
             </a>
-            <a href={`tel:${contactConfig.phoneNumber}`} className="cta-btn call" title="Call Us">
-              <FontAwesomeIcon icon={faPhone} />
-              <span>Call Now</span>
+            <a href={contactConfig.social.instagram} className="cta-btn call" title="Visit Instagram" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faInstagram} />
+              <span>Instagram</span>
             </a>
             <button
               onClick={() => window.open(contactConfig.whatsapp.getWhatsAppLink(contactConfig.whatsapp.message), '_blank')}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
-import { faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faFacebookF, faInstagram, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import './Header.css';
 import logo from '../assets/images/iskcon-logo.png';
 import spImage from '../assets/images/sp.jpg';
@@ -33,9 +32,9 @@ const Header = () => {
               <FontAwesomeIcon icon={faYoutube} />
             </a>
           </div>
-          <a href={`tel:${contactConfig.phoneNumber}`} className="contact-btn" title="Call Us">
-            <FontAwesomeIcon icon={faPhone} />
-            <span>Contact</span>
+          <a href={contactConfig.social.instagram} className="contact-btn" title="Visit Instagram" target="_blank" rel="noopener noreferrer">
+            <FontAwesomeIcon icon={faInstagram} />
+            <span>Instagram</span>
           </a>
           <button onClick={handleWhatsAppClick} className="whatsapp-btn" title="Message on WhatsApp">
             <FontAwesomeIcon icon={faWhatsapp} />
