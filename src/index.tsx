@@ -10,7 +10,7 @@ import { routes } from './config/routes';
 const App = lazy(() => import('./App'));
 const ExternalRedirect = lazy(() => import('./components/ExternalRedirect'));
 const RecentCelebrationsPage = lazy(() => import('./RecentCelebrationsPage'));
-const GitamrtaPage = lazy(() => import('./gitamrta/GitamrtaPage'));
+const BvPage = lazy(() => import('./bv/BvPage'));
 const SadhanaFormPage = lazy(() => import('./sadhana/SadhanaFormPage'));
 const SadhanaRecordsPage = lazy(() => import('./sadhana/SadhanaRecordsPage'));
 const SadhanaAdminOverviewPage = lazy(() => import('./sadhana/SadhanaAdminOverviewPage'));
@@ -49,10 +49,10 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: routes.gitamrta,
+    path: routes.bv,
     element: (
       <Suspense fallback={<RouteFallback />}>
-        {lazyEl(GitamrtaPage)}
+        {lazyEl(BvPage)}
       </Suspense>
     ),
   },

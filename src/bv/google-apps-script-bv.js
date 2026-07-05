@@ -10,10 +10,10 @@
  * 6. Execute as: Me
  * 7. Who has access: Anyone
  * 8. Deploy and copy the URL
- * 9. Replace SCRIPT_URL in GitamrtaPage.tsx with the deployment URL
+ * 9. Replace SCRIPT_URL in BvPage.tsx with the deployment URL
  */
 
-const SHEET_NAME = 'GitamrtaRegistrations';
+const SHEET_NAME = 'BvRegistrations';
 const HEADERS = [
   'Timestamp',
   'RegistrationId',
@@ -55,7 +55,7 @@ function ensureHeaders(sheet) {
 }
 
 function generateRegistrationId() {
-  return 'GITAMRTA-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
+  return 'BV-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
 }
 
 function handleRegister(sheet, data) {
@@ -135,5 +135,5 @@ function doPost(e) {
 }
 
 function doGet() {
-  return jsonResponse({ status: 'Gitamrta Registration + Payment API is running' });
+  return jsonResponse({ status: 'Bv Registration + Payment API is running' });
 }

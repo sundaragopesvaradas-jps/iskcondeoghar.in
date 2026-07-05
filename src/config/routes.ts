@@ -1,6 +1,6 @@
 export const routes = {
   home: '/home',
-  gitamrta: '/gitamrta',
+  bv: '/bv',
   sadhana: '/sadhana',
   /** व्यक्तिगत पिछली साधना (नाम + PIN) */
   sadhanaRecords: '/sadhana/records',

@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300..700&display=swap');
 
-.gitamrta-page {
-  --gitamrta-primary: #9a4f00;
-  --gitamrta-primary-bright: #c2410c;
-  --gitamrta-on-primary: #ffffff;
-  --gitamrta-surface: #fffaf5;
-  --gitamrta-surface-variant: #f6e3d6;
-  --gitamrta-ink: #1f1b16;
-  --gitamrta-ink-muted: #53443b;
-  --gitamrta-outline: #857468;
-  --gitamrta-accent-ring: rgba(251, 146, 60, 0.38);
+.bv-page {
+  --bv-primary: #9a4f00;
+  --bv-primary-bright: #c2410c;
+  --bv-on-primary: #ffffff;
+  --bv-surface: #fffaf5;
+  --bv-surface-variant: #f6e3d6;
+  --bv-ink: #1f1b16;
+  --bv-ink-muted: #53443b;
+  --bv-outline: #857468;
+  --bv-accent-ring: rgba(251, 146, 60, 0.38);
 
   font-family: "Roboto Flex", system-ui, -apple-system, Segoe UI, sans-serif;
   font-optical-sizing: auto;
-  color: var(--gitamrta-ink);
+  color: var(--bv-ink);
   min-height: 100vh;
   display: flex;
   flex-direction: row;
@@ -22,7 +22,7 @@
 }
 
 /* Blurred poster background */
-.gitamrta-bg {
+.bv-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -34,7 +34,7 @@
 }
 
 /* Left pane - poster */
-.gitamrta-left {
+.bv-left {
   position: sticky;
   top: 0;
   flex: 0 0 42%;
@@ -46,24 +46,24 @@
   z-index: 1;
 }
 
-.gitamrta-left::-webkit-scrollbar {
+.bv-left::-webkit-scrollbar {
   display: none;
 }
 
-.gitamrta-left__poster-wrap {
+.bv-left__poster-wrap {
   min-height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.gitamrta-left__poster {
+.bv-left__poster {
   width: 100%;
   display: block;
   object-fit: cover;
 }
 
 /* Right pane - form */
-.gitamrta-right {
+.bv-right {
   flex: 1;
   height: 100vh;
   overflow-y: auto;
@@ -74,7 +74,7 @@
 }
 
 /* Header section */
-.gitamrta-header {
+.bv-header {
   text-align: center;
   margin-bottom: 2rem;
   padding: 1.5rem 1rem;
@@ -85,24 +85,24 @@
   backdrop-filter: blur(12px);
 }
 
-.gitamrta-header__title {
+.bv-header__title {
   margin: 0 0 0.25rem;
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--gitamrta-ink);
+  color: var(--bv-ink);
 }
 
-.gitamrta-header__subtitle {
+.bv-header__subtitle {
   margin: 0;
   font-size: 0.92rem;
   font-weight: 500;
-  color: var(--gitamrta-ink-muted);
+  color: var(--bv-ink-muted);
   line-height: 1.45;
 }
 
 /* Form card */
-.gitamrta-form-card {
+.bv-form-card {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(133, 116, 104, 0.25);
@@ -111,80 +111,80 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-.gitamrta-form-grid {
+.bv-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
 
-.gitamrta-field {
+.bv-field {
   display: flex;
   flex-direction: column;
 }
 
-.gitamrta-field--full {
+.bv-field--full {
   grid-column: 1 / -1;
 }
 
-.gitamrta-field__label {
+.bv-field__label {
   display: block;
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--gitamrta-ink-muted);
+  color: var(--bv-ink-muted);
   margin-bottom: 0.4rem;
 }
 
-.gitamrta-field__input {
+.bv-field__input {
   width: 100%;
   box-sizing: border-box;
   border-radius: 12px;
-  border: 1px solid var(--gitamrta-outline);
+  border: 1px solid var(--bv-outline);
   padding: 0.6rem 0.85rem;
   font: inherit;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--gitamrta-ink);
-  background: var(--gitamrta-surface-variant);
+  color: var(--bv-ink);
+  background: var(--bv-surface-variant);
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-.gitamrta-field__input:focus {
+.bv-field__input:focus {
   outline: none;
   border-color: #fb923c;
-  box-shadow: 0 0 0 3px var(--gitamrta-accent-ring);
+  box-shadow: 0 0 0 3px var(--bv-accent-ring);
   background: #fffbeb;
 }
 
-.gitamrta-field__input.filled {
+.bv-field__input.filled {
   border-color: #34d399;
   background: #ecfdf5;
   box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.35);
 }
 
 /* Gender radio group */
-.gitamrta-gender-group {
+.bv-gender-group {
   padding: 0.75rem 1rem;
   border-radius: 12px;
-  border: 1px solid var(--gitamrta-outline);
-  background: var(--gitamrta-surface-variant);
+  border: 1px solid var(--bv-outline);
+  background: var(--bv-surface-variant);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   transition: border-color 0.18s ease, background 0.18s ease;
 }
 
-.gitamrta-gender-group.filled {
+.bv-gender-group.filled {
   border-color: #34d399;
   background: #ecfdf5;
 }
 
-.gitamrta-gender-group:focus-within {
+.bv-gender-group:focus-within {
   border-color: #fb923c;
   background: #fffbeb;
 }
 
-.gitamrta-gender-option {
+.bv-gender-option {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -194,32 +194,32 @@
   transition: background 0.12s ease;
 }
 
-.gitamrta-gender-option:hover {
+.bv-gender-option:hover {
   background: rgba(255, 255, 255, 0.8);
 }
 
-.gitamrta-gender-option input[type="radio"] {
+.bv-gender-option input[type="radio"] {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--gitamrta-primary);
+  accent-color: var(--bv-primary);
   cursor: pointer;
 }
 
-.gitamrta-gender-option span {
+.bv-gender-option span {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--gitamrta-ink);
+  color: var(--bv-ink);
 }
 
 /* Submit button */
-.gitamrta-submit-section {
+.bv-submit-section {
   margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.gitamrta-submit-btn {
+.bv-submit-btn {
   width: 100%;
   border: none;
   border-radius: 12px;
@@ -229,8 +229,8 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   cursor: pointer;
-  color: var(--gitamrta-on-primary);
-  background: linear-gradient(135deg, var(--gitamrta-primary) 0%, var(--gitamrta-primary-bright) 100%);
+  color: var(--bv-on-primary);
+  background: linear-gradient(135deg, var(--bv-primary) 0%, var(--bv-primary-bright) 100%);
   box-shadow: 0 3px 12px rgba(154, 79, 0, 0.35);
   transition: transform 0.1s ease, box-shadow 0.18s ease, opacity 0.18s ease;
   display: flex;
@@ -239,22 +239,22 @@
   gap: 0.5rem;
 }
 
-.gitamrta-submit-btn:hover:not(:disabled) {
+.bv-submit-btn:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(154, 79, 0, 0.42);
 }
 
-.gitamrta-submit-btn:active:not(:disabled) {
+.bv-submit-btn:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.gitamrta-submit-btn:disabled {
+.bv-submit-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
 /* Error */
-.gitamrta-error {
+.bv-error {
   margin-top: 0.75rem;
   padding: 0.55rem 0.75rem;
   font-size: 0.85rem;
@@ -266,7 +266,7 @@
   text-align: center;
 }
 
-.gitamrta-success {
+.bv-success {
   margin-top: 0.75rem;
   padding: 0.55rem 0.75rem;
   font-size: 0.85rem;
@@ -278,25 +278,55 @@
   text-align: center;
 }
 
+.bv-thankyou-card {
+  text-align: center;
+}
+
+.bv-thankyou-text {
+  margin: 0.75rem 0 1.25rem;
+  color: var(--bv-ink-muted);
+}
+
+.bv-thankyou-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bv-link-btn {
+  width: 100%;
+  border-radius: 12px;
+  padding: 0.85rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-decoration: none;
+  color: var(--bv-primary);
+  background: rgba(154, 79, 0, 0.08);
+  border: 1px solid rgba(154, 79, 0, 0.25);
+  box-sizing: border-box;
+}
+
 /* Spinner */
-.gitamrta-spinner {
-  animation: gitamrtaSpin 1s linear infinite;
+.bv-spinner {
+  animation: bvSpin 1s linear infinite;
   width: 1.25rem;
   height: 1.25rem;
 }
 
-@keyframes gitamrtaSpin {
+@keyframes bvSpin {
   to { transform: rotate(360deg); }
 }
 
 /* Mobile layout */
 @media (max-width: 768px) {
-  .gitamrta-page {
+  .bv-page {
     flex-direction: column;
     overflow: visible;
   }
 
-  .gitamrta-left {
+  .bv-left {
     flex: none;
     max-width: 100%;
     width: 100%;
@@ -305,19 +335,19 @@
     overflow: visible;
   }
 
-  .gitamrta-left__poster {
+  .bv-left__poster {
     width: 100%;
     max-height: 60vh;
     object-fit: contain;
   }
 
-  .gitamrta-right {
+  .bv-right {
     height: auto;
     overflow: visible;
     padding: 1.25rem 1rem 2rem;
   }
 
-  .gitamrta-form-grid {
+  .bv-form-grid {
     grid-template-columns: 1fr;
   }
 }
