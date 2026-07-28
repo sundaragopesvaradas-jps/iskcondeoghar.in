@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
-import { faCalendarAlt, faPlay, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faExternalLinkAlt, faPlay, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './EventGallery.css';
-import { upcomingFestival } from '../data/festivalData';
+import { upcomingFestival, janmashtamiHighlights } from '../data/festivalData';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { scrollConfig } from '../config/scrollConfig';
 import { dateConfig } from '../config/dateConfig';
@@ -32,7 +32,7 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const getYouTubeVideoId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|live\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };
@@ -47,6 +47,15 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
           className="video-thumbnail-wrapper" 
           onClick={() => setIsPlaying(true)}
           style={{ cursor: 'pointer' }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Play video: ${title}`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsPlaying(true);
+            }
+          }}
         >
           <div className="thumbnail-container">
             <img
@@ -56,7 +65,7 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
               loading="lazy"
               decoding="async"
             />
-            <div className="play-button">
+            <div className="play-button" aria-hidden="true">
               <FontAwesomeIcon icon={faPlay} />
             </div>
           </div>
@@ -83,6 +92,7 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
               onClick={() => setIsPlaying(false)} 
               className="close-video-btn"
               title="Close video"
+              aria-label={`Close video: ${title}`}
             >
               <FontAwesomeIcon icon={faXmark} />
             </button>
@@ -98,6 +108,42 @@ const VideoCard = ({ title, videoUrl, date, hideCaption }: VideoCardProps) => {
     </div>
   );
 };
+
+interface PostCardProps {
+  title: string;
+  url: string;
+  date: string;
+  image: string;
+}
+
+const PostCard = ({ title, url, date, image }: PostCardProps) => (
+  <div className="video-card">
+    <a
+      href={url}
+      className="video-thumbnail-wrapper post-card-link"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Open post: ${title} (opens in a new tab)`}
+    >
+      <div className="thumbnail-container">
+        <img
+          src={image}
+          alt=""
+          className="video-thumbnail"
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="play-button" aria-hidden="true">
+          <FontAwesomeIcon icon={faExternalLinkAlt} />
+        </div>
+      </div>
+      <div className="video-content">
+        <h3 className="video-title">{title}</h3>
+        <p className="video-date">{dateConfig.displayFormat(date)}</p>
+      </div>
+    </a>
+  </div>
+);
 
 const calculateTimeLeft = (targetDate: string, targetTime: string) => {
   const targetDateTime = dateConfig.getISTTimestamp(targetDate, targetTime);
@@ -177,6 +223,7 @@ const EventGallery = () => {
   const regularAGridRef = useRef<HTMLDivElement>(null);
   const regularBGridRef = useRef<HTMLDivElement>(null);
   const regularCGridRef = useRef<HTMLDivElement>(null);
+  const janmashtamiGridRef = useRef<HTMLDivElement>(null);
   const [currentStyle] = useState<BannerStyle>(BANNER_STYLES.DYNAMIC_LAYERS);
 
   useAutoScroll(templeGridRef, false);
@@ -184,6 +231,7 @@ const EventGallery = () => {
   useAutoScroll(regularAGridRef, false);
   useAutoScroll(regularBGridRef, false);
   useAutoScroll(regularCGridRef, false);
+  useAutoScroll(janmashtamiGridRef, false);
 
   return (
     <div className="gallery-section">
@@ -201,34 +249,55 @@ const EventGallery = () => {
             <h2 className="festival-title">{upcomingFestival.title}</h2>
             <p className="festival-date">
               <FontAwesomeIcon icon={faCalendarAlt} />
-              {dateConfig.displayFormat(upcomingFestival.date)} at 12:00 PM
+              {dateConfig.displayFormat(upcomingFestival.date)} at {dateConfig.displayTime12h(upcomingFestival.time)}
             </p>
             <p className="festival-description">{upcomingFestival.description}</p>
             <Countdown targetDate={upcomingFestival.date} targetTime={upcomingFestival.time} />
           </div>
         </div>
       </section>
-      <section className="route-section">
-        <h2 className="section-title route-title">Ratha Yatra Route</h2>
-        <p className="route-info">
-          Jhosagarhi to ISKCON Deoghar via Tower Chowk, VIP Chowk and Satsang Chowk.
+      <section className="janmashtami-highlights-section" aria-labelledby="janmashtami-highlights-title">
+        <h2 id="janmashtami-highlights-title" className="section-title donation-title">
+          Past Janmashtami Highlights
+        </h2>
+        <p className="donation-info">
+          Watch videos and posts from previous Janmashtami celebrations at ISKCON Deoghar.
         </p>
-        <img
-          src="/images/UpcomingEventBanner/ratha-yatra-route-2026.svg"
-          alt="Ratha Yatra route from Jhosagarhi to ISKCON Deoghar via Tower Chowk, VIP Chowk and Satsang Chowk"
-          className="route-image"
-          loading="lazy"
-          decoding="async"
-        />
+        <div className="scroll-container">
+          <div
+            className="video-grid"
+            ref={janmashtamiGridRef}
+            style={{ gap: `${scrollConfig.gapBetweenTiles}px` }}
+          >
+            {janmashtamiHighlights.map((item) =>
+              item.type === 'video' ? (
+                <VideoCard
+                  key={`${item.type}-${item.url}`}
+                  title={item.title}
+                  videoUrl={item.url}
+                  date={item.date}
+                />
+              ) : (
+                <PostCard
+                  key={`${item.type}-${item.url}`}
+                  title={item.title}
+                  url={item.url}
+                  date={item.date}
+                  image={item.image}
+                />
+              )
+            )}
+          </div>
+        </div>
       </section>
       <section className="donation-section">
-        <h2 className="section-title donation-title">Donate For Ratha Yatra 2026</h2>
+        <h2 className="section-title donation-title">Donate For Janmashtami 2026</h2>
         <p className="donation-info">
           If you would like to support the festival seva, you can donate using this UPI QR code.
         </p>
         <img
           src="/images/UpcomingEventBanner/ratha-yatra-donation-qr.png"
-          alt="Ratha Yatra donation UPI QR code"
+          alt="Janmashtami donation UPI QR code"
           className="donation-image"
           loading="lazy"
           decoding="async"

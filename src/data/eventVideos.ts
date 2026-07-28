@@ -2,6 +2,11 @@ import { EventVideo } from './types';
 
 export const eventVideos: EventVideo[] = [
   {
+    title: "Ratha Yatra 2026 Live Stream",
+    date: "2026-07-16",
+    videoUrl: "https://www.youtube.com/live/wEW3qwu-Fys"
+  },
+  {
     title: "Snana Yatra 2026",
     date: "2026-06-29",
     videoUrl: "https://www.youtube.com/watch?v=BdE0O_Cvh0Q"

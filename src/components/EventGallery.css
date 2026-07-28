@@ -816,13 +816,36 @@
 }
 
 .route-section,
-.donation-section {
+.donation-section,
+.janmashtami-highlights-section {
   margin: 2.5rem auto;
   padding: 2rem;
   border-radius: 16px;
   background: linear-gradient(to right, rgba(255, 64, 129, 0.06), rgba(255, 128, 171, 0.08));
   box-shadow: 0 6px 16px rgba(255, 64, 129, 0.12);
   text-align: center;
+}
+
+.janmashtami-highlights-section .scroll-container {
+  margin-top: 0.5rem;
+}
+
+.janmashtami-highlights-section .video-grid {
+  justify-content: flex-start;
+  padding-bottom: 0.5rem;
+}
+
+.post-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.post-card-link:focus-visible {
+  outline: 3px solid #ff4081;
+  outline-offset: 4px;
+  border-radius: 12px;
 }
 
 .route-title,
@@ -857,7 +880,8 @@
 
 @media (max-width: 767px) {
   .route-section,
-  .donation-section {
+  .donation-section,
+  .janmashtami-highlights-section {
     margin: 1.8rem 0.8rem;
     padding: 1.2rem;
   }

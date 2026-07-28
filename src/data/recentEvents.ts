@@ -2,6 +2,13 @@ import { FestivalEvent } from './types';
 
 export const recentEvents: FestivalEvent[] = [
   {
+    title: "Ratha Yatra 2026",
+    date: "2026-07-16",
+    image: "/images/RecentEvents/ratha2022.jpg",
+    description: "Watch the live stream of Ratha Yatra 2026 at ISKCON Deoghar — the grand chariot festival of Lord Jagannath, Baladeva, and Subhadra Maharani.",
+    url: "https://www.youtube.com/live/wEW3qwu-Fys"
+  },
+  {
     title: "Snana Yatra 2026",
     date: "2025-06-29",
     image: "/images/RecentEvents/snana2026.jpg",
