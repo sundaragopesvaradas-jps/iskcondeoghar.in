@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { sadhanaFormFields } from './sadhanaFormConfig';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { getSadhanaScriptUrl, submitSadhanaResponse } from './submitSadhanaResponse';
@@ -20,6 +22,7 @@ import {
 } from './sadhanaFormUtils';
 import iskconDeogharLogo from '../assets/images/iskcon-logo.png';
 import srilaPrabhupadaLogo from '../assets/images/sp.jpg';
+import { assetSrc } from '../lib/assetSrc';
 import { SADHANA_AUTO_SCROLL_DURATION_MS } from './sadhanaAutoScrollConfig';
 import { smoothScrollElementIntoViewCenter } from './sadhanaSmoothScrollToField';
 import { SITE_FONT_STACK } from '../config/typographyConfig';
@@ -401,7 +404,7 @@ const SadhanaFormPage: React.FC = () => {
               <div className="sadhana-hero__row">
                 <span className="sadhana-hero__logo-frame sadhana-hero__logo-frame--iskcon">
                   <img
-                    src={iskconDeogharLogo}
+                    src={assetSrc(iskconDeogharLogo)}
                     alt="ISKCON देवघर"
                     className="sadhana-hero__logo sadhana-hero__logo--iskcon"
                     decoding="async"
@@ -410,7 +413,7 @@ const SadhanaFormPage: React.FC = () => {
                 <h1 className="sadhana-hero__title">{t.heroTitle}</h1>
                 <span className="sadhana-hero__logo-frame sadhana-hero__logo-frame--sp">
                   <img
-                    src={srilaPrabhupadaLogo}
+                    src={assetSrc(srilaPrabhupadaLogo)}
                     alt="श्रील प्रभुपाद"
                     className="sadhana-hero__logo sadhana-hero__logo--sp"
                     decoding="async"
@@ -421,7 +424,7 @@ const SadhanaFormPage: React.FC = () => {
             </div>
 
             <div className="sadhana-records-entry">
-              <Link to={routes.sadhanaRecords} className="sadhana-records-open-btn">
+              <Link href={routes.sadhanaRecords} className="sadhana-records-open-btn">
                 {t.recordsOpenButton}
               </Link>
             </div>

@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { routes } from '../config/routes';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
@@ -208,7 +210,7 @@ const SadhanaRecordsPage: React.FC = () => {
       <div className="sadhana-content">
         <main className="sadhana-main sadhana-records-page-main">
           <p className="sadhana-admin-nav">
-            <Link to={routes.sadhana} className="sadhana-admin-back-link">
+            <Link href={routes.sadhana} className="sadhana-admin-back-link">
               ← {t.recordsBackToForm}
             </Link>
           </p>

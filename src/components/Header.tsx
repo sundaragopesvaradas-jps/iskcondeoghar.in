@@ -1,11 +1,14 @@
+'use client';
+
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram, faWhatsapp, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import Link from 'next/link';
 import './Header.css';
 import logo from '../assets/images/iskcon-logo.png';
 import spImage from '../assets/images/sp.jpg';
 import { contactConfig } from '../config/contactConfig';
-import { Link } from 'react-router-dom';
+import { assetSrc } from '../lib/assetSrc';
 
 const Header = () => {
   const handleWhatsAppClick = () => {
@@ -15,8 +18,8 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
-        <Link to="/home" className="header-left" style={{ textDecoration: 'none' }}>
-          <img src={logo} alt="ISKCON Deoghar" className="logo" decoding="async" />
+        <Link href="/home" className="header-left" style={{ textDecoration: 'none' }}>
+          <img src={assetSrc(logo)} alt="ISKCON Deoghar" className="logo" decoding="async" />
           <div className="logo-text">
             <h1>ISKCON Deoghar</h1>
             <p>International Society for Krishna Consciousness</p>
@@ -36,12 +39,12 @@ const Header = () => {
             <FontAwesomeIcon icon={faInstagram} />
             <span>Instagram</span>
           </a>
-          <button onClick={handleWhatsAppClick} className="whatsapp-btn" title="Message on WhatsApp">
+          <button type="button" onClick={handleWhatsAppClick} className="whatsapp-btn" title="Message on WhatsApp">
             <FontAwesomeIcon icon={faWhatsapp} />
             <span>WhatsApp</span>
           </button>
           <img
-            src={spImage}
+            src={assetSrc(spImage)}
             alt="Srila Prabhupada"
             className="sp-image"
             title="His Divine Grace A.C. Bhaktivedanta Swami Prabhupada"
@@ -53,4 +56,4 @@ const Header = () => {
   );
 };
 
-export default Header; 
+export default Header;

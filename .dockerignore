@@ -1,0 +1,14 @@
+# Dependencies / build context ignored for App Service & local Docker
+Dockerfile*
+.dockerignore
+.git
+.github
+.next
+node_modules
+build
+out
+*.md
+.env*
+.DS_Store
+.cursor
+npm-debug.log*
