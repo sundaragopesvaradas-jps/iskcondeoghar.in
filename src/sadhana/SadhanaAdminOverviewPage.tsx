@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { routes } from '../config/routes';
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
-import { getSadhanaFontPreset } from './sadhanaTypographyConfig';
+import { SITE_FONT_STACK } from '../config/typographyConfig';
 import { getSadhanaScriptUrl } from './submitSadhanaResponse';
 import { fetchSeeAllSadhanasLookup, fetchSeeAllSadhanasNames } from './sadhanaAdminApi';
 import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
@@ -30,7 +30,6 @@ function mapAdminErr(e: unknown): string {
 const SadhanaAdminOverviewPage: React.FC = () => {
   const scriptUrl = getSadhanaScriptUrl();
   const backgroundImageUrl = useMemo(() => getSadhanaBackgroundImageUrl(), []);
-  const fontPreset = getSadhanaFontPreset();
 
   const [adminKeyInput, setAdminKeyInput] = useState(() => {
     try {
@@ -62,21 +61,6 @@ const SadhanaAdminOverviewPage: React.FC = () => {
       else document.documentElement.removeAttribute('lang');
     };
   }, []);
-
-  useEffect(() => {
-    const id = 'sadhana-admin-google-font';
-    let link = document.getElementById(id) as HTMLLinkElement | null;
-    if (!link) {
-      link = document.createElement('link');
-      link.id = id;
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-    }
-    link.href = fontPreset.googleFontsHref;
-    return () => {
-      link?.remove();
-    };
-  }, [fontPreset.googleFontsHref]);
 
   const tryLoadNames = useCallback(
     async (key: string) => {
@@ -191,11 +175,8 @@ const SadhanaAdminOverviewPage: React.FC = () => {
   }, []);
 
   const pageStyle = useMemo(
-    () =>
-      ({
-        fontFamily: `'${fontPreset.cssFontFamily}', system-ui, -apple-system, 'Segoe UI', sans-serif`,
-      }) as React.CSSProperties,
-    [fontPreset.cssFontFamily]
+    () => ({ fontFamily: SITE_FONT_STACK }) as React.CSSProperties,
+    []
   );
 
   return (

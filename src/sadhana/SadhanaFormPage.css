@@ -1,4 +1,4 @@
-/* फ़ॉन्ट: `sadhanaTypographyConfig.ts` → Google Fonts लिंक SadhanaFormPage में लोड होता है */
+/* फ़ॉन्ट: पूरी साइट का स्टैक `src/config/typographyConfig.ts` में */
 
 .sadhana-page {
   /* थीम: शांत रात + केसर एक्सेंट */
@@ -18,7 +18,7 @@
   --sadhana-night: #1a1528;
   --sadhana-night-soft: rgba(26, 21, 40, 0.06);
 
-  /* font-family: sadhanaTypographyConfig से इनलाइन */
+  font-family: var(--site-font);
   font-optical-sizing: auto;
   color: var(--sadhana-ink);
   min-height: 100vh;
@@ -756,7 +756,7 @@
 
 .sadhana-code {
   font-size: 0.8em;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  font-family: var(--site-font-mono);
   padding: 0.1em 0.35em;
   border-radius: 5px;
   background: rgba(0, 0, 0, 0.06);

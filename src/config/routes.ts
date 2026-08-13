@@ -6,6 +6,8 @@ export const routes = {
   sadhanaRecords: '/sadhana/records',
   /** Admin: सभी भक्तों की साधना (प्रशासन कुंजी) */
   sadhanaAdmin: '/sadhana/overview',
+  /** Baby / devotee name search (Google Sheet Boy/Girl tabs) */
+  name: '/name',
   spbooks: '/spbooks',
   spletters: '/spletters',
   default: '/home',

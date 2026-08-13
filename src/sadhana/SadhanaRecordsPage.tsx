@@ -4,7 +4,7 @@ import { routes } from '../config/routes';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
-import { getSadhanaFontPreset } from './sadhanaTypographyConfig';
+import { SITE_FONT_STACK } from '../config/typographyConfig';
 import { getSadhanaScriptUrl } from './submitSadhanaResponse';
 import { SADHANA_NAME_FIELD_ID, SADHANA_NAMES_SESSION_KEY } from './sadhanaNameFieldConstants';
 import { SadhanaHistoryCharts } from './SadhanaHistoryCharts';
@@ -58,7 +58,6 @@ function mapErr(e: unknown): string {
 const SadhanaRecordsPage: React.FC = () => {
   const scriptUrl = getSadhanaScriptUrl();
   const backgroundImageUrl = useMemo(() => getSadhanaBackgroundImageUrl(), []);
-  const fontPreset = getSadhanaFontPreset();
 
   const recordsNameId = `${SADHANA_NAME_FIELD_ID}-records-page`;
 
@@ -100,21 +99,6 @@ const SadhanaRecordsPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const id = 'sadhana-records-page-google-font';
-    let link = document.getElementById(id) as HTMLLinkElement | null;
-    if (!link) {
-      link = document.createElement('link');
-      link.id = id;
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-    }
-    link.href = fontPreset.googleFontsHref;
-    return () => {
-      link?.remove();
-    };
-  }, [fontPreset.googleFontsHref]);
-
-  useEffect(() => {
     try {
       sessionStorage.setItem(SADHANA_NAMES_SESSION_KEY, JSON.stringify(nameSuggestions));
     } catch {
@@ -139,11 +123,8 @@ const SadhanaRecordsPage: React.FC = () => {
   }, [scriptUrl]);
 
   const pageStyle = useMemo(
-    () =>
-      ({
-        fontFamily: `'${fontPreset.cssFontFamily}', system-ui, -apple-system, 'Segoe UI', sans-serif`,
-      }) as React.CSSProperties,
-    [fontPreset.cssFontFamily]
+    () => ({ fontFamily: SITE_FONT_STACK }) as React.CSSProperties,
+    []
   );
 
   const inputClass = 'sadhana-input';

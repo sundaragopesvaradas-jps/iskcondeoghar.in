@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { getAppInsights } from './appInsights';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { routes } from './config/routes';
+import { SITE_FONT_STACK } from './config/typographyConfig';
 
 const App = lazy(() => import('./App'));
 const ExternalRedirect = lazy(() => import('./components/ExternalRedirect'));
@@ -14,6 +15,7 @@ const BvPage = lazy(() => import('./bv/BvPage'));
 const SadhanaFormPage = lazy(() => import('./sadhana/SadhanaFormPage'));
 const SadhanaRecordsPage = lazy(() => import('./sadhana/SadhanaRecordsPage'));
 const SadhanaAdminOverviewPage = lazy(() => import('./sadhana/SadhanaAdminOverviewPage'));
+const NameSearchPage = lazy(() => import('./name/NameSearchPage'));
 
 /** CRA + TS 3.9 + React 19 types: JSX on `lazy()` components is mis-inferred; `createElement` is typed correctly. */
 function lazyEl(C: LazyExoticComponent<ComponentType>) {
@@ -26,7 +28,7 @@ function RouteFallback() {
       style={{
         padding: '3rem 1rem',
         textAlign: 'center',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontFamily: SITE_FONT_STACK,
         color: '#444',
       }}
     >
@@ -105,6 +107,14 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<RouteFallback />}>
         {lazyEl(SadhanaAdminOverviewPage)}
+      </Suspense>
+    ),
+  },
+  {
+    path: routes.name,
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        {lazyEl(NameSearchPage)}
       </Suspense>
     ),
   },
