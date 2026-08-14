@@ -18,6 +18,7 @@ import { fetchSadhanaHistory, submitSadhanaPinChange } from './sadhanaHistoryApi
 import type { SadhanaHistoryErrorCode } from './sadhanaHistoryApi';
 import { isDevoteeNameInList, resolveCanonicalDevoteeName } from './sadhanaRecordsUtils';
 import { sadhanaStrings as t } from './sadhanaStrings';
+import { SadhanaLeaderboardPanel } from './SadhanaLeaderboardPanel';
 import './SadhanaFormPage.css';
 
 const BG = SADHANA_BACKGROUND_CONFIG;
@@ -263,6 +264,14 @@ const SadhanaRecordsPage: React.FC = () => {
                 <p className="sadhana-records-who">
                   <strong>{canonicalName}</strong>
                 </p>
+
+                <SadhanaLeaderboardPanel
+                  className="sadhana-lb--records"
+                  title={t.recordsLeaderboardTitle}
+                  highlightName={canonicalName}
+                  maskNames
+                  limit={10}
+                />
 
                 <SadhanaRecordsTable rows={rows} />
 

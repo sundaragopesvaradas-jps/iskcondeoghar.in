@@ -24,7 +24,6 @@ Next.js (App Router) site for ISKCON Deoghar.
 - `/sadhana` (+ records/overview) — Cosmos via `POST /api/sadhana`. Overview admin key is set in `/admn` on the sadhana table (not env).
 - `/admn` — data console (username/password; roles `read`/`write`) — see `docs/ADMN_CONSOLE.md`
 - Data migration: `docs/COSMOS_DATA_MIGRATION.md`
-- Retire old Google web apps: `docs/RETIRE_APPS_SCRIPT.md`
 
 ## Hosting
 

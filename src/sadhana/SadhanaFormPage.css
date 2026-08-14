@@ -1250,3 +1250,130 @@
     backdrop-filter: none;
   }
 }
+
+/* —— Leaderboard (last 30 days) —— */
+.sadhana-lb {
+  margin: 1.25rem 0 1.5rem;
+  padding: 1rem 1.1rem 1.15rem;
+  border-radius: 12px;
+  background: rgba(255, 252, 247, 0.92);
+  border: 1px solid rgba(146, 64, 14, 0.18);
+  box-shadow: 0 8px 28px rgba(68, 28, 8, 0.08);
+}
+
+.sadhana-lb__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--sadhana-ink, #3b1d0b);
+  letter-spacing: 0.01em;
+}
+
+.sadhana-lb__period {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: var(--sadhana-ink-muted, #7c5a42);
+}
+
+.sadhana-lb__hint,
+.sadhana-lb__err {
+  margin: 0.35rem 0;
+  font-size: 0.92rem;
+}
+
+.sadhana-lb__err {
+  color: #b91c1c;
+}
+
+.sadhana-lb__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sadhana-lb__row {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.sadhana-lb__row--self {
+  background: rgba(254, 243, 199, 0.95);
+  box-shadow: inset 0 0 0 1.5px rgba(180, 83, 9, 0.45);
+}
+
+.sadhana-lb__rank {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--sadhana-ink-muted, #7c5a42);
+}
+
+.sadhana-lb__name {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--sadhana-ink, #3b1d0b);
+}
+
+.sadhana-lb__name-head {
+  letter-spacing: 0.02em;
+}
+
+.sadhana-lb__name-rest {
+  filter: blur(5px);
+  opacity: 0.72;
+  user-select: none;
+  letter-spacing: 0.04em;
+}
+
+.sadhana-lb__points {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #9a3412;
+}
+
+.sadhana-lb__self {
+  margin: 0.85rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(254, 243, 199, 0.85);
+  font-size: 0.95rem;
+  color: var(--sadhana-ink, #3b1d0b);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sadhana-lb--form {
+  margin-top: 0.5rem;
+}
+
+.sadhana-lb--top {
+  margin-top: 0.5rem;
+}
+
+.sadhana-lb--bottom {
+  margin-top: 1.75rem;
+}
+
+.sadhana-lb--records {
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+}

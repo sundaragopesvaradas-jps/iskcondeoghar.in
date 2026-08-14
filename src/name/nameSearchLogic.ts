@@ -12,6 +12,8 @@ import { parseNameQueryPrefixes } from './nameSearchTypes';
 export type NameRow = {
   name: string;
   meaning: string;
+  /** First-letter index from sheet `Letter` column (optional). */
+  letter?: string;
 };
 
 export function wordCountOfName(name: string): number {

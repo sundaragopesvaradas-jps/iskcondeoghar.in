@@ -28,6 +28,7 @@ import { SADHANA_AUTO_SCROLL_DURATION_MS } from './sadhanaAutoScrollConfig';
 import { smoothScrollElementIntoViewCenter } from './sadhanaSmoothScrollToField';
 import { SITE_FONT_STACK } from '../config/typographyConfig';
 import { routes } from '../config/routes';
+import { SadhanaLeaderboardPanel } from './SadhanaLeaderboardPanel';
 import './SadhanaFormPage.css';
 
 const FORM_ID = 'sadhana-v2-hi';
@@ -98,6 +99,9 @@ const SadhanaFormPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const [celebrate, setCelebrate] = useState(false);
+  /** Leaderboard sits below the form until a submit succeeds, then moves above it. */
+  const [submittedOnce, setSubmittedOnce] = useState(false);
+  const [leaderboardVersion, setLeaderboardVersion] = useState(0);
   const [nameSuggestions, setNameSuggestions] = useState<string[]>(() =>
     typeof window !== 'undefined' ? readCachedNamesFromSession(SADHANA_NAMES_SESSION_KEY) : []
   );
@@ -374,6 +378,8 @@ const SadhanaFormPage: React.FC = () => {
       }
       setMessage({ type: 'ok', text: t.success });
       setCelebrate(true);
+      setSubmittedOnce(true);
+      setLeaderboardVersion((v) => v + 1);
       const reset: Record<string, string | boolean | string[]> = {};
       fields.forEach((f) => {
         reset[f.id] = emptyValueForField(f);
@@ -389,6 +395,16 @@ const SadhanaFormPage: React.FC = () => {
 
   const inputClass = (hasValue: boolean) =>
     `sadhana-input${hasValue ? ' filled' : ''}`;
+
+  const leaderboardPanel = (
+    <SadhanaLeaderboardPanel
+      key={leaderboardVersion}
+      className={`sadhana-lb--form${submittedOnce ? ' sadhana-lb--top' : ' sadhana-lb--bottom'}`}
+      title={t.leaderboardTitle}
+      maskNames
+      limit={10}
+    />
+  );
 
   return (
     <div
@@ -449,6 +465,8 @@ const SadhanaFormPage: React.FC = () => {
                 {t.recordsOpenButton}
               </Link>
             </div>
+
+            {submittedOnce ? leaderboardPanel : null}
 
             <div ref={alertsRef} className="sadhana-alerts">
               {message && (
@@ -625,6 +643,8 @@ const SadhanaFormPage: React.FC = () => {
               </div>
             </form>
             ) : null}
+
+            {!submittedOnce ? leaderboardPanel : null}
           </main>
           <aside className="sadhana-side sadhana-side--right" aria-hidden>
             <div className="sadhana-side__inner">

@@ -15,6 +15,7 @@
 - **Column prefix filters**: type in a column header to filter the current page in real time
 - **Allowed values**: stored once on the table (`columnSchemas`); dropdowns in the grid; edit under **Allowed values (shared)**. For `sadhana`, these lists are the **only** source for `/sadhana` form radios/checkboxes and history charts (no code fallbacks). Seed once: `npx tsx scripts/seed-sadhana-column-schemas.ts`
 - **Sadhana overview admin key**: 4 digits only; set on the `sadhana` table in this UI. Used by `/sadhana/overview`.
+- **Sadhana leaderboard (last year)**: assign points on allowed values, then Generate all — 12 rolling windows (1–30 … 331–365).
 - **Tabs**: search with datalist suggestions + horizontally scrollable tab chips
 
 ## Sadhana data shape

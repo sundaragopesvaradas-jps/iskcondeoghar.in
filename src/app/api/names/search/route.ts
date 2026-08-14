@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isCosmosConfigured } from '@/lib/cosmos';
-import { loadNameRowsForGender } from '@/name/nameCosmosStore';
+import { loadNameRowsForPrefixes } from '@/name/nameCosmosStore';
 import { runNameSearch } from '@/name/nameSearchLogic';
+import { parseNameQueryPrefixes } from '@/name/nameSearchTypes';
 import type { NameGender } from '@/name/nameSearchTypes';
 
 export const runtime = 'nodejs';
@@ -38,11 +39,20 @@ async function handleSearch(body: {
     );
   }
 
-  const rows = await loadNameRowsForGender(gender as NameGender);
+  const query = (body.query || '').toString();
+  const prefixes = parseNameQueryPrefixes(query);
+  if (prefixes.length === 0) {
+    return NextResponse.json(
+      { status: 'error', message: 'query must include at least one prefix' },
+      { status: 400 }
+    );
+  }
+
+  const rows = await loadNameRowsForPrefixes(gender as NameGender, prefixes);
   const result = runNameSearch(rows, {
     gender,
     wordCount: (body.wordCount || '').toString(),
-    query: (body.query || '').toString(),
+    query,
   });
 
   if (result.status === 'error') {

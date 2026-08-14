@@ -163,9 +163,50 @@
   align-items: center;
 }
 
-.admn-person-bar {
-  border-top: 1px solid #efe4d4;
-  padding-top: 0.5rem;
+.admn-lb-wrap {
+  margin-top: 0.75rem;
+  overflow: auto;
+  max-height: 20rem;
+  border: 1px solid #e2d2bc;
+}
+
+.admn-lb-periods {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.admn-lb-period__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3b1d0b;
+}
+
+.admn-lb-period__dates {
+  font-weight: 500;
+  font-size: 0.88rem;
+  color: #7c5a42;
+}
+
+.admn-lb {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admn-lb th,
+.admn-lb td {
+  border-bottom: 1px solid #efe4d4;
+  padding: 0.4rem 0.55rem;
+  text-align: left;
+}
+
+.admn-lb th {
+  background: #f3ebe0;
+  position: sticky;
+  top: 0;
 }
 
 .admn-th-check,

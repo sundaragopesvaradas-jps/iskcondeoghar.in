@@ -41,10 +41,12 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     const body = (await req.json()) as {
       name?: string;
       allowedValues?: string[];
+      allowedValuePoints?: Record<string, number>;
     };
     const table = await upsertColumnSchema(decodeURIComponent(tableId), {
       name: String(body.name || ''),
       allowedValues: body.allowedValues,
+      allowedValuePoints: body.allowedValuePoints,
     });
     return NextResponse.json({
       status: 'success',

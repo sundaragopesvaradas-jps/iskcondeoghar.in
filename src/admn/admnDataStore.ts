@@ -7,6 +7,11 @@ export type ColumnSchema = {
   name: string;
   /** When set, cell editors show a dropdown of these values only. */
   allowedValues?: string[];
+  /**
+   * Points per allowed value (same keys as allowedValues).
+   * Used for sadhana last-30-days leaderboard scoring.
+   */
+  allowedValuePoints?: Record<string, number>;
 };
 
 export type TabMeta = {
@@ -107,7 +112,7 @@ export async function createTab(tableId: string, tabName: string): Promise<Table
   return table;
 }
 
-/** Upsert shared column schema (allowed values) for a table. */
+/** Upsert shared column schema (allowed values + optional points) for a table. */
 export async function upsertColumnSchema(
   tableId: string,
   schema: ColumnSchema
@@ -120,9 +125,27 @@ export async function upsertColumnSchema(
   const allowedValues = Array.isArray(schema.allowedValues)
     ? schema.allowedValues.map((v) => String(v).trim()).filter(Boolean)
     : undefined;
+
+  let allowedValuePoints: Record<string, number> | undefined;
+  if (schema.allowedValuePoints && typeof schema.allowedValuePoints === 'object') {
+    allowedValuePoints = {};
+    for (const [k, v] of Object.entries(schema.allowedValuePoints)) {
+      const key = String(k).trim();
+      if (!key) continue;
+      if (allowedValues && allowedValues.length > 0 && !allowedValues.includes(key)) {
+        continue;
+      }
+      const n = Number(v);
+      if (!Number.isFinite(n)) continue;
+      allowedValuePoints[key] = n;
+    }
+    if (Object.keys(allowedValuePoints).length === 0) allowedValuePoints = undefined;
+  }
+
   const next: ColumnSchema = {
     name,
     ...(allowedValues && allowedValues.length > 0 ? { allowedValues } : {}),
+    ...(allowedValuePoints ? { allowedValuePoints } : {}),
   };
   const list = [...(table.columnSchemas || [])];
   const idx = list.findIndex((c) => c.name === name);

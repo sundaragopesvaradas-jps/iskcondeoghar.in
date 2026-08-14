@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import '../admn.css';
 
 type Role = 'read' | 'write';
-type ColumnSchema = { name: string; allowedValues?: string[] };
+type ColumnSchema = { name: string; allowedValues?: string[]; allowedValuePoints?: Record<string, number> };
 type ColumnView = { name: string; allowedValues?: string[] };
 type TabInfo = { id: string; name: string; rowCount?: number; columns?: string[] };
 type TableInfo = {
@@ -47,8 +47,23 @@ export default function AdmnConsolePage() {
   const [tabSearch, setTabSearch] = useState('');
   const [schemaCol, setSchemaCol] = useState('');
   const [schemaValueList, setSchemaValueList] = useState<string[]>([]);
+  const [schemaPoints, setSchemaPoints] = useState<Record<string, number>>({});
   const [schemaEditIdx, setSchemaEditIdx] = useState(0);
   const [schemaAddValue, setSchemaAddValue] = useState('');
+  const [schemaAddPoints, setSchemaAddPoints] = useState('0');
+  const [lbLimit, setLbLimit] = useState(10);
+  const [lbLoading, setLbLoading] = useState(false);
+  const [lbPeriods, setLbPeriods] = useState<
+    Array<{
+      label: string;
+      dayFrom: number;
+      dayTo: number;
+      from: string;
+      to: string;
+      entries: Array<{ rank: number; name: string; points: number; days: number }>;
+    }>
+  >([]);
+  const [lbScoredColumns, setLbScoredColumns] = useState<string[]>([]);
   const [newColumnName, setNewColumnName] = useState('');
   const [colFilters, setColFilters] = useState<Record<string, string>>({});
   const [sortCol, setSortCol] = useState('');
@@ -230,12 +245,16 @@ export default function AdmnConsolePage() {
       const s = schemas.find((c) => c.name === schemaCol);
       const vals = [...(s?.allowedValues || [])];
       setSchemaValueList(vals);
+      setSchemaPoints({ ...(s?.allowedValuePoints || {}) });
       setSchemaEditIdx(0);
       setSchemaAddValue('');
+      setSchemaAddPoints('0');
     } else {
       setSchemaValueList([]);
+      setSchemaPoints({});
       setSchemaEditIdx(0);
       setSchemaAddValue('');
+      setSchemaAddPoints('0');
     }
   }, [selectedTable, schemaCol]);
 
@@ -434,12 +453,18 @@ export default function AdmnConsolePage() {
   const saveColumnSchema = async () => {
     if (!canWrite || !tableId || !schemaCol.trim()) return;
     const allowedValues = schemaValueList.map((v) => v.trim()).filter(Boolean);
+    const allowedValuePoints: Record<string, number> = {};
+    for (const v of allowedValues) {
+      const n = Number(schemaPoints[v] ?? 0);
+      allowedValuePoints[v] = Number.isFinite(n) ? n : 0;
+    }
     const res = await fetch(`/api/admn/tables/${encodeURIComponent(tableId)}/columns`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: schemaCol.trim(),
         allowedValues,
+        allowedValuePoints,
       }),
     });
     const data = await res.json();
@@ -499,6 +524,30 @@ export default function AdmnConsolePage() {
         ? 'Overview admin key saved. Use it on /sadhana/overview.'
         : 'Overview admin key cleared.'
     );
+  };
+
+
+  const loadLeaderboard = async () => {
+    if (tableId !== 'sadhana') return;
+    setLbLoading(true);
+    setError('');
+    try {
+      const qs = new URLSearchParams({ limit: String(lbLimit) });
+      const res = await fetch(`/api/admn/sadhana/leaderboard?${qs}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Leaderboard failed');
+        return;
+      }
+      const periods = Array.isArray(data.periods) ? data.periods : [];
+      setLbPeriods(periods);
+      setLbScoredColumns(data.scoredColumns || []);
+      setStatus(
+        `Leaderboards ${data.horizonFrom || ''} → ${data.horizonTo || ''} (${periods.length} periods)`
+      );
+    } finally {
+      setLbLoading(false);
+    }
   };
 
   const selectTab = (id: string) => {
@@ -970,6 +1019,99 @@ export default function AdmnConsolePage() {
         </table>
       </div>
 
+      {tableId === 'sadhana' ? (
+        <section className="admn-admin-panels" aria-label="Sadhana leaderboard">
+            <div className="admn-panel">
+              <h2>Leaderboards · last year (30-day windows)</h2>
+              <p className="admn-panel__hint">
+                Generates 12 boards: days 1–30, 31–60, …, 301–330, and 331–365 (stretched final
+                window). Scores Responses with points on allowed values. Full names shown here
+                only.
+                {canWrite
+                  ? ' Assign points under Allowed values, Save, then Generate.'
+                  : ' Points are configured by write admins.'}
+              </p>
+              <div className="admn-inline">
+                <label>
+                  Top
+                  <select
+                    value={lbLimit}
+                    onChange={(e) => setLbLimit(parseInt(e.target.value, 10))}
+                    aria-label="Leaderboard size"
+                  >
+                    {[10, 20, 50, 100].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  className="admn-btn"
+                  disabled={lbLoading}
+                  onClick={() => void loadLeaderboard()}
+                >
+                  {lbLoading ? 'Generating…' : 'Generate all'}
+                </button>
+              </div>
+              {lbScoredColumns.length ? (
+                <p className="admn-panel__hint">
+                  Scored columns: {lbScoredColumns.join(', ')}
+                </p>
+              ) : lbPeriods.length === 0 && !lbLoading ? (
+                <p className="admn-panel__hint">
+                  No points configured yet — set points on allowed values, Save, then Generate.
+                </p>
+              ) : null}
+              {lbPeriods.length > 0 ? (
+                <div className="admn-lb-periods">
+                  {lbPeriods.map((period) => (
+                    <div
+                      key={`${period.dayFrom}-${period.dayTo}`}
+                      className="admn-lb-period"
+                    >
+                      <h3 className="admn-lb-period__title">
+                        {period.label}
+                        <span className="admn-lb-period__dates">
+                          {' '}
+                          · {period.from} → {period.to}
+                        </span>
+                      </h3>
+                      {period.entries.length > 0 ? (
+                        <div className="admn-lb-wrap">
+                          <table className="admn-lb">
+                            <thead>
+                              <tr>
+                                <th scope="col">Rank</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Points</th>
+                                <th scope="col">Days</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {period.entries.map((e) => (
+                                <tr key={`${period.dayFrom}-${e.rank}-${e.name}`}>
+                                  <td>{e.rank}</td>
+                                  <td>{e.name}</td>
+                                  <td>{e.points}</td>
+                                  <td>{e.days}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <p className="admn-panel__hint">No scored entries in this window.</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+        </section>
+      ) : null}
+
       {canWrite ? (
         <section className="admn-admin-panels" aria-label="Write actions">
           {tableId === 'sadhana' ? (
@@ -1089,11 +1231,45 @@ export default function AdmnConsolePage() {
                         onChange={(e) => {
                           const next = [...schemaValueList];
                           if (!next.length) return;
-                          next[schemaEditIdx] = e.target.value;
+                          const prevVal = next[schemaEditIdx];
+                          const newVal = e.target.value;
+                          next[schemaEditIdx] = newVal;
                           setSchemaValueList(next);
+                          setSchemaPoints((pts) => {
+                            const copy = { ...pts };
+                            if (prevVal !== newVal) {
+                              copy[newVal] = copy[prevVal] ?? 0;
+                              delete copy[prevVal];
+                            }
+                            return copy;
+                          });
                         }}
                         disabled={schemaValueList.length === 0}
                         aria-label="Edit selected allowed value"
+                      />
+                    </label>
+                    <label>
+                      Points
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        value={
+                          schemaValueList[schemaEditIdx]
+                            ? String(schemaPoints[schemaValueList[schemaEditIdx]] ?? 0)
+                            : '0'
+                        }
+                        onChange={(e) => {
+                          const key = schemaValueList[schemaEditIdx];
+                          if (!key) return;
+                          const n = parseFloat(e.target.value);
+                          setSchemaPoints((pts) => ({
+                            ...pts,
+                            [key]: Number.isFinite(n) ? n : 0,
+                          }));
+                        }}
+                        disabled={schemaValueList.length === 0}
+                        aria-label="Points for selected value"
+                        style={{ width: '5rem' }}
                       />
                     </label>
                     <button
@@ -1101,8 +1277,14 @@ export default function AdmnConsolePage() {
                       className="admn-btn admn-btn--ghost"
                       disabled={schemaValueList.length === 0}
                       onClick={() => {
+                        const removed = schemaValueList[schemaEditIdx];
                         const next = schemaValueList.filter((_, i) => i !== schemaEditIdx);
                         setSchemaValueList(next);
+                        setSchemaPoints((pts) => {
+                          const copy = { ...pts };
+                          if (removed) delete copy[removed];
+                          return copy;
+                        });
                         setSchemaEditIdx(Math.max(0, Math.min(schemaEditIdx, next.length - 1)));
                       }}
                     >
@@ -1125,11 +1307,28 @@ export default function AdmnConsolePage() {
                             setError('That value is already in the list.');
                             return;
                           }
+                          const pts = parseFloat(schemaAddPoints);
                           setSchemaValueList((prev) => [...prev, v]);
+                          setSchemaPoints((p) => ({
+                            ...p,
+                            [v]: Number.isFinite(pts) ? pts : 0,
+                          }));
                           setSchemaEditIdx(schemaValueList.length);
                           setSchemaAddValue('');
+                          setSchemaAddPoints('0');
                           setError('');
                         }}
+                      />
+                    </label>
+                    <label>
+                      Points
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        value={schemaAddPoints}
+                        onChange={(e) => setSchemaAddPoints(e.target.value)}
+                        aria-label="Points for new value"
+                        style={{ width: '5rem' }}
                       />
                     </label>
                     <button
@@ -1143,9 +1342,15 @@ export default function AdmnConsolePage() {
                           setError('That value is already in the list.');
                           return;
                         }
+                        const pts = parseFloat(schemaAddPoints);
                         setSchemaValueList((prev) => [...prev, v]);
+                        setSchemaPoints((p) => ({
+                          ...p,
+                          [v]: Number.isFinite(pts) ? pts : 0,
+                        }));
                         setSchemaEditIdx(schemaValueList.length);
                         setSchemaAddValue('');
+                        setSchemaAddPoints('0');
                         setError('');
                       }}
                     >
@@ -1161,6 +1366,9 @@ export default function AdmnConsolePage() {
                   </div>
                   <p className="admn-panel__hint" aria-live="polite">
                     {schemaValueList.length} value(s) — order is used for charts / form options.
+                    {tableId === 'sadhana'
+                      ? ' Points feed the last-30-days leaderboard.'
+                      : ''}
                   </p>
                 </>
               ) : null}
