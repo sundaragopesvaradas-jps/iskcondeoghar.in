@@ -14,6 +14,6 @@ export const SADHANA_HISTORY_TABLE_COLUMNS = [
 ] as const;
 
 export type SadhanaHistoryRow = Record<(typeof SADHANA_HISTORY_TABLE_COLUMNS)[number], string> & {
-  /** Set by Google Apps Script from sheet Timestamp for same-date deduplication */
+  /** Set from submission Timestamp for same-date deduplication */
   _submissionTimeMs?: number;
 };
