@@ -19,10 +19,10 @@ Next.js (App Router) site for ISKCON Deoghar.
 
 ## Backends
 
-- `/name` — Cosmos via `POST /api/names/search` (requires `COSMOS_*` env)
-- `/bv` — Cosmos via `POST /api/bv` (`register` / `markPaid`)
-- Sadhana still uses Google Apps Script until migrated (`src/sadhana/GOOGLE_SHEETS_SETUP.md`)
-- Data migration notes: `docs/COSMOS_DATA_MIGRATION.md`
+- `/name` — Cosmos via `POST /api/names/search`
+- `/bv` — Cosmos via `POST /api/bv`
+- `/sadhana` (+ records/overview) — Cosmos via `POST /api/sadhana` (set `SADHANA_ADMIN_KEY` for overview)
+- Data migration: `docs/COSMOS_DATA_MIGRATION.md`
 
 ## Hosting
 

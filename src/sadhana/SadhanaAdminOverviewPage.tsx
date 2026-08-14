@@ -6,7 +6,6 @@ import { routes } from '../config/routes';
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
 import { SITE_FONT_STACK } from '../config/typographyConfig';
-import { getSadhanaScriptUrl } from './submitSadhanaResponse';
 import { fetchSeeAllSadhanasLookup, fetchSeeAllSadhanasNames } from './sadhanaAdminApi';
 import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
 import { prepareRowsForChartSeries } from './sadhanaHistoryChartPrep';
@@ -30,7 +29,6 @@ function mapAdminErr(e: unknown): string {
 }
 
 const SadhanaAdminOverviewPage: React.FC = () => {
-  const scriptUrl = getSadhanaScriptUrl();
   const backgroundImageUrl = useMemo(() => getSadhanaBackgroundImageUrl(), []);
 
   const [adminKeyInput, setAdminKeyInput] = useState(() => {
@@ -64,39 +62,32 @@ const SadhanaAdminOverviewPage: React.FC = () => {
     };
   }, []);
 
-  const tryLoadNames = useCallback(
-    async (key: string) => {
-      if (!scriptUrl) {
-        setError(t.adminNotConfigured);
-        return;
-      }
-      setError(null);
-      setLoading(true);
+  const tryLoadNames = useCallback(async (key: string) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const list = await fetchSeeAllSadhanasNames(key);
       try {
-        const list = await fetchSeeAllSadhanasNames(scriptUrl, key);
-        try {
-          sessionStorage.setItem(ADMIN_KEY_STORAGE, key.trim());
-        } catch {
-          /* ignore */
-        }
-        setAdminKeyInput(key.trim());
-        setNames(list);
-        setPhase('list');
-        setSelectedName(null);
-        setRows([]);
-      } catch (e) {
-        setError(mapAdminErr(e));
-        try {
-          sessionStorage.removeItem(ADMIN_KEY_STORAGE);
-        } catch {
-          /* ignore */
-        }
-      } finally {
-        setLoading(false);
+        sessionStorage.setItem(ADMIN_KEY_STORAGE, key.trim());
+      } catch {
+        /* ignore */
       }
-    },
-    [scriptUrl]
-  );
+      setAdminKeyInput(key.trim());
+      setNames(list);
+      setPhase('list');
+      setSelectedName(null);
+      setRows([]);
+    } catch (e) {
+      setError(mapAdminErr(e));
+      try {
+        sessionStorage.removeItem(ADMIN_KEY_STORAGE);
+      } catch {
+        /* ignore */
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,10 +98,10 @@ const SadhanaAdminOverviewPage: React.FC = () => {
         return '';
       }
     })();
-    if (!k || !scriptUrl) return;
+    if (!k) return;
     setLoading(true);
     setError(null);
-    fetchSeeAllSadhanasNames(scriptUrl, k)
+    fetchSeeAllSadhanasNames(k)
       .then((list) => {
         if (cancelled) return;
         setAdminKeyInput(k);
@@ -134,7 +125,7 @@ const SadhanaAdminOverviewPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [scriptUrl]);
+  }, []);
 
   const goChangeKey = useCallback(() => {
     try {
@@ -151,13 +142,12 @@ const SadhanaAdminOverviewPage: React.FC = () => {
 
   const openName = useCallback(
     async (name: string) => {
-      if (!scriptUrl) return;
       setError(null);
       setLoading(true);
       setSelectedName(name);
       setPhase('detail');
       try {
-        const raw = await fetchSeeAllSadhanasLookup(scriptUrl, adminKeyInput, name);
+        const raw = await fetchSeeAllSadhanasLookup(adminKeyInput, name);
         setRows(raw);
       } catch (e) {
         setError(mapAdminErr(e));
@@ -166,7 +156,7 @@ const SadhanaAdminOverviewPage: React.FC = () => {
         setLoading(false);
       }
     },
-    [scriptUrl, adminKeyInput]
+    [adminKeyInput]
   );
 
   const backToList = useCallback(() => {
@@ -205,8 +195,6 @@ const SadhanaAdminOverviewPage: React.FC = () => {
 
           <h1 className="sadhana-admin-title">{t.adminPageTitle}</h1>
 
-          {!scriptUrl ? <p className="sadhana-records-warn">{t.adminNotConfigured}</p> : null}
-
           {error ? (
             <div className="sadhana-records-error" role="alert">
               {error}
@@ -226,12 +214,12 @@ const SadhanaAdminOverviewPage: React.FC = () => {
                 placeholder={t.adminKeyPlaceholder}
                 value={adminKeyInput}
                 onChange={(e) => setAdminKeyInput(e.target.value)}
-                disabled={loading || !scriptUrl}
+                disabled={loading}
               />
               <button
                 type="button"
                 className="sadhana-submit sadhana-records-submit"
-                disabled={loading || !scriptUrl || !adminKeyInput.trim()}
+                disabled={loading || !adminKeyInput.trim()}
                 onClick={() => tryLoadNames(adminKeyInput)}
               >
                 {loading ? t.recordsLoading : t.adminLoadNames}

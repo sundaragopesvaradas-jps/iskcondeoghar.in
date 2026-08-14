@@ -1,4 +1,4 @@
-import { SADHANA_GOOGLE_SCRIPT_URL } from './sadhanaBackendConfig';
+import { SADHANA_API_PATH } from './sadhanaBackendConfig';
 
 export interface SadhanaSubmitPayload {
   action: 'SADHANA_SUBMIT';
@@ -9,13 +9,11 @@ export interface SadhanaSubmitPayload {
 }
 
 export async function submitSadhanaResponse(
-  scriptUrl: string,
   payload: SadhanaSubmitPayload
 ): Promise<void> {
-  const res = await fetch(scriptUrl, {
+  const res = await fetch(SADHANA_API_PATH, {
     method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
 
@@ -32,6 +30,7 @@ export async function submitSadhanaResponse(
   }
 }
 
+/** @deprecated Prefer SADHANA_API_PATH; kept so old imports compile during migration. */
 export function getSadhanaScriptUrl(): string {
-  return (SADHANA_GOOGLE_SCRIPT_URL || '').trim();
+  return SADHANA_API_PATH;
 }

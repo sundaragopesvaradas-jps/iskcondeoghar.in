@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link';
 import { sadhanaFormFields } from './sadhanaFormConfig';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
-import { getSadhanaScriptUrl, submitSadhanaResponse } from './submitSadhanaResponse';
+import { submitSadhanaResponse } from './submitSadhanaResponse';
 import { SadhanaNameCombobox } from './SadhanaNameCombobox';
 import {
   normalizeDevoteeName,
@@ -80,7 +80,6 @@ function emptyValueForField(f: FieldDef): string | boolean | string[] {
 }
 
 const SadhanaFormPage: React.FC = () => {
-  const scriptUrl = getSadhanaScriptUrl();
   const backgroundImageUrl = useMemo(() => getSadhanaBackgroundImageUrl(), []);
   const alertsRef = useRef<HTMLDivElement>(null);
   const fieldBlockRefs = useRef<Map<string, HTMLElement | null>>(new Map());
@@ -204,20 +203,19 @@ const SadhanaFormPage: React.FC = () => {
   }, [nameSuggestions]);
 
   useEffect(() => {
-    if (!scriptUrl) return;
     let cancelled = false;
-    fetchSadhanaNameSuggestions(scriptUrl)
+    fetchSadhanaNameSuggestions()
       .then((names) => {
         if (cancelled) return;
         setNameSuggestions((prev) => dedupeSortedNames([...prev, ...names]));
       })
       .catch(() => {
-        /* ऑफ़लाइन / पुराना स्क्रिप्ट — मौन */
+        /* offline — silent */
       });
     return () => {
       cancelled = true;
     };
-  }, [scriptUrl]);
+  }, []);
 
   const scrollNextFieldIntoView = useCallback((completedFieldId: string) => {
     const idx = sadhanaFormFields.findIndex((f) => f.id === completedFieldId);
@@ -330,10 +328,6 @@ const SadhanaFormPage: React.FC = () => {
       setMessage({ type: 'err', text: err });
       return;
     }
-    if (!scriptUrl) {
-      setMessage({ type: 'err', text: t.notConfigured });
-      return;
-    }
     setSubmitting(true);
     const normalizedName = normalizeDevoteeName(String(values[SADHANA_NAME_FIELD_ID] ?? ''));
     const responsesForSubmit: Record<string, string | boolean | string[]> = {
@@ -341,7 +335,7 @@ const SadhanaFormPage: React.FC = () => {
       [SADHANA_NAME_FIELD_ID]: normalizedName,
     };
     try {
-      await submitSadhanaResponse(scriptUrl, {
+      await submitSadhanaResponse({
         action: 'SADHANA_SUBMIT',
         formId: FORM_ID,
         fieldOrder,
@@ -430,14 +424,6 @@ const SadhanaFormPage: React.FC = () => {
             </div>
 
             <div ref={alertsRef} className="sadhana-alerts">
-              {!scriptUrl && (
-                <div className="sadhana-banner warn">
-                  {t.devBannerBeforeCode}{' '}
-                  <code className="sadhana-code">sadhanaBackendConfig.ts</code>{' '}
-                  {t.devBannerAfterCode}
-                </div>
-              )}
-
               {message && (
                 <div className={`sadhana-banner ${message.type === 'ok' ? 'ok' : 'err'}`}>{message.text}</div>
               )}
@@ -598,7 +584,7 @@ const SadhanaFormPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="sadhana-actions">
-                  <button type="submit" className="sadhana-submit" disabled={submitting || !scriptUrl}>
+                  <button type="submit" className="sadhana-submit" disabled={submitting}>
                     {submitting ? t.submitting : t.submit}
                   </button>
                 </div>

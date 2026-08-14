@@ -7,7 +7,6 @@ import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { SADHANA_BACKGROUND_CONFIG } from './sadhanaBackgroundConfig';
 import { getSadhanaBackgroundImageUrl } from './sadhanaBackground';
 import { SITE_FONT_STACK } from '../config/typographyConfig';
-import { getSadhanaScriptUrl } from './submitSadhanaResponse';
 import { SADHANA_NAME_FIELD_ID, SADHANA_NAMES_SESSION_KEY } from './sadhanaNameFieldConstants';
 import { SadhanaHistoryCharts } from './SadhanaHistoryCharts';
 import { prepareRowsForChartSeries } from './sadhanaHistoryChartPrep';
@@ -58,7 +57,6 @@ function mapErr(e: unknown): string {
 }
 
 const SadhanaRecordsPage: React.FC = () => {
-  const scriptUrl = getSadhanaScriptUrl();
   const backgroundImageUrl = useMemo(() => getSadhanaBackgroundImageUrl(), []);
 
   const recordsNameId = `${SADHANA_NAME_FIELD_ID}-records-page`;
@@ -109,20 +107,19 @@ const SadhanaRecordsPage: React.FC = () => {
   }, [nameSuggestions]);
 
   useEffect(() => {
-    if (!scriptUrl) return;
     let cancelled = false;
-    fetchSadhanaNameSuggestions(scriptUrl)
+    fetchSadhanaNameSuggestions()
       .then((names) => {
         if (cancelled) return;
         setNameSuggestions((prev) => dedupeSortedNames([...prev, ...names]));
       })
       .catch(() => {
-        /* offline / old script */
+        /* offline */
       });
     return () => {
       cancelled = true;
     };
-  }, [scriptUrl]);
+  }, []);
 
   const pageStyle = useMemo(
     () => ({ fontFamily: SITE_FONT_STACK }) as React.CSSProperties,
@@ -132,11 +129,11 @@ const SadhanaRecordsPage: React.FC = () => {
   const inputClass = 'sadhana-input';
 
   const handleViewRecords = useCallback(async () => {
-    if (!scriptUrl || !nameOk || !canonicalName) return;
+    if (!nameOk || !canonicalName) return;
     setError(null);
     setLoading(true);
     try {
-      const data = await fetchSadhanaHistory(scriptUrl, canonicalName, pin);
+      const data = await fetchSadhanaHistory(canonicalName, pin);
       setRows(data);
       setSessionPin(pin);
       setPhase('table');
@@ -145,10 +142,10 @@ const SadhanaRecordsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [scriptUrl, nameOk, canonicalName, pin]);
+  }, [nameOk, canonicalName, pin]);
 
   const handleSaveNewPin = useCallback(async () => {
-    if (!scriptUrl || !canonicalName) return;
+    if (!canonicalName) return;
     if (newPin.length !== SADHANA_PIN_LENGTH || !/^[0-9]+$/.test(newPin)) {
       setError(t.recordsError('INVALID_PIN'));
       return;
@@ -157,7 +154,7 @@ const SadhanaRecordsPage: React.FC = () => {
     setPinSaveMsg(null);
     setLoading(true);
     try {
-      await submitSadhanaPinChange(scriptUrl, canonicalName, sessionPin, newPin);
+      await submitSadhanaPinChange(canonicalName, sessionPin, newPin);
       setSessionPin(newPin);
       setNewPin('');
       setPinSaveMsg(t.recordsPinSaved);
@@ -166,7 +163,7 @@ const SadhanaRecordsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [scriptUrl, canonicalName, sessionPin, newPin]);
+  }, [canonicalName, sessionPin, newPin]);
 
   const goDifferentName = useCallback(() => {
     setPhase('login');
@@ -190,8 +187,8 @@ const SadhanaRecordsPage: React.FC = () => {
   };
 
   const pinDisabled = !nameOk || loading;
-  const canSubmitLogin = nameOk && pin.length === SADHANA_PIN_LENGTH && !loading && !!scriptUrl;
-  const canSavePin = newPin.length === SADHANA_PIN_LENGTH && !loading && !!scriptUrl;
+  const canSubmitLogin = nameOk && pin.length === SADHANA_PIN_LENGTH && !loading;
+  const canSavePin = newPin.length === SADHANA_PIN_LENGTH && !loading;
 
   return (
     <div className="sadhana-page sadhana-records-page-root" lang="hi" style={pageStyle}>
@@ -218,8 +215,6 @@ const SadhanaRecordsPage: React.FC = () => {
           <h1 className="sadhana-admin-title">{t.recordsTitle}</h1>
 
           <div className="sadhana-records-page-panel">
-            {!scriptUrl ? <p className="sadhana-records-warn">{t.notConfigured}</p> : null}
-
             {error ? (
               <div className="sadhana-records-error" role="alert">
                 {error}
@@ -236,7 +231,7 @@ const SadhanaRecordsPage: React.FC = () => {
                   value={name}
                   onChange={setName}
                   suggestions={nameSuggestions}
-                  disabled={loading || !scriptUrl}
+                  disabled={loading}
                   inputClassName={inputClass}
                   listHint={t.nameComboboxListHint}
                 />

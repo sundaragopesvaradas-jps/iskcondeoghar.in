@@ -1,6 +1,7 @@
 import { SADHANA_PIN_LENGTH } from './sadhanaPinConfig';
 import { SADHANA_HISTORY_TABLE_COLUMNS } from './sadhanaHistoryTableConfig';
 import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
+import { SADHANA_API_PATH } from './sadhanaBackendConfig';
 
 export type SadhanaHistoryErrorCode =
   | 'WRONG_PIN'
@@ -9,7 +10,8 @@ export type SadhanaHistoryErrorCode =
   | 'NAME_REQUIRED'
   | 'PIN_UNCHANGED'
   | 'UNKNOWN_ACTION'
-  | 'SERVER_ERROR';
+  | 'SERVER_ERROR'
+  | 'NOT_CONFIGURED';
 
 function normalizeRow(raw: Record<string, unknown>): SadhanaHistoryRow {
   const o = {} as SadhanaHistoryRow;
@@ -42,14 +44,12 @@ function parseJsonResponse(text: string): {
 }
 
 export async function fetchSadhanaHistory(
-  scriptUrl: string,
   name: string,
   pin: string
 ): Promise<SadhanaHistoryRow[]> {
-  const res = await fetch(scriptUrl, {
+  const res = await fetch(SADHANA_API_PATH, {
     method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       action: 'SADHANA_LOOKUP',
       name: name.trim(),
@@ -77,15 +77,13 @@ export async function fetchSadhanaHistory(
 }
 
 export async function submitSadhanaPinChange(
-  scriptUrl: string,
   name: string,
   oldPin: string,
   newPin: string
 ): Promise<void> {
-  const res = await fetch(scriptUrl, {
+  const res = await fetch(SADHANA_API_PATH, {
     method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       action: 'SADHANA_CHANGE_PIN',
       name: name.trim(),

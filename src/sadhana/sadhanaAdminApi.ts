@@ -1,6 +1,7 @@
 import { SADHANA_HISTORY_TABLE_COLUMNS } from './sadhanaHistoryTableConfig';
 import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
 import type { SadhanaHistoryErrorCode } from './sadhanaHistoryApi';
+import { SADHANA_API_PATH } from './sadhanaBackendConfig';
 
 function normalizeRow(raw: Record<string, unknown>): SadhanaHistoryRow {
   const o = {} as SadhanaHistoryRow;
@@ -34,17 +35,10 @@ function parseJson(text: string): {
   }
 }
 
-/**
- * `seeAllSadhanas` — mode `names`: all devotee names (same source as autocomplete).
- */
-export async function fetchSeeAllSadhanasNames(
-  scriptUrl: string,
-  adminKey: string
-): Promise<string[]> {
-  const res = await fetch(scriptUrl, {
+export async function fetchSeeAllSadhanasNames(adminKey: string): Promise<string[]> {
+  const res = await fetch(SADHANA_API_PATH, {
     method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       action: 'seeAllSadhanas',
       adminKey: adminKey.trim(),
@@ -62,18 +56,13 @@ export async function fetchSeeAllSadhanasNames(
   return data.names.filter((n): n is string => typeof n === 'string' && n.trim() !== '');
 }
 
-/**
- * `seeAllSadhanas` — mode `lookup`: history rows for one name (no per-user PIN).
- */
 export async function fetchSeeAllSadhanasLookup(
-  scriptUrl: string,
   adminKey: string,
   name: string
 ): Promise<SadhanaHistoryRow[]> {
-  const res = await fetch(scriptUrl, {
+  const res = await fetch(SADHANA_API_PATH, {
     method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       action: 'seeAllSadhanas',
       adminKey: adminKey.trim(),

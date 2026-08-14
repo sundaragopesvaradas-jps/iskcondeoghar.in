@@ -1,11 +1,10 @@
-/**
- * Google Apps Script — `action: SADHANA_NAMES` (google-apps-script-sadhana.js)
- */
-export async function fetchSadhanaNameSuggestions(scriptUrl: string): Promise<string[]> {
-  const res = await fetch(scriptUrl, {
+import { SADHANA_API_PATH } from './sadhanaBackendConfig';
+
+/** `action: SADHANA_NAMES` */
+export async function fetchSadhanaNameSuggestions(): Promise<string[]> {
+  const res = await fetch(SADHANA_API_PATH, {
     method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'SADHANA_NAMES' }),
   });
 

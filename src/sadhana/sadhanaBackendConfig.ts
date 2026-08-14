@@ -1,9 +1,5 @@
 /**
- * Google Apps Script Web App URL for Sadhana form submissions.
- *
- * Paste the URL from: Google Sheet → Extensions → Apps Script → Deploy → Web app
- * (see src/sadhana/GOOGLE_SHEETS_SETUP.md)
- *
- * Example: https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec
+ * Sadhana backend — Cosmos via App Service API.
+ * Google Apps Script is no longer used by the UI.
  */
-export const SADHANA_GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTNYMp5KCPveAsn5-dJ6TG4SXN45hiLUKlFGbMguk_92i1CE13nwDM2ZoBLRG2fY5y/exec";
+export const SADHANA_API_PATH = '/api/sadhana';
