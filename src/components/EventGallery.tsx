@@ -171,10 +171,17 @@ const calculateTimeLeft = (targetDate: string, targetTime: string) => {
   };
 };
 
+type TimeLeft = ReturnType<typeof calculateTimeLeft>;
+
+const pad = (value: number) => String(value).padStart(2, '0');
+
 const Countdown: React.FC<CountdownProps> = ({ targetDate, targetTime }) => {
-  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate, targetTime));
+  /* समय क्लाइंट पर ही गिना जाता है — सर्वर रेंडर में गिनने से hydration mismatch होता है */
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
 
   useEffect(() => {
+    setTimeLeft(calculateTimeLeft(targetDate, targetTime));
+
     const timer = setInterval(() => {
       const newTimeLeft = calculateTimeLeft(targetDate, targetTime);
       setTimeLeft(newTimeLeft);
@@ -187,7 +194,7 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, targetTime }) => {
     return () => clearInterval(timer);
   }, [targetDate, targetTime]);
 
-  if (timeLeft.isExpired) {
+  if (timeLeft?.isExpired) {
     return (
       <div className="countdown-timer">
         <div className="countdown-expired">
@@ -200,19 +207,19 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, targetTime }) => {
   return (
     <div className="countdown-timer">
       <div className="countdown-item">
-        <div className="countdown-value">{String(timeLeft.days).padStart(2, '0')}</div>
+        <div className="countdown-value">{timeLeft ? pad(timeLeft.days) : '--'}</div>
         <div className="countdown-label">Days</div>
       </div>
       <div className="countdown-item">
-        <div className="countdown-value">{String(timeLeft.hours).padStart(2, '0')}</div>
+        <div className="countdown-value">{timeLeft ? pad(timeLeft.hours) : '--'}</div>
         <div className="countdown-label">Hours</div>
       </div>
       <div className="countdown-item">
-        <div className="countdown-value">{String(timeLeft.minutes).padStart(2, '0')}</div>
+        <div className="countdown-value">{timeLeft ? pad(timeLeft.minutes) : '--'}</div>
         <div className="countdown-label">Minutes</div>
       </div>
       <div className="countdown-item">
-        <div className="countdown-value">{String(timeLeft.seconds).padStart(2, '0')}</div>
+        <div className="countdown-value">{timeLeft ? pad(timeLeft.seconds) : '--'}</div>
         <div className="countdown-label">Seconds</div>
       </div>
     </div>
