@@ -2,7 +2,8 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { sadhanaFormFields } from './sadhanaFormConfig';
+import type { SadhanaFieldDefinition } from './sadhanaFormConfig';
+import { fetchSadhanaFormConfig } from './fetchSadhanaFormConfig';
 import { fetchSadhanaNameSuggestions } from './fetchSadhanaNameSuggestions';
 import { submitSadhanaResponse } from './submitSadhanaResponse';
 import { SadhanaNameCombobox } from './SadhanaNameCombobox';
@@ -32,7 +33,7 @@ import './SadhanaFormPage.css';
 const FORM_ID = 'sadhana-v2-hi';
 const BG = SADHANA_BACKGROUND_CONFIG;
 
-type FieldDef = (typeof sadhanaFormFields)[number];
+type FieldDef = SadhanaFieldDefinition;
 
 const QUESTIONS_PER_GROUP = 2;
 /** Q1=0, Q2=1, Q3=2 — पहले दो प्रश्नों के बाद स्क्रॉल नहीं; Q3 (विकल्प) चुनने के बाद से स्क्रॉल */
@@ -71,7 +72,7 @@ function readCachedNamesFromSession(key: string): string[] {
 
 function emptyValueForField(f: FieldDef): string | boolean | string[] {
   if (f.type === 'checkbox') {
-    return f.options && f.options.length > 0 ? [] : false;
+    return f.expectsOptions || (f.options && f.options.length > 0) ? [] : false;
   }
   if (f.type === 'radio' || f.type === 'date' || f.type === 'text') {
     return '';
@@ -90,13 +91,10 @@ const SadhanaFormPage: React.FC = () => {
   const [bgOverlayOpacity, setBgOverlayOpacity] = useState<number>(BG.overlay.initial);
   const [bgImageOpacity, setBgImageOpacity] = useState<number>(BG.imageOpacity.initial);
 
-  const [values, setValues] = useState<Record<string, string | boolean | string[]>>(() => {
-    const init: Record<string, string | boolean | string[]> = {};
-    sadhanaFormFields.forEach((f) => {
-      init[f.id] = emptyValueForField(f);
-    });
-    return init;
-  });
+  const [fields, setFields] = useState<FieldDef[]>([]);
+  const [fieldsLoading, setFieldsLoading] = useState(true);
+  const [fieldsError, setFieldsError] = useState('');
+  const [values, setValues] = useState<Record<string, string | boolean | string[]>>({});
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const [celebrate, setCelebrate] = useState(false);
@@ -105,25 +103,54 @@ const SadhanaFormPage: React.FC = () => {
   );
   const labels = useMemo(() => {
     const m: Record<string, string> = {};
-    sadhanaFormFields.forEach((f) => {
+    fields.forEach((f) => {
       m[f.id] = f.label;
     });
     return m;
-  }, []);
+  }, [fields]);
 
-  const fieldOrder = useMemo(() => sadhanaFormFields.map((f) => f.id), []);
+  const fieldOrder = useMemo(() => fields.map((f) => f.id), [fields]);
 
   const fieldGroups = useMemo(
-    () => chunkFields(sadhanaFormFields, QUESTIONS_PER_GROUP),
-    []
+    () => chunkFields(fields, QUESTIONS_PER_GROUP),
+    [fields]
   );
 
   const { done: filledRequiredCount, total: requiredTotal } = useMemo(
-    () => countCompletedRequired(sadhanaFormFields, values),
-    [values]
+    () => countCompletedRequired(fields, values),
+    [fields, values]
   );
 
   const progressPct = requiredTotal > 0 ? Math.round((filledRequiredCount / requiredTotal) * 100) : 0;
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setFieldsLoading(true);
+      setFieldsError('');
+      try {
+        const { fields: loaded } = await fetchSadhanaFormConfig();
+        if (cancelled) return;
+        setFields(loaded);
+        const init: Record<string, string | boolean | string[]> = {};
+        loaded.forEach((f) => {
+          init[f.id] = emptyValueForField(f);
+        });
+        setValues(init);
+        prevFieldFilledRef.current = {};
+        autoScrollInitRef.current = false;
+      } catch (e) {
+        if (!cancelled) {
+          setFieldsError(e instanceof Error ? e.message : 'Failed to load form');
+        }
+      } finally {
+        if (!cancelled) setFieldsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const prevTitle = document.title;
@@ -218,10 +245,10 @@ const SadhanaFormPage: React.FC = () => {
   }, []);
 
   const scrollNextFieldIntoView = useCallback((completedFieldId: string) => {
-    const idx = sadhanaFormFields.findIndex((f) => f.id === completedFieldId);
+    const idx = fields.findIndex((f) => f.id === completedFieldId);
     if (idx === -1 || idx < AUTO_SCROLL_AFTER_FIELD_INDEX) return;
-    for (let j = idx + 1; j < sadhanaFormFields.length; j++) {
-      const f = sadhanaFormFields[j];
+    for (let j = idx + 1; j < fields.length; j++) {
+      const f = fields[j];
       if (!isFieldVisible(f, values)) continue;
       const el = fieldBlockRefs.current.get(f.id);
       if (el) {
@@ -235,7 +262,7 @@ const SadhanaFormPage: React.FC = () => {
 
   const handleTextFieldBlur = useCallback(
     (fieldId: string) => {
-      const f = sadhanaFormFields.find((x) => x.id === fieldId);
+      const f = fields.find((x) => x.id === fieldId);
       if (!f || f.type !== 'text') return;
       if (!isFieldVisible(f, values)) return;
       if (!isFieldValueFilled(f, values[fieldId], values)) return;
@@ -247,7 +274,7 @@ const SadhanaFormPage: React.FC = () => {
   useEffect(() => {
     if (!autoScrollInitRef.current) {
       autoScrollInitRef.current = true;
-      sadhanaFormFields.forEach((f) => {
+      fields.forEach((f) => {
         if (!isFieldVisible(f, values)) return;
         prevFieldFilledRef.current[f.id] = isFieldValueFilled(f, values[f.id], values);
       });
@@ -255,7 +282,7 @@ const SadhanaFormPage: React.FC = () => {
     }
 
     let scrolled = false;
-    for (const f of sadhanaFormFields) {
+    for (const f of fields) {
       if (!isFieldVisible(f, values)) continue;
       if (f.type === 'text') continue;
       const was = prevFieldFilledRef.current[f.id] === true;
@@ -266,7 +293,7 @@ const SadhanaFormPage: React.FC = () => {
       }
     }
 
-    sadhanaFormFields.forEach((f) => {
+    fields.forEach((f) => {
       if (!isFieldVisible(f, values)) {
         delete prevFieldFilledRef.current[f.id];
         return;
@@ -298,7 +325,7 @@ const SadhanaFormPage: React.FC = () => {
   };
 
   const validate = (): string | null => {
-    for (const f of sadhanaFormFields) {
+    for (const f of fields) {
       if (!isFieldRequired(f, values)) continue;
       const v = values[f.id];
       if ((f.type === 'text' || f.type === 'date') && (!v || String(v).trim() === '')) {
@@ -348,7 +375,7 @@ const SadhanaFormPage: React.FC = () => {
       setMessage({ type: 'ok', text: t.success });
       setCelebrate(true);
       const reset: Record<string, string | boolean | string[]> = {};
-      sadhanaFormFields.forEach((f) => {
+      fields.forEach((f) => {
         reset[f.id] = emptyValueForField(f);
       });
       setValues(reset);
@@ -427,8 +454,15 @@ const SadhanaFormPage: React.FC = () => {
               {message && (
                 <div className={`sadhana-banner ${message.type === 'ok' ? 'ok' : 'err'}`}>{message.text}</div>
               )}
+              {fieldsError ? (
+                <div className="sadhana-banner err" role="alert">
+                  {fieldsError}
+                </div>
+              ) : null}
+              {fieldsLoading ? <p className="sadhana-form-loading">{t.recordsLoading}</p> : null}
             </div>
 
+            {!fieldsLoading && !fieldsError && fields.length > 0 ? (
             <form className="sadhana-form" onSubmit={handleSubmit} noValidate>
               {fieldGroups.map((group, groupIndex) => {
                 const visible = group.filter((f) => isFieldVisible(f, values));
@@ -590,6 +624,7 @@ const SadhanaFormPage: React.FC = () => {
                 </div>
               </div>
             </form>
+            ) : null}
           </main>
           <aside className="sadhana-side sadhana-side--right" aria-hidden>
             <div className="sadhana-side__inner">

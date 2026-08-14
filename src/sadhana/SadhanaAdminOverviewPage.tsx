@@ -127,19 +127,6 @@ const SadhanaAdminOverviewPage: React.FC = () => {
     };
   }, []);
 
-  const goChangeKey = useCallback(() => {
-    try {
-      sessionStorage.removeItem(ADMIN_KEY_STORAGE);
-    } catch {
-      /* ignore */
-    }
-    setPhase('gate');
-    setNames([]);
-    setSelectedName(null);
-    setRows([]);
-    setError(null);
-  }, []);
-
   const openName = useCallback(
     async (name: string) => {
       setError(null);
@@ -209,17 +196,22 @@ const SadhanaAdminOverviewPage: React.FC = () => {
               <input
                 id="sadhana-admin-key"
                 type="password"
+                inputMode="numeric"
+                pattern="[0-9]{4}"
+                maxLength={4}
                 autoComplete="off"
                 className="sadhana-input"
                 placeholder={t.adminKeyPlaceholder}
                 value={adminKeyInput}
-                onChange={(e) => setAdminKeyInput(e.target.value)}
+                onChange={(e) =>
+                  setAdminKeyInput(e.target.value.replace(/\D/g, '').slice(0, 4))
+                }
                 disabled={loading}
               />
               <button
                 type="button"
                 className="sadhana-submit sadhana-records-submit"
-                disabled={loading || !adminKeyInput.trim()}
+                disabled={loading || adminKeyInput.length !== 4}
                 onClick={() => tryLoadNames(adminKeyInput)}
               >
                 {loading ? t.recordsLoading : t.adminLoadNames}
@@ -238,9 +230,6 @@ const SadhanaAdminOverviewPage: React.FC = () => {
                         {t.adminBackToNames}
                       </button>
                     ) : null}
-                    <button type="button" className="sadhana-admin-text-btn" onClick={goChangeKey}>
-                      {t.adminChangeKey}
-                    </button>
                   </div>
                 </div>
                 <div className="sadhana-admin-name-grid" role="list">

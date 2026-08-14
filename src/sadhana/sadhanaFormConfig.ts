@@ -1,6 +1,6 @@
 /**
- * मॉड्यूलर साधना फ़ॉर्म — फ़ील्ड यहीं जोड़ें/बदलें।
- * स्प्रेडशीट में कॉलम लेबल (हिंदी) इन्हीं `label` से बनते हैं।
+ * Sadhana form structure (labels, types, conditionals).
+ * Option lists live only in Cosmos: tables/sadhana.columnSchemas.allowedValues.
  */
 
 export type SadhanaFieldType = 'text' | 'date' | 'checkbox' | 'radio';
@@ -11,10 +11,12 @@ export interface SadhanaFieldDefinition {
   label: string;
   description?: string;
   required?: boolean;
+  /** Filled at runtime from Cosmos columnSchemas — never hardcoded here. */
   options?: string[];
+  /** Checkbox that must load options from Cosmos (multi-select). */
+  expectsOptions?: boolean;
   /**
-   * When set: this field is shown and required only if the parent field is set
-   * and its value is not `skipWhenParentEquals` (e.g. show "which books" when reading minutes ≠ "0").
+   * When set: shown/required only if parent is set and ≠ skipWhenParentEquals.
    */
   conditionalRequired?: {
     parentFieldId: string;
@@ -22,52 +24,8 @@ export interface SadhanaFieldDefinition {
   };
 }
 
-/** रेडियो विकल्प — समय सीमा (सोने / उठने) */
-const SLEEP_TIME_OPTIONS = [
-  'रात 9 बजे से पहले',
-  'रात 9–10 बजे',
-  'रात 10–11 बजे',
-  'रात 11 बजे के बाद'
-];
-
-const WAKE_TIME_OPTIONS = [
-  'सुबह 4 बजे से पहले',
-  'सुबह 4–5 बजे',
-  'सुबह 5–6 बजे',
-  'सुबह 6 बजे के बाद'
-];
-
-/** माला संख्या */
-const MALA_COUNT_OPTIONS = ['16 माला', '17 से 20 माला', '21 से 25 माला', '26 से 32 माला', '32 से ज़्यादा माला'];
-
-/** 16 (या न्यूनतम) माला कब तक पूरी की */
-const MALA_BY_TIME_OPTIONS = [
-  'सुबह 7 बजे तक',
-  'सुबह 9 बजे तक',
-  'दोपहर 2 बजे तक',
-  'शाम 6 बजे तक',
-  'रात 9 बजे तक',
-  'पूरी नहीं हुई',
-];
-
-/** मिनट — पढ़ाई / श्रवण */
-const MINUTES_OPTIONS = [
-  '0',
-  'आधे घंटे तक',
-  '1 घंटे तक',
-  '2 घंटे तक',
-  '2 घंटे से अधिक',
-];
-
-/** श्रील प्रभुपाद की पुस्तकें — कौन-सी पढ़ीं (केवल जब पढ़ने का समय > 0) */
-const SP_BOOKS_WHICH_OPTIONS = [
-  'भगवद्-गीता',
-  'श्रीमद् भागवतम्',
-  'श्रील प्रभुपाद की छोटी पुस्तकें',
-  'अन्य',
-];
-
-export const sadhanaFormFields: SadhanaFieldDefinition[] = [
+/** Static field defs — no option arrays. */
+export const sadhanaFormFieldDefs: SadhanaFieldDefinition[] = [
   {
     id: 'devotee_name',
     type: 'text',
@@ -79,49 +37,43 @@ export const sadhanaFormFields: SadhanaFieldDefinition[] = [
     id: 'sadhana_date',
     type: 'date',
     label: 'आप किस दिन का साधना भर रहे हैं?',
-    //description: 'कैलेंडर से तारीख चुनें',
     required: true,
   },
   {
     id: 'sleep_time_range',
     type: 'radio',
     label: 'पिछली रात आप कितने बजे सोए थे?',
-    options: SLEEP_TIME_OPTIONS,
     required: true,
   },
   {
     id: 'wake_time_range',
     type: 'radio',
     label: 'आप कितने बजे सोकर उठे?',
-    options: WAKE_TIME_OPTIONS,
     required: true,
   },
   {
     id: 'mala_count_range',
     type: 'radio',
     label: 'आपने कितने माला जप किए?',
-    options: MALA_COUNT_OPTIONS,
     required: true,
   },
   {
     id: 'mala_completed_by_time',
     type: 'radio',
     label: 'आपने कितने बजे तक 16 (या न्यूनतम) माला जप किए?',
-    options: MALA_BY_TIME_OPTIONS,
     required: true,
   },
   {
     id: 'sp_books_minutes',
     type: 'radio',
     label: 'आपने कितने मिनट श्रीला प्रभुपाद की किताबें पढ़ीं?',
-    options: MINUTES_OPTIONS,
     required: true,
   },
   {
     id: 'sp_books_which',
     type: 'checkbox',
     label: 'कौन-सी पुस्तकें पढ़ीं?',
-    options: SP_BOOKS_WHICH_OPTIONS,
+    expectsOptions: true,
     conditionalRequired: {
       parentFieldId: 'sp_books_minutes',
       skipWhenParentEquals: '0',
@@ -131,12 +83,14 @@ export const sadhanaFormFields: SadhanaFieldDefinition[] = [
     id: 'sravanam_duration',
     type: 'radio',
     label: 'आपने कितनी देर श्रवण किया?',
-    options: MINUTES_OPTIONS,
     required: true,
   },
 ];
 
-/** English table column keys used for trend charts (ordinal Y = option order in config). */
+/** @deprecated Use sadhanaFormFieldDefs + Cosmos options. Kept name for fewer churn imports during migrate. */
+export const sadhanaFormFields = sadhanaFormFieldDefs;
+
+/** English table column keys used for trend charts (ordinal Y = option order in Cosmos). */
 export const SADHANA_HISTORY_CHART_COLUMNS = [
   'Sleeping Time',
   'Waking up Time',
@@ -147,16 +101,3 @@ export const SADHANA_HISTORY_CHART_COLUMNS = [
 ] as const;
 
 export type SadhanaHistoryChartColumnKey = (typeof SADHANA_HISTORY_CHART_COLUMNS)[number];
-
-/** Low → high on Y matches index 0 → last in each array. */
-export const SADHANA_OPTION_ORDER_BY_CHART_COLUMN: Record<
-  SadhanaHistoryChartColumnKey,
-  readonly string[]
-> = {
-  'Sleeping Time': SLEEP_TIME_OPTIONS,
-  'Waking up Time': WAKE_TIME_OPTIONS,
-  'Chanting Rounds': MALA_COUNT_OPTIONS,
-  'Chanting Completed': MALA_BY_TIME_OPTIONS,
-  'Book Reading': MINUTES_OPTIONS,
-  Hearing: MINUTES_OPTIONS,
-};

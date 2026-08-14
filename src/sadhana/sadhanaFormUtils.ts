@@ -35,7 +35,7 @@ export function isFieldValueFilled(
     return !!(v != null && String(v).trim() !== '');
   }
   if (f.type === 'checkbox') {
-    if (f.options && f.options.length > 0) {
+    if (f.expectsOptions || (f.options && f.options.length > 0)) {
       return Array.isArray(v) && v.length > 0;
     }
     return v === true;

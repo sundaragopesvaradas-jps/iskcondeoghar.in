@@ -66,6 +66,28 @@
   border: 1px solid #cbb79a;
 }
 
+.admn-btn--danger {
+  color: #8a1f1f;
+  border-color: #d4a5a5;
+}
+
+.admn-th-actions,
+.admn-td-actions {
+  position: sticky;
+  right: 0;
+  background: #f3ebe0;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.admn-td-actions {
+  background: #fff;
+}
+
+.admn-grid tr.is-dirty .admn-td-actions {
+  background: #fff6e8;
+}
+
 .admn-error {
   color: #8a1f1f;
   margin: 0;
@@ -73,7 +95,24 @@
 
 .admn-status {
   color: #2f5d2f;
-  margin: 0 1rem;
+  margin: 0;
+}
+
+.admn-flash {
+  padding: 0.5rem 1.25rem;
+  min-height: 1.5rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .admn-console {
@@ -122,6 +161,154 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
+}
+
+.admn-person-bar {
+  border-top: 1px solid #efe4d4;
+  padding-top: 0.5rem;
+}
+
+.admn-th-check,
+.admn-td-check {
+  width: 2.25rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.admn-tab-search {
+  flex: 0 0 auto;
+}
+
+.admn-tab-search input {
+  border: 1px solid #cbb79a;
+  background: #fff;
+  padding: 0.45rem 0.65rem;
+  font: inherit;
+  width: 12rem;
+}
+
+.admn-tab-chips {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 0.15rem;
+  scrollbar-width: thin;
+}
+
+.admn-tab-chip {
+  flex: 0 0 auto;
+  border: 1px solid #cbb79a;
+  background: #fffaf2;
+  color: #1f1208;
+  padding: 0.4rem 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admn-tab-chip.is-active {
+  background: #8b4513;
+  border-color: #8b4513;
+  color: #fffaf2;
+}
+
+.admn-tab-chip:focus-visible {
+  outline: 2px solid #8b4513;
+  outline-offset: 2px;
+}
+
+.admn-tab-chip__count {
+  margin-left: 0.35rem;
+  opacity: 0.75;
+  font-size: 0.8em;
+}
+
+.admn-tab-empty {
+  color: #5c4631;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.admn-th {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 10rem;
+}
+
+.admn-th-sort {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admn-th-sort:hover,
+.admn-th-sort:focus-visible {
+  color: #8b4513;
+  outline: none;
+}
+
+.admn-th-sort:focus-visible {
+  outline: 2px solid #8b4513;
+  outline-offset: 2px;
+}
+
+.admn-th-sort__ind {
+  opacity: 0.55;
+  font-size: 0.8em;
+  flex: 0 0 auto;
+}
+
+.admn-col-filter input {
+  width: 100%;
+  border: 1px solid #cbb79a;
+  background: #fff;
+  padding: 0.25rem 0.4rem;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.admn-grid tr.is-dirty {
+  background: #fff6e8;
+}
+
+.admn-cell--select {
+  width: 12rem;
+  appearance: auto;
+}
+
+.admn-schema-editor {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admn-schema-editor > label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  max-width: 20rem;
+}
+
+.admn-grow {
+  flex: 1 1 14rem;
+}
+
+.admn-inline label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
 }
 
 .admn-grid-wrap {

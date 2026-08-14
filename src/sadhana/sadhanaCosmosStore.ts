@@ -3,6 +3,7 @@
  */
 import { createHash, randomUUID } from 'node:crypto';
 import { getRowsContainer, isCosmosConfigured } from '@/lib/cosmos';
+import { getTable } from '@/admn/admnDataStore';
 import { SADHANA_DEFAULT_PIN } from './sadhanaPinConfig';
 import {
   SADHANA_TABLE_ID,
@@ -16,11 +17,14 @@ import {
   nameKey,
   normalizeName,
   pinLen,
-  sheetTitleForDevotee,
   sortHistoryRowsByDateOnly,
   validatePinFormat,
   type SadhanaHistoryObj,
 } from './sadhanaLogic';
+import {
+  getSadhanaColumnSchemas,
+  validateResponsesAgainstSchemas,
+} from './sadhanaOptionsStore';
 
 type RowDoc = {
   id: string;
@@ -132,23 +136,15 @@ export async function sadhanaListNames(): Promise<SadhanaResult> {
   }
 }
 
+/** All history from Sadhana Responses only (no per-person tabs). */
 async function historyForName(name: string): Promise<SadhanaHistoryObj[]> {
-  const title = sheetTitleForDevotee(name);
-  const fromTab = await queryTabRows(title);
-  let combined: SadhanaHistoryObj[];
-
-  if (fromTab.length > 0) {
-    combined = fromTab.map((r) => dataToHistoryObj(r.data || {}));
-  } else {
-    const nk = nameKey(name);
-    const main = await queryTabRows(RESPONSES_TAB);
-    combined = [];
-    for (const r of main) {
-      if (nameKey(r.data?.Name) !== nk) continue;
-      combined.push(dataToHistoryObj(r.data || {}));
-    }
+  const nk = nameKey(name);
+  const main = await queryTabRows(RESPONSES_TAB);
+  const combined: SadhanaHistoryObj[] = [];
+  for (const r of main) {
+    if (nameKey(r.data?.Name) !== nk) continue;
+    combined.push(dataToHistoryObj(r.data || {}));
   }
-
   return sortHistoryRowsByDateOnly(limitHistoryRowsToMax(combined));
 }
 
@@ -251,8 +247,9 @@ export async function sadhanaChangePin(input: {
   }
 }
 
-function getAdminKeyExpected(): string {
-  return (process.env.SADHANA_ADMIN_KEY || '').trim();
+async function getAdminKeyExpected(): Promise<string> {
+  const table = await getTable(SADHANA_TABLE_ID);
+  return String(table?.adminKey || '').trim();
 }
 
 export async function sadhanaSeeAll(input: {
@@ -264,7 +261,7 @@ export async function sadhanaSeeAll(input: {
   if (cfg) return cfg;
   try {
     const key = String(input.adminKey || '').trim();
-    const stored = getAdminKeyExpected();
+    const stored = await getAdminKeyExpected();
     if (!stored || key !== stored) {
       return { status: 'error', message: 'Invalid admin key', code: 'FORBIDDEN' };
     }
@@ -314,28 +311,6 @@ async function upsertDevoteeName(rawName: unknown): Promise<void> {
   });
 }
 
-async function appendDevoteeTab(rawName: unknown, data: Record<string, string>): Promise<void> {
-  try {
-    const name = normalizeName(rawName);
-    if (!name) return;
-    const tabId = sheetTitleForDevotee(name);
-    const rowIndex = await nextRowIndex(tabId);
-    const now = new Date().toISOString();
-    await getRowsContainer().items.upsert({
-      id: randomUUID().replace(/-/g, ''),
-      tableId: SADHANA_TABLE_ID,
-      tabId,
-      rowIndex,
-      data,
-      updatedAt: now,
-      updatedBy: 'app',
-      syncStatus: 'synced',
-    });
-  } catch {
-    /* devotee tab failure must not fail main submit */
-  }
-}
-
 export async function sadhanaSubmit(input: {
   fieldOrder?: string[];
   labels?: Record<string, string>;
@@ -344,6 +319,8 @@ export async function sadhanaSubmit(input: {
   const cfg = requireCosmos();
   if (cfg) return cfg;
   try {
+    const schemas = await getSadhanaColumnSchemas();
+    validateResponsesAgainstSchemas(input.responses, schemas);
     const data = buildResponseData(input);
     const rowIndex = await nextRowIndex(RESPONSES_TAB);
     const now = new Date().toISOString();
@@ -360,7 +337,6 @@ export async function sadhanaSubmit(input: {
 
     const rawName = input.responses?.devotee_name ?? data.Name;
     await upsertDevoteeName(rawName);
-    await appendDevoteeTab(rawName, data);
 
     return { status: 'success' };
   } catch (err) {

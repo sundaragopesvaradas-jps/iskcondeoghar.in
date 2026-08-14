@@ -1,11 +1,10 @@
-import React, { useMemo } from 'react';
-import {
-  SADHANA_OPTION_ORDER_BY_CHART_COLUMN,
-  SADHANA_HISTORY_CHART_COLUMNS,
-} from './sadhanaFormConfig';
+import React, { useEffect, useMemo, useState } from 'react';
+import { SADHANA_HISTORY_CHART_COLUMNS } from './sadhanaFormConfig';
 import type { SadhanaHistoryChartColumnKey } from './sadhanaFormConfig';
 import type { SadhanaHistoryRow } from './sadhanaHistoryTableConfig';
 import { sadhanaStrings as t } from './sadhanaStrings';
+
+type OptionOrderMap = Record<SadhanaHistoryChartColumnKey, string[]>;
 
 type Props = {
   series: SadhanaHistoryRow[];
@@ -171,13 +170,14 @@ function SadhanaOrdinalChart({
   series,
   chartNoData,
   chartAria,
+  options,
 }: {
   column: SadhanaHistoryChartColumnKey;
   series: SadhanaHistoryRow[];
   chartNoData: string;
   chartAria: (columnTitle: string) => string;
+  options: readonly string[];
 }) {
-  const options = SADHANA_OPTION_ORDER_BY_CHART_COLUMN[column];
   const pts = useMemo(() => buildPointCoords(series, column, options), [series, column, options]);
 
   const innerWData = useMemo(() => computeInnerWData(pts.length), [pts.length]);
@@ -304,6 +304,33 @@ function SadhanaOrdinalChart({
 }
 
 export const SadhanaHistoryCharts: React.FC<Props> = ({ series, copy }) => {
+  const [optionOrder, setOptionOrder] = useState<OptionOrderMap | null>(null);
+  const [optionsError, setOptionsError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/sadhana/form');
+        const data = await res.json();
+        if (!res.ok || data.status === 'error') {
+          throw new Error(data.message || 'Failed to load chart options');
+        }
+        if (!cancelled) {
+          setOptionOrder(data.optionOrderByChartColumn as OptionOrderMap);
+          setOptionsError('');
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setOptionsError(e instanceof Error ? e.message : 'Failed to load chart options');
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   if (series.length === 0) {
     return null;
   }
@@ -312,6 +339,24 @@ export const SadhanaHistoryCharts: React.FC<Props> = ({ series, copy }) => {
   const chartsHint = copy?.chartsHint ?? t.recordsChartsHint;
   const chartNoData = copy?.chartNoData ?? t.recordsChartNoData;
   const chartAria = copy?.chartAria ?? t.recordsChartAria;
+
+  if (optionsError) {
+    return (
+      <section className="sadhana-records-charts" aria-label={chartsHeading}>
+        <p className="sadhana-records-err" role="alert">
+          {optionsError}
+        </p>
+      </section>
+    );
+  }
+
+  if (!optionOrder) {
+    return (
+      <section className="sadhana-records-charts" aria-label={chartsHeading}>
+        <p className="sadhana-records-charts-hint">{t.recordsLoading}</p>
+      </section>
+    );
+  }
 
   return (
     <section className="sadhana-records-charts" aria-label={chartsHeading}>
@@ -325,6 +370,7 @@ export const SadhanaHistoryCharts: React.FC<Props> = ({ series, copy }) => {
             series={series}
             chartNoData={chartNoData}
             chartAria={chartAria}
+            options={optionOrder[col] || []}
           />
         ))}
       </div>

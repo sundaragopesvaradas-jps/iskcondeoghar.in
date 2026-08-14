@@ -15,6 +15,8 @@ export async function GET() {
       tables: tables.map((t) => ({
         id: t.id,
         name: t.name,
+        columnSchemas: t.columnSchemas || [],
+        adminKey: t.adminKey || '',
         tabs: (t.tabs || []).map((tab) => ({
           id: tab.id,
           name: tab.name,

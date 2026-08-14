@@ -21,10 +21,8 @@ function assert(cond: unknown, msg: string) {
 
 async function main() {
   loadEnvLocal();
-  if (!process.env.SADHANA_ADMIN_KEY) {
-    process.env.SADHANA_ADMIN_KEY = 'smoke-admin-key';
-  }
 
+  const { updateTableAdminKey } = await import('../src/admn/admnDataStore');
   const {
     runSadhanaAction,
     sadhanaListNames,
@@ -33,6 +31,9 @@ async function main() {
     sadhanaSeeAll,
     sadhanaSubmit,
   } = await import('../src/sadhana/sadhanaCosmosStore');
+
+  const smokeKey = '2026';
+  await updateTableAdminKey('sadhana', smokeKey);
 
   console.log('--- SADHANA_NAMES ---');
   const namesRes = await sadhanaListNames();
@@ -63,7 +64,7 @@ async function main() {
   const adminBad = await sadhanaSeeAll({ adminKey: 'nope', mode: 'names' });
   assert(adminBad.status === 'error' && adminBad.code === 'FORBIDDEN', JSON.stringify(adminBad));
   const adminNames = await sadhanaSeeAll({
-    adminKey: process.env.SADHANA_ADMIN_KEY,
+    adminKey: smokeKey,
     mode: 'names',
   });
   assert(adminNames.status === 'success', JSON.stringify(adminNames));
@@ -71,7 +72,7 @@ async function main() {
 
   console.log('--- seeAllSadhanas lookup ---');
   const adminLookup = await sadhanaSeeAll({
-    adminKey: process.env.SADHANA_ADMIN_KEY,
+    adminKey: smokeKey,
     mode: 'lookup',
     name: testName,
   });
