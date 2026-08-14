@@ -22,6 +22,7 @@ Next.js (App Router) site for ISKCON Deoghar.
 - `/name` — Cosmos via `POST /api/names/search`
 - `/bv` — Cosmos via `POST /api/bv`
 - `/sadhana` (+ records/overview) — Cosmos via `POST /api/sadhana` (set `SADHANA_ADMIN_KEY` for overview)
+- `/admn` — data console (username/password; roles `read`/`write`) — see `docs/ADMN_CONSOLE.md`
 - Data migration: `docs/COSMOS_DATA_MIGRATION.md`
 
 ## Hosting
