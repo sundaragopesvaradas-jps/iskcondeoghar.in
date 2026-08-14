@@ -1,5 +1,5 @@
 /**
- * Pure Sadhana helpers — ported from google-apps-script-sadhana.js.
+ * Pure Sadhana helpers — ported from archived `docs/archive/google-apps-script-sadhana.js`.
  */
 import { SADHANA_DEFAULT_PIN, SADHANA_PIN_LENGTH } from './sadhanaPinConfig';
 

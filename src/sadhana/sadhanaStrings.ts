@@ -28,14 +28,13 @@ export const sadhanaStrings = {
   validateCheckboxSingle: (label: string) => `कृपया "${label}" पर सहमति दें।`,
 
   notConfigured:
-    'फॉर्म अभी सक्रिय नहीं है। डेवलपर को src/sadhana/sadhanaBackendConfig.ts में SADHANA_GOOGLE_SCRIPT_URL सेट करके साइट फिर से बिल्ड करनी होगी।',
+    'फॉर्म अभी सक्रिय नहीं है। Cosmos / सर्वर कॉन्फ़िग जाँचें, फिर पुनः प्रयास करें।',
 
   success: 'धन्यवाद — आपकी जानकारी दर्ज कर ली गई है।',
   genericError: 'कुछ गलत हो गया। कृपया कुछ देर बाद पुनः प्रयास करें।',
 
-  devBannerBeforeCode: 'जब तक फ़ाइल',
-  devBannerAfterCode:
-    'में Google Apps Script का वेब ऐप URL नहीं जोड़ा जाता, जमा करना बंद रहेगा।',
+  devBannerBeforeCode: 'जब तक बैकएंड',
+  devBannerAfterCode: 'कॉन्फ़िगर नहीं है, जमा करना बंद रहेगा।',
 
   /** पिछली साधना रिकॉर्ड */
   recordsOpenButton: 'अपनी साधना रिकॉर्ड देखें',

@@ -1,3 +1,4 @@
+/** DEPRECATED — archived. Site uses Cosmos + Next.js APIs. See docs/RETIRE_APPS_SCRIPT.md */
 /**
  * Google Apps Script — Sadhana form → Spreadsheet
  *

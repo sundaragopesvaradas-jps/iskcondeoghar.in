@@ -1,5 +1,5 @@
 /**
- * BV registration — Cosmos helpers (parity with google-apps-script-bv.js).
+ * BV registration — Cosmos helpers (parity with archived `docs/archive/google-apps-script-bv.js`).
  * Live migrated tab name is `Sheet1` (not BvRegistrations).
  */
 import { createHash, randomInt } from 'node:crypto';

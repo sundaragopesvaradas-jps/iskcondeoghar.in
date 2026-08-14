@@ -1,6 +1,6 @@
 /**
  * Past-record table: column order and headers shown to users (English).
- * Backend (Apps Script) maps Hindi sheet headers to these keys.
+ * Backend maps storage headers to these keys.
  */
 export const SADHANA_HISTORY_TABLE_COLUMNS = [
   'Date',

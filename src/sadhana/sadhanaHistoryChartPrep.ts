@@ -9,7 +9,7 @@ export type PrepareChartSeriesOptions = {
 };
 
 /**
- * One point per **submission** (row). Row count is already capped by Apps Script (`MAX_HISTORY_ROWS_RETURN`).
+ * One point per **submission** (row). Row count is already capped by the API (`MAX_HISTORY_ROWS_RETURN`).
  * Sort: by date, then by submission time within the same day.
  */
 export function prepareRowsForChartSeries(

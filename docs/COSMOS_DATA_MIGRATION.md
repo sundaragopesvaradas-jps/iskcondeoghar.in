@@ -22,7 +22,7 @@ Upserts are idempotent by deterministic row `id`.
 | tableId | tabs | rows |
 |---|---|---|
 | `names` | Boy, Girl | 36858 |
-| `sadhana` | 47 (Responses + Unique Names + devotee tabs) | 1800 |
+| `sadhana` | Responses + Unique Names (legacy person tabs removed) | was 1800 incl. person tabs |
 | `bv` | Sheet1 (not named BvRegistrations in the sheet) | 13 |
 
-Website: `/name` uses Cosmos (`POST /api/names/search`). Sadhana / BV still use Google Apps Script until migrated.
+Website APIs use Cosmos only (`/api/names/search`, `/api/bv`, `/api/sadhana`). Undeploy old Apps Script web apps: `docs/RETIRE_APPS_SCRIPT.md`.

@@ -1,5 +1,5 @@
 /**
- * Name search rules — ported from `google-apps-script-name.js` (parity).
+ * Name search rules — ported from archived `docs/archive/google-apps-script-name.js` (parity).
  */
 import type {
   NameGender,
