@@ -3,7 +3,7 @@
 import React, { FormEvent, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { fetchNameSearch, getNameScriptUrl } from './fetchNameSearch';
+import { fetchNameSearch } from './fetchNameSearch';
 import { hasSearchableNameQuery } from './nameSearchTypes';
 import { renderNameWithBoldPrefix } from './renderNameWithBoldPrefix';
 import type { NameGender, NameSearchResult, NameWordCount } from './nameSearchTypes';
@@ -18,7 +18,6 @@ function NameSearchPage() {
   const [result, setResult] = useState<NameSearchResult | null>(null);
 
   const canSearch = hasSearchableNameQuery(query) && !loading;
-  const scriptConfigured = Boolean(getNameScriptUrl());
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -29,18 +28,10 @@ function NameSearchPage() {
       return;
     }
 
-    const scriptUrl = getNameScriptUrl();
-    if (!scriptUrl) {
-      setError(
-        'Name search is not configured. Set NAME_GOOGLE_SCRIPT_URL in src/name/nameBackendConfig.ts and rebuild.'
-      );
-      return;
-    }
-
     setLoading(true);
     setResult(null);
     try {
-      const data = await fetchNameSearch(scriptUrl, {
+      const data = await fetchNameSearch({
         action: 'NAME_SEARCH',
         gender,
         wordCount,
@@ -130,12 +121,6 @@ function NameSearchPage() {
           >
             {loading ? 'Searching…' : 'Search'}
           </button>
-
-          {!scriptConfigured && (
-            <p className="name-hint" role="status">
-              Backend URL not set yet. See <code>src/name/GOOGLE_SHEETS_SETUP.md</code>.
-            </p>
-          )}
         </form>
 
         {error && (

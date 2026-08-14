@@ -19,10 +19,10 @@ Next.js (App Router) site for ISKCON Deoghar.
 
 ## Backends
 
-Sadhana / Name / BV still use Google Apps Script web apps. See:
-
-- `src/sadhana/GOOGLE_SHEETS_SETUP.md`
-- `src/name/GOOGLE_SHEETS_SETUP.md`
+- `/name` — Cosmos via `POST /api/names/search` (requires `COSMOS_*` env)
+- `/bv` — Cosmos via `POST /api/bv` (`register` / `markPaid`)
+- Sadhana still uses Google Apps Script until migrated (`src/sadhana/GOOGLE_SHEETS_SETUP.md`)
+- Data migration notes: `docs/COSMOS_DATA_MIGRATION.md`
 
 ## Hosting
 

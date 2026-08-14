@@ -1,4 +1,4 @@
-import { NAME_GOOGLE_SCRIPT_URL } from './nameBackendConfig';
+import { NAME_SEARCH_API_PATH } from './nameBackendConfig';
 import {
   NameSearchPayload,
   NameSearchResult,
@@ -6,8 +6,8 @@ import {
   NameSearchItem,
 } from './nameSearchTypes';
 
-export function getNameScriptUrl(): string {
-  return (NAME_GOOGLE_SCRIPT_URL || '').trim();
+export function getNameSearchApiPath(): string {
+  return NAME_SEARCH_API_PATH;
 }
 
 function isItem(value: unknown): value is NameSearchItem {
@@ -21,9 +21,10 @@ function normalizeGroups(raw: unknown, includeMeaning: boolean): NameSearchGroup
   return raw
     .map((g) => {
       if (!g || typeof g !== 'object') return null;
-      const prefix = typeof (g as NameSearchGroup).prefix === 'string'
-        ? (g as NameSearchGroup).prefix
-        : '';
+      const prefix =
+        typeof (g as NameSearchGroup).prefix === 'string'
+          ? (g as NameSearchGroup).prefix
+          : '';
       if (!prefix) return null;
       const itemsRaw = (g as NameSearchGroup).items;
       const items = Array.isArray(itemsRaw)
@@ -43,13 +44,11 @@ function normalizeGroups(raw: unknown, includeMeaning: boolean): NameSearchGroup
 }
 
 export async function fetchNameSearch(
-  scriptUrl: string,
   payload: NameSearchPayload
 ): Promise<NameSearchResult> {
-  const res = await fetch(scriptUrl, {
+  const res = await fetch(getNameSearchApiPath(), {
     method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
 

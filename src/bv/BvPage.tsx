@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './BvPage.css';
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwe2M3QHtcDKqV3sDrcCJ7XFJS5aw_HQf9qONoRe36kY1zhzDnlxtQmi0jgwTKLtiOr/exec';
+const BV_API_PATH = '/api/bv';
 
 interface FormState {
   name: string;
@@ -49,16 +49,17 @@ function BvPage() {
   const fieldClass = (value: string) =>
     `bv-field__input${value.trim() ? ' filled' : ''}`;
 
-  const postToScript = async (payload: Record<string, string>) => {
-    const res = await fetch(SCRIPT_URL, {
+  const postToBvApi = async (payload: Record<string, string>) => {
+    const res = await fetch(BV_API_PATH, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error('Server error');
+      throw new Error((data as { error?: string })?.error || 'Server error');
     }
-    return res.json();
+    return data as { success?: boolean; registrationId?: string; error?: string };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,7 +88,7 @@ function BvPage() {
         gender: form.gender,
         location: form.location.trim(),
       };
-      const result = await postToScript(payload);
+      const result = await postToBvApi(payload);
       if (!result?.success || !result?.registrationId) {
         throw new Error(result?.error || 'Registration failed');
       }

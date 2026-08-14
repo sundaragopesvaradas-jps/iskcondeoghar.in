@@ -6,3 +6,7 @@ out/
 deploy/
 *.log
 .env*.local
+tmp/
+scripts/migrate-data/node_modules/
+scripts/migrate-data/.env
+*.tsbuildinfo
