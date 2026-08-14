@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
-import type { AdmnRole, AdmnUserPublic } from './admnTypes';
+import { getLiveUser } from './admnUsersStore';
+import { normalizeRole, type AdmnUserPublic } from './admnTypes';
 
 export const ADMN_SESSION_COOKIE = 'admn_session';
 const SESSION_DAYS = 14;
@@ -26,6 +27,7 @@ export async function createSessionToken(user: AdmnUserPublic): Promise<string> 
   return new SignJWT({
     username: user.username,
     role: user.role,
+    expiresAt: user.expiresAt ?? null,
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(user.username)
@@ -34,6 +36,10 @@ export async function createSessionToken(user: AdmnUserPublic): Promise<string> 
     .sign(sessionSecret());
 }
 
+/**
+ * Validates cookie JWT, then reloads the user from Cosmos so role/expiry
+ * changes take effect without waiting for cookie expiry.
+ */
 export async function readSessionFromCookies(): Promise<AdmnUserPublic | null> {
   try {
     const jar = await cookies();
@@ -41,9 +47,13 @@ export async function readSessionFromCookies(): Promise<AdmnUserPublic | null> {
     if (!token) return null;
     const { payload } = await jwtVerify(token, sessionSecret());
     const username = String(payload.username || payload.sub || '').trim();
-    const role = String(payload.role || '').trim() as AdmnRole;
-    if (!username || (role !== 'read' && role !== 'write')) return null;
-    return { username, role };
+    if (!username) return null;
+    const jwtRole = normalizeRole(payload.role);
+    if (!jwtRole) return null;
+
+    const live = await getLiveUser(username);
+    if (!live) return null;
+    return live;
   } catch {
     return null;
   }

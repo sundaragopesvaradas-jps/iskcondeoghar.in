@@ -163,11 +163,38 @@
   align-items: center;
 }
 
-.admn-lb-wrap {
+.admn-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admn-users-panel {
+  margin-top: 1.5rem;
+}
+
+.admn-users-subtitle {
+  margin: 1.1rem 0 0.45rem;
+  font-size: 0.95rem;
+}
+
+.admn-users-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.admn-users-edit {
   margin-top: 0.75rem;
-  overflow: auto;
-  max-height: 20rem;
-  border: 1px solid #e2d2bc;
+  align-items: center;
+}
+
+.admn-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
 }
 
 .admn-lb-periods {

@@ -4,7 +4,25 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import '../admn.css';
 
-type Role = 'read' | 'write';
+type Role = 'owner' | 'editor' | 'viewer';
+type AdmnUserRow = {
+  username: string;
+  role: Role;
+  expiresAt?: string | null;
+};
+
+function roleLabel(role: Role): string {
+  if (role === 'owner') return 'Owner';
+  if (role === 'editor') return 'Editor';
+  return 'Viewer';
+}
+
+function normalizeClientRole(role: unknown): Role {
+  const r = String(role || '').toLowerCase();
+  if (r === 'owner') return 'owner';
+  if (r === 'editor' || r === 'write') return 'editor';
+  return 'viewer';
+}
 type ColumnSchema = { name: string; allowedValues?: string[]; allowedValuePoints?: Record<string, number> };
 type ColumnView = { name: string; allowedValues?: string[] };
 type TabInfo = { id: string; name: string; rowCount?: number; columns?: string[] };
@@ -27,7 +45,11 @@ function deepCloneRows(rows: RowDoc[]): RowDoc[] {
 
 export default function AdmnConsolePage() {
   const router = useRouter();
-  const [user, setUser] = useState<{ username: string; role: Role } | null>(null);
+  const [user, setUser] = useState<{
+    username: string;
+    role: Role;
+    expiresAt?: string | null;
+  } | null>(null);
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [tableId, setTableId] = useState('');
   const [tabId, setTabId] = useState('');
@@ -42,7 +64,23 @@ export default function AdmnConsolePage() {
   const [saving, setSaving] = useState(false);
   const [newTableName, setNewTableName] = useState('');
   const [newTabName, setNewTabName] = useState('');
-  const [newUser, setNewUser] = useState({ username: '', password: '', role: 'read' as Role });
+  const [newUser, setNewUser] = useState({
+    username: '',
+    password: '',
+    role: 'viewer' as 'editor' | 'viewer',
+    expiresAmount: '',
+    expiresUnit: 'days' as 'hours' | 'days',
+  });
+  const [adminUsers, setAdminUsers] = useState<AdmnUserRow[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [editUser, setEditUser] = useState<{
+    username: string;
+    role: 'editor' | 'viewer';
+    expiresAmount: string;
+    expiresUnit: 'hours' | 'days';
+    clearExpiry: boolean;
+  } | null>(null);
+  const [transferTo, setTransferTo] = useState('');
   const [status, setStatus] = useState('');
   const [tabSearch, setTabSearch] = useState('');
   const [schemaCol, setSchemaCol] = useState('');
@@ -74,7 +112,8 @@ export default function AdmnConsolePage() {
   const [personFilter, setPersonFilter] = useState('');
   const [personSearch, setPersonSearch] = useState('');
 
-  const canWrite = user?.role === 'write';
+  const canWrite = user?.role === 'owner' || user?.role === 'editor';
+  const isOwner = user?.role === 'owner';
   const columns = useMemo(() => columnViews.map((c) => c.name), [columnViews]);
 
   const selectedTable = useMemo(
@@ -143,7 +182,15 @@ export default function AdmnConsolePage() {
       return;
     }
     if (!res.ok) throw new Error(data.message || 'Failed to load tables');
-    setUser(data.user);
+    setUser(
+      data.user
+        ? {
+            username: data.user.username,
+            role: normalizeClientRole(data.user.role),
+            expiresAt: data.user.expiresAt ?? null,
+          }
+        : null
+    );
     setTables(data.tables || []);
     if (!tableId && data.tables?.[0]) {
       setTableId(data.tables[0].id);
@@ -262,6 +309,35 @@ export default function AdmnConsolePage() {
     await fetch('/api/admn/logout', { method: 'POST' });
     router.replace('/admn/login');
   };
+
+  const loadAdminUsers = useCallback(async () => {
+    if (!isOwner) {
+      setAdminUsers([]);
+      return;
+    }
+    setUsersLoading(true);
+    try {
+      const res = await fetch('/api/admn/users');
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Failed to load users');
+        return;
+      }
+      setAdminUsers(
+        (data.users || []).map((u: AdmnUserRow) => ({
+          username: u.username,
+          role: normalizeClientRole(u.role),
+          expiresAt: u.expiresAt ?? null,
+        }))
+      );
+    } finally {
+      setUsersLoading(false);
+    }
+  }, [isOwner]);
+
+  useEffect(() => {
+    if (isOwner) void loadAdminUsers();
+  }, [isOwner, loadAdminUsers]);
 
   const setCell = (rowId: string, col: string, value: string) => {
     if (!canWrite) return;
@@ -435,19 +511,118 @@ export default function AdmnConsolePage() {
   };
 
   const createUser = async () => {
-    if (!canWrite) return;
+    if (!isOwner) return;
+    const body: Record<string, unknown> = {
+      username: newUser.username,
+      password: newUser.password,
+      role: newUser.role,
+    };
+    const amount = parseInt(newUser.expiresAmount, 10);
+    if (Number.isFinite(amount) && amount > 0) {
+      body.expiresInAmount = amount;
+      body.expiresInUnit = newUser.expiresUnit;
+    }
     const res = await fetch('/api/admn/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newUser),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     if (!res.ok) {
       setError(data.message || 'Create user failed');
       return;
     }
-    setNewUser({ username: '', password: '', role: 'read' });
-    setStatus(`User created: ${data.user.username} (${data.user.role})`);
+    setNewUser({
+      username: '',
+      password: '',
+      role: 'viewer',
+      expiresAmount: '',
+      expiresUnit: 'days',
+    });
+    setStatus(`User created: ${data.user.username} (${roleLabel(normalizeClientRole(data.user.role))})`);
+    await loadAdminUsers();
+  };
+
+  const saveUserEdits = async () => {
+    if (!isOwner || !editUser) return;
+    const body: Record<string, unknown> = {
+      username: editUser.username,
+      role: editUser.role,
+    };
+    if (editUser.clearExpiry) {
+      body.clearExpiry = true;
+    } else {
+      const amount = parseInt(editUser.expiresAmount, 10);
+      if (Number.isFinite(amount) && amount > 0) {
+        body.expiresInAmount = amount;
+        body.expiresInUnit = editUser.expiresUnit;
+      }
+    }
+    const res = await fetch('/api/admn/users', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.message || 'Update user failed');
+      return;
+    }
+    setEditUser(null);
+    setStatus(
+      `Updated ${data.user.username} → ${roleLabel(normalizeClientRole(data.user.role))}`
+    );
+    await loadAdminUsers();
+  };
+
+  const transferOwner = async () => {
+    if (!isOwner || !transferTo.trim()) return;
+    const ok = window.confirm(
+      `Transfer ownership to "${transferTo.trim()}"? You will become an Editor.`
+    );
+    if (!ok) return;
+    const res = await fetch('/api/admn/users', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: transferTo.trim(), transferOwnership: true }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.message || 'Transfer failed');
+      return;
+    }
+    setTransferTo('');
+    setStatus(`Ownership transferred to ${data.newOwner.username}`);
+    setUser({
+      username: data.previousOwner.username,
+      role: normalizeClientRole(data.previousOwner.role),
+      expiresAt: data.previousOwner.expiresAt ?? null,
+    });
+  };
+
+  const deleteUserAccount = async (username: string) => {
+    const self = user && username.toLowerCase() === user.username.toLowerCase();
+    const ok = window.confirm(
+      self
+        ? 'Delete your own account? You will be signed out.'
+        : `Delete account "${username}"? This cannot be undone.`
+    );
+    if (!ok) return;
+    const res = await fetch(
+      `/api/admn/users?username=${encodeURIComponent(username)}`,
+      { method: 'DELETE' }
+    );
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.message || 'Delete failed');
+      return;
+    }
+    if (self) {
+      await logout();
+      return;
+    }
+    setStatus(`Deleted ${username}`);
+    await loadAdminUsers();
   };
 
   const saveColumnSchema = async () => {
@@ -670,16 +845,33 @@ export default function AdmnConsolePage() {
             {user ? (
               <>
                 Signed in as <strong>{user.username}</strong> · access{' '}
-                <strong>{user.role}</strong>
+                <strong>{roleLabel(user.role)}</strong>
+                {user.expiresAt ? (
+                  <>
+                    {' '}
+                    · expires <strong>{new Date(user.expiresAt).toLocaleString()}</strong>
+                  </>
+                ) : null}
               </>
             ) : (
               'Loading…'
             )}
           </p>
         </div>
-        <button type="button" className="admn-btn admn-btn--ghost" onClick={logout}>
-          Sign out
-        </button>
+        <div className="admn-header-actions">
+          {user && user.role !== 'owner' ? (
+            <button
+              type="button"
+              className="admn-btn admn-btn--ghost"
+              onClick={() => void deleteUserAccount(user.username)}
+            >
+              Delete my account
+            </button>
+          ) : null}
+          <button type="button" className="admn-btn admn-btn--ghost" onClick={logout}>
+            Sign out
+          </button>
+        </div>
       </header>
 
       <div className="admn-flash" aria-live="polite">
@@ -1400,35 +1592,6 @@ export default function AdmnConsolePage() {
               </button>
             </div>
           </div>
-          <div className="admn-panel">
-            <h2>Create admin user</h2>
-            <div className="admn-inline">
-              <input
-                value={newUser.username}
-                onChange={(e) => setNewUser((u) => ({ ...u, username: e.target.value }))}
-                placeholder="username"
-              />
-              <input
-                type="password"
-                value={newUser.password}
-                onChange={(e) => setNewUser((u) => ({ ...u, password: e.target.value }))}
-                placeholder="password (min 8)"
-              />
-              <select
-                value={newUser.role}
-                onChange={(e) =>
-                  setNewUser((u) => ({ ...u, role: e.target.value as Role }))
-                }
-                aria-label="Role"
-              >
-                <option value="read">read</option>
-                <option value="write">write</option>
-              </select>
-              <button type="button" className="admn-btn" onClick={createUser}>
-                Create user
-              </button>
-            </div>
-          </div>
         </section>
       ) : (
         <>
@@ -1444,10 +1607,233 @@ export default function AdmnConsolePage() {
             </section>
           ) : null}
           <p className="admn-note">
-            Your account is read-only. Ask a write admin to grant edit access.
+            Your account is {user ? roleLabel(user.role) : 'read-only'}. Ask the owner for
+            edit access or a longer expiry.
           </p>
         </>
       )}
+
+      {isOwner ? (
+        <section className="admn-admin-panels admn-users-panel" aria-label="Admin accounts">
+          <div className="admn-panel">
+            <h2>Admin accounts (owner only)</h2>
+            <p className="admn-panel__hint">
+              One Owner. Multiple Editors (can edit data) and Viewers (read-only). Optional
+              expiry stops login after the chosen period. Only you can delete others or change
+              access; editors/viewers may delete their own account.
+            </p>
+            {usersLoading ? <p className="admn-note">Loading accounts…</p> : null}
+            <div className="admn-lb-wrap">
+              <table className="admn-lb admn-users-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Access</th>
+                    <th scope="col">Expires</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adminUsers.map((u) => (
+                    <tr key={u.username}>
+                      <td>{u.username}</td>
+                      <td>{roleLabel(u.role)}</td>
+                      <td>
+                        {u.role === 'owner'
+                          ? 'Never'
+                          : u.expiresAt
+                            ? new Date(u.expiresAt).toLocaleString()
+                            : 'No expiry'}
+                      </td>
+                      <td className="admn-users-actions">
+                        {u.role !== 'owner' ? (
+                          <>
+                            <button
+                              type="button"
+                              className="admn-btn admn-btn--ghost"
+                              onClick={() =>
+                                setEditUser({
+                                  username: u.username,
+                                  role: u.role === 'editor' ? 'editor' : 'viewer',
+                                  expiresAmount: '',
+                                  expiresUnit: 'days',
+                                  clearExpiry: false,
+                                })
+                              }
+                            >
+                              Edit access
+                            </button>
+                            <button
+                              type="button"
+                              className="admn-btn admn-btn--ghost"
+                              onClick={() => void deleteUserAccount(u.username)}
+                            >
+                              Delete
+                            </button>
+                          </>
+                        ) : (
+                          <span className="admn-panel__hint">Current owner</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {adminUsers.length === 0 && !usersLoading ? (
+                    <tr>
+                      <td colSpan={4}>No users found.</td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
+            </div>
+
+            {editUser ? (
+              <div className="admn-inline admn-users-edit">
+                <strong>Edit {editUser.username}</strong>
+                <select
+                  value={editUser.role}
+                  onChange={(e) =>
+                    setEditUser((x) =>
+                      x
+                        ? { ...x, role: e.target.value as 'editor' | 'viewer' }
+                        : x
+                    )
+                  }
+                  aria-label="Edit role"
+                >
+                  <option value="editor">Editor</option>
+                  <option value="viewer">Viewer</option>
+                </select>
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="new expiry amount"
+                  value={editUser.expiresAmount}
+                  onChange={(e) =>
+                    setEditUser((x) => (x ? { ...x, expiresAmount: e.target.value } : x))
+                  }
+                  aria-label="Expiry amount"
+                />
+                <select
+                  value={editUser.expiresUnit}
+                  onChange={(e) =>
+                    setEditUser((x) =>
+                      x
+                        ? { ...x, expiresUnit: e.target.value as 'hours' | 'days' }
+                        : x
+                    )
+                  }
+                  aria-label="Expiry unit"
+                >
+                  <option value="hours">hours</option>
+                  <option value="days">days</option>
+                </select>
+                <label className="admn-check">
+                  <input
+                    type="checkbox"
+                    checked={editUser.clearExpiry}
+                    onChange={(e) =>
+                      setEditUser((x) =>
+                        x ? { ...x, clearExpiry: e.target.checked } : x
+                      )
+                    }
+                  />
+                  Clear expiry
+                </label>
+                <button type="button" className="admn-btn" onClick={() => void saveUserEdits()}>
+                  Save access
+                </button>
+                <button
+                  type="button"
+                  className="admn-btn admn-btn--ghost"
+                  onClick={() => setEditUser(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : null}
+
+            <h3 className="admn-users-subtitle">Create account</h3>
+            <div className="admn-inline">
+              <input
+                value={newUser.username}
+                onChange={(e) => setNewUser((u) => ({ ...u, username: e.target.value }))}
+                placeholder="username"
+              />
+              <input
+                type="password"
+                value={newUser.password}
+                onChange={(e) => setNewUser((u) => ({ ...u, password: e.target.value }))}
+                placeholder="password (min 8)"
+              />
+              <select
+                value={newUser.role}
+                onChange={(e) =>
+                  setNewUser((u) => ({
+                    ...u,
+                    role: e.target.value as 'editor' | 'viewer',
+                  }))
+                }
+                aria-label="Access role"
+              >
+                <option value="viewer">Viewer</option>
+                <option value="editor">Editor</option>
+              </select>
+              <input
+                type="number"
+                min={1}
+                placeholder="expiry (optional)"
+                value={newUser.expiresAmount}
+                onChange={(e) =>
+                  setNewUser((u) => ({ ...u, expiresAmount: e.target.value }))
+                }
+                aria-label="Expiry amount"
+              />
+              <select
+                value={newUser.expiresUnit}
+                onChange={(e) =>
+                  setNewUser((u) => ({
+                    ...u,
+                    expiresUnit: e.target.value as 'hours' | 'days',
+                  }))
+                }
+                aria-label="Expiry unit"
+              >
+                <option value="hours">hours</option>
+                <option value="days">days</option>
+              </select>
+              <button type="button" className="admn-btn" onClick={() => void createUser()}>
+                Create user
+              </button>
+            </div>
+
+            <h3 className="admn-users-subtitle">Transfer ownership</h3>
+            <div className="admn-inline">
+              <select
+                value={transferTo}
+                onChange={(e) => setTransferTo(e.target.value)}
+                aria-label="New owner"
+              >
+                <option value="">Select editor or viewer…</option>
+                {adminUsers
+                  .filter((u) => u.role !== 'owner')
+                  .map((u) => (
+                    <option key={u.username} value={u.username}>
+                      {u.username} ({roleLabel(u.role)})
+                    </option>
+                  ))}
+              </select>
+              <button
+                type="button"
+                className="admn-btn"
+                disabled={!transferTo}
+                onClick={() => void transferOwner()}
+              >
+                Transfer ownership
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

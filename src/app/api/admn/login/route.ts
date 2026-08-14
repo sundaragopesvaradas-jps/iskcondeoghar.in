@@ -5,7 +5,7 @@ import {
   createSessionToken,
   sessionCookieOptions,
 } from '@/admn/admnAuth';
-import { authenticateAdmnUser } from '@/admn/admnUsersStore';
+import { authenticateAdmnUser, ensureSoleOwner } from '@/admn/admnUsersStore';
 import { isCosmosConfigured } from '@/lib/cosmos';
 
 export const runtime = 'nodejs';
@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       );
     }
+    // Ensure legacy roles are mapped and sandip (or sole write user) is owner.
+    await ensureSoleOwner('sandip');
     const body = (await req.json()) as { username?: string; password?: string };
     const username = String(body.username || '').trim();
     const password = String(body.password || '');
@@ -44,9 +46,14 @@ export async function POST(req: NextRequest) {
     return res;
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Login failed';
+    const expired = /expired/i.test(message);
     return NextResponse.json(
-      { status: 'error', message, code: 'SERVER_ERROR' },
-      { status: 500 }
+      {
+        status: 'error',
+        message,
+        code: expired ? 'ACCESS_EXPIRED' : 'SERVER_ERROR',
+      },
+      { status: expired ? 403 : 500 }
     );
   }
 }
