@@ -300,9 +300,9 @@ const EventGallery = () => {
         </div>
       </section>
       <section className="donation-section">
-        <h2 className="section-title donation-title">Donate For Janmashtami 2026</h2>
+        <h2 className="section-title donation-title">Donation for the Seva</h2>
         <p className="donation-info">
-          If you would like to support the festival seva, you can donate using this UPI QR code.
+          Donate from the heart for the excusive service of Lord Sri Sri Radha and Krsna
         </p>
         <img
           src="/images/UpcomingEventBanner/ratha-yatra-donation-qr.png"
